@@ -49,11 +49,13 @@ app.use(logger(configlog, {
 var show = require('./route/show_users')
 var User = require('./route/User')
 var product = require('./route/product')
+var product_information = require('./route/product_information')
 
 
 app.use(version +'show',show)
 app.use(version +'user',User)
 app.use(version +'product',product)
+app.use(version +'product_information',product_information)
 
 
 app.listen(port, function () {
