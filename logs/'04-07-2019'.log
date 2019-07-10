@@ -115,3 +115,14 @@
 [10: 54: 14] [ip]: ::1 - [method]: GET [url]: /api/v1/trader/get_product HTTP/1.1 [status]: 200 [response-time]: 7.436 ms [client]: PostmanRuntime/7.15.0
 [10: 54: 34] [ip]: ::1 - [method]: GET [url]: /api/v1/trader/get_product HTTP/1.1 [status]: 200 [response-time]: 8.159 ms [client]: PostmanRuntime/7.15.0
 [10: 55: 06] [ip]: ::1 - [method]: GET [url]: /api/v1/trader/get_product HTTP/1.1 [status]: 200 [response-time]: 8.229 ms [client]: PostmanRuntime/7.15.0
+[10: 58: 41] [ip]: ::1 - [method]: GET [url]: /api/v1/show/show_users HTTP/1.1 [status]: 404 [response-time]: 2.786 ms [client]: PostmanRuntime/7.15.0
+[10: 58: 41] [ip]: ::1 - [method]: GET [url]: /api/v1/show HTTP/1.1 [status]: 200 [response-time]: 12.934 ms [client]: PostmanRuntime/7.15.0
+[10: 58: 41] [ip]: ::1 - [method]: POST [url]: /api/v1/user/user_login HTTP/1.1 [status]: 200 [response-time]: 1.527 ms [client]: PostmanRuntime/7.15.0
+[10: 58: 41] [ip]: ::1 - [method]: POST [url]: /api/v1/user/user_login HTTP/1.1 [status]: 200 [response-time]: 0.901 ms [client]: PostmanRuntime/7.15.0
+[12: 48: 03] [ip]: ::1 - [method]: POST [url]: /api/v1/user/user_login HTTP/1.1 [status]: 200 [response-time]: 5.052 ms [client]: PostmanRuntime/7.15.0
+[12: 48: 03] [ip]: ::1 - [method]: POST [url]: /api/v1/user/user_login HTTP/1.1 [status]: 200 [response-time]: 0.975 ms [client]: PostmanRuntime/7.15.0
+[12: 50: 55] [ip]: ::1 - [method]: POST [url]: /api/v1/user/user_login HTTP/1.1 [status]: 200 [response-time]: 6.066 ms [client]: PostmanRuntime/7.15.0
+[12: 51: 43] [ip]: ::1 - [method]: POST [url]: /api/v1/user/user_login HTTP/1.1 [status]: 200 [response-time]: 4.270 ms [client]: PostmanRuntime/7.15.0
+[12: 53: 33] [ip]: ::1 - [method]: POST [url]: /api/v1/user/user_login HTTP/1.1 [status]: 200 [response-time]: 5.432 ms [client]: PostmanRuntime/7.15.0
+[12: 57: 45] [ip]: ::1 - [method]: POST [url]: /api/v1/user/user_login HTTP/1.1 [status]: 200 [response-time]: 5.609 ms [client]: PostmanRuntime/7.15.0
+[12: 57: 45] [ip]: ::1 - [method]: POST [url]: /api/v1/user/user_login HTTP/1.1 [status]: 200 [response-time]: 130.927 ms [client]: PostmanRuntime/7.15.0

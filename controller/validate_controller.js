@@ -1,100 +1,105 @@
-var errorMessage = require('../const/error_message')
+var errorMessages = require('../const/error_message')
 var jsonwebToken = require('jsonwebtoken')
 var constance = require('../const/constance')
+var errorMessagess = require('../const/error_message')
 
-exports.validate_user_register=()=>{
-    return(req,res,next)=>{
-        if(req.body.username&&
-            req.body.password&&
-            req.body.role){
-                next();
-            }
-        else{
-            res.status(200).json(errorMessage.invalid_data)
-        }
+exports.validate_user_register = () => {
+  return (req, res, next) => {
+    if (req.body.username &&
+      req.body.password &&
+      req.body.role&&
+      req.body.name&&
+      req.body.lastname&&
+      req.body.address&&
+      req.body.phone) {
+      next();
     }
-}
-
-exports.validate_user_login = () =>{
-    return (req,res,next)=>{
-        if (req.body.username&&
-            req.body.password){
-                next();
-            }
-        else{
-            res.status(200).json(errorMessage.invalid_data)
-        }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
     }
-}
-
-exports.validate_user_update_password = () =>{
-  return(req,res,next)=>{
-    if(req.body.password&&
-        req.body.newpassword){
-          next()
-        }
-        else{
-          res.status(200).json(errorMessage.invalid_data)
-        }
   }
 }
 
-exports.validate_user_update_data = () =>{
-    return(req,res,next)=>{
-        if(req.body.username&&
-            req.body.name&&
-            req.body.lastname&&
-            req.body.address&&
-            req.body.phone){
-                next()
-            }
-        else{
-            res.status(200).json(errorMessage.invalid_data)
-        }
+exports.validate_user_login = () => {
+  return (req, res, next) => {
+    if (req.body.username &&
+      req.body.password) {
+      next();
     }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
 }
 
-exports.validate_show_product_info = () =>{
-  return (req,res,next)=>{
-      if (req.body.pro_id){
-              next();
-          }
-      else{
-          res.status(200).json(errorMessage.invalid_data)
-      }
+exports.validate_user_update_password = () => {
+  return (req, res, next) => {
+    if (req.body.password &&
+      req.body.newpassword) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
+
+exports.validate_user_update_data = () => {
+  return (req, res, next) => {
+    if (req.body.username &&
+      req.body.name &&
+      req.body.lastname &&
+      req.body.address &&
+      req.body.phone) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
+
+exports.validate_show_product_info = () => {
+  return (req, res, next) => {
+    if (req.body.pro_id) {
+      next();
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
   }
 }
 
 
-exports.validate_add_product = () =>{
-    return(req,res,next)=>{
-      if(req.body.pro_name&&
-         req.body.pro_cost&&
-         req.body.pro_price&&
-         req.body.pro_amount&&
-         req.body.pro_details&&
-         req.body.pro_status){
-           next()
-         }
-      else{
-        res.status(200).json(errorMessage.invalid_data)
-      }
+exports.validate_add_product = () => {
+  return (req, res, next) => {
+    if (req.body.pro_name &&
+      req.body.pro_cost &&
+      req.body.pro_price &&
+      req.body.pro_amount &&
+      req.body.pro_details &&
+      req.body.pro_status) {
+      next()
     }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
 }
 
-exports.validate_update_product = () =>{
-  return(req,res,next)=>{
-    if(req.body.pro_id&&
-       req.body.pro_name&&
-       req.body.pro_cost&&
-       req.body.pro_price&&
-       req.body.pro_amount&&
-       req.body.pro_details&&
-       req.body.pro_status){
-         next()
-       }
-    else{
-      res.status(200).json(errorMessage.invalid_data)
+exports.validate_update_product = () => {
+  return (req, res, next) => {
+    if (req.body.pro_id &&
+      req.body.pro_name &&
+      req.body.pro_cost &&
+      req.body.pro_price &&
+      req.body.pro_amount &&
+      req.body.pro_details &&
+      req.body.pro_status) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
     }
   }
 }
@@ -102,29 +107,166 @@ exports.validate_update_product = () =>{
 
 
 exports.validate_token_user = function () {
-    return function (req, res, next) {
-      // console.log(req.session.token)
-      if (!Boolean(req.headers["authorization"])) {
-        res.status(200).json({
-          success: false,
-          message: errorMessage.err_required_token
-        });
-      } else {
-        // console.log("token")
-        jsonwebToken.verify(
-          req.headers.authorization,
-          constance.sign,
-          (err, decode) => {
-            if (err) {
-              // console.log(decode.type)
-              res.status(200).json(errorMessage.err_required_fingerprint_token);
+  return function (req, res, next) {
+    // console.log(req.session.token)
+    if (!Boolean(req.headers["authorization"])) {
+      res.status(200).json({
+        success: false,
+        message: errorMessages.err_required_token
+      });
+    } else {
+      // console.log("token")
+      jsonwebToken.verify(
+        req.headers.authorization,
+        constance.sign,
+        (err, decode) => {
+          if (err) {
+            // console.log(decode.type)
+            res.status(200).json(errorMessages.err_required_fingerprint_token);
+          } else {
+            req.user_id = decode.id;
+            next();
+
+          }
+        }
+      );
+    }
+  };
+};
+
+exports.validate_token_trader = function () {
+  return function (req, res, next) {
+    // console.log(req.session.token)
+    if (!Boolean(req.headers["authorization"])) {
+      res.status(200).json({
+        success: false,
+        message: errorMessagess.err_required_token
+      });
+    } else {
+      // console.log("token")
+      jsonwebToken.verify(
+        req.headers.authorization,
+        constance.sign,
+        (err, decode) => {
+          if (err) {
+            res.status(200).json(errorMessagess.err_required_fingerprint_token);
+          } else {
+            if (decode.type > 1) {
+              req.user_id = decode.id;
+              next();
             } else {
-                req.user_id = decode.id;
-                next();
-                
+              // console.log(decode.type)
+              res
+                .status(200)
+                .json(errorMessagess.err_required_fingerprint_token);
             }
           }
-        );
-      }
-    };
+        }
+      );
+    }
   };
+};
+
+exports.validate_token_se_small = () => {
+  return (req, res, next) => {
+    if (!Boolean(req.headers["authorization"])) {
+      res.status(200).json({
+        success: false,
+        message: errorMessages.err_required_token
+      })
+    }
+    else {
+      jsonwebToken.verify(
+        req.headers.authorization,
+        constance.sign,
+        (err, decode) => {
+          if (err) {
+            res.status(200).json(errorMessages.err_required_fingerprint_token)
+          }
+          else {
+            if (decode > 2) {
+              req.user_id = decode.id
+              next()
+            }
+            else {
+              console.log(decode.type)
+              res
+                .status(200)
+                .json(errorMessagess.err_required_fingerprint_token);
+            }
+          }
+        }
+      )
+    }
+  }
+}
+
+exports.validate_token_se = () =>{
+  return(req,res,next)=>{
+    if(!Boolean(req.headers["authorization"])){
+      res.status(200).json({
+        success : false,
+        message : errorMessages.err_required_token
+      })
+    }
+    else{
+      jsonwebToken.verify(req.headers.authorization,
+        constance.sign,
+        (err,decode) =>{
+          if(err){
+            res.status(200).json({
+              success : false,
+              message : errorMessages.err_required_fingerprint_token
+            })
+          }
+          else{
+            if(decode.type>3){
+              req.user_id = decode.id
+              next()
+            }
+            else{
+              console.log('type : ',decode.type)
+              res.status(200).json({
+                success : false,
+                message : errorMessages.err_required_fingerprint_token
+              })
+            }
+          }
+        })
+    }
+  }
+}
+
+exports.validate_token_admin = function () {
+  return function (req, res, next) {
+    // console.log(req.session.token)
+    if (!Boolean(req.headers["authorization"])) {
+      res.status(200).json({
+        success: false,
+        message: errorMessagess.err_required_token
+      });
+    } else {
+      // console.log("token")
+      jsonwebToken.verify(
+        req.headers.authorization,
+        constance.sign,
+        (err, decode) => {
+          if (err) {
+            // console.log(decode.type)
+            res.status(200).json(errorMessagess.err_required_fingerprint_token);
+          } else {
+            if (decode.type > 4) {
+              req.user_id = decode.id;
+              next();
+            } else {
+              console.log(decode.type)
+              res
+                .status(200)
+                .json(errorMessagess.err_required_fingerprint_token);
+            }
+          }
+        }
+      );
+    }
+  };
+};

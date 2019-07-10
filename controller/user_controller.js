@@ -36,7 +36,7 @@ exports.User_Register = () =>{
                 address : req.body.address,
                 phone : req.body.phone,
                 username : req.body.username,
-                User_ID : result.insertId}
+                user_id : result.insertId}
 
             db.query('INSERT INTO userprofile SET ?',dataprofile, (err, result) => {//console.log('data',result.insertId)
                 if (err){
@@ -72,15 +72,15 @@ exports.User_Register = () =>{
 exports.User_Login = () =>{
     return (req,res,next) => {
         let username = req.body.username
-        let email = req.body.email
-        db.query(`SELECT * FROM useraccount WHERE username = ? OR email = ?`,[username,email], (err,result)=>{
+        
+        db.query(`SELECT * FROM useraccount WHERE username = ? `,username, (err,result)=>{
             if(err) throw err;//console.log(`SELECT * From useraccount WHERE Username = '${Username}'`)
             if(result[0]){
                 let password = result[0].password
                 if (bcrypt.compareSync(req.body.password, password)) {
     
                     req.token = jsonwebToken.sign({
-                        id: result[0].User_ID,
+                        id: result[0].user_id,
                         type: result[0].user_type
                     },constance.sign)
     
@@ -91,7 +91,7 @@ exports.User_Login = () =>{
             }
             }
             else{
-                res.status(200).json(errorMessager.err_user_not_found)
+                res.status(200).json(errorMessager.user_work_not_found)
             }
         })
     }
@@ -101,7 +101,7 @@ exports.user_update_password= () => {
     return (req,res,next) => {
     let user_id = req.user_id
 
-    db.query(`SELECT password FROM useraccount WHERE User_ID = ?`,user_id, (err,result)=>{
+    db.query(`SELECT password FROM useraccount WHERE user_id = ?`,user_id, (err,result)=>{
         if(err) throw err;//console.log(`SELECT * From useraccount WHERE Username = '${Username}'`)
         if(result[0]){
             let password = result[0].password
@@ -114,7 +114,7 @@ exports.user_update_password= () => {
 
                 if(updateInfo.password !== "" ){
         
-                    db.query("UPDATE useraccount SET Password = ? WHERE User_ID  = ?",[updateInfo.password,updateInfo.user_id], function (err, result) {
+                    db.query("UPDATE useraccount SET Password = ? WHERE user_id  = ?",[updateInfo.password,updateInfo.user_id], function (err, result) {
                         if (err) throw err;
                         console.log("okkub")
                         next();
@@ -146,10 +146,10 @@ exports.user_update_data = () =>{
             address : req.body.address,
             phone : req.body.phone
         }
-        db.query('UPDATE useraccount SET username = ? WHERE User_ID = ?',[data_update.username,user_id],(err,result)=>{
+        db.query('UPDATE useraccount SET username = ? WHERE user_id = ?',[data_update.username,user_id],(err,result)=>{
             if (err) throw err;
 
-            db.query('UPDATE userprofile SET ? WHERE User_ID = ?',[data_update,user_id],(err,result)=>{
+            db.query('UPDATE userprofile SET ? WHERE user_id = ?',[data_update,user_id],(err,result)=>{
                 if (err) throw err;
                 if(req.body.user_image){
                     let user_image = req.body.user_image.slice(req.body.user_image.indexOf(',') + 1)

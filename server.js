@@ -10,12 +10,9 @@ var path = require('path')
  
 
  var mm = moment()
- var date = mm.utc().format('DD-MM-YYYY')
- var time = mm.utc().format('HH: mm: ss')
+ var date = mm.utc(7).format('DD-MM-YYYY')
+ var time = mm.utc(7).format('HH: mm: ss')
  console.log(date,time)
-
-
-
 
 
 app.use(bodyParser.urlencoded({
