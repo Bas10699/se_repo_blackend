@@ -1,6 +1,7 @@
 var db = require('../connect/test_connect')
 var moment = require('moment')
 var mm = moment()
+var randomstring = require("randomstring");
 
 var date_time = mm.utc(7).format('YYMMDDHHmm')
 
@@ -251,9 +252,10 @@ exports.add_order_trader = () => {
     return (req, res, next) => {
 
         let order_trader = JSON.stringify(req.body.detail)
+        let random = randomstring.generate(3);
 
         let add_order = {
-            order_id: date_time,
+            order_id: date_time+random,
             order_date: mm.utc(7).format(),
             detail: order_trader,
             order_status: req.body.order_status,
