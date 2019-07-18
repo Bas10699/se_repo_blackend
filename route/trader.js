@@ -35,6 +35,16 @@ router.post('/add_cart_trader',
     }
 )
 
+router.post('/delete_cart_product_tarder',
+    validateUtil.validate_token_trader(),
+    productUtil.delete_product_cart(),
+    (req,res)=>{
+        res.status(200).json({
+            success: true,
+            message:"ลบสินค้าในตะกร้าสำเร็จ"
+        })
+    })
+
 router.post('/update_cart_trader',
     validateUtil.validate_token_trader(),
     productUtil.update_cart_trader(),
@@ -46,7 +56,7 @@ router.post('/update_cart_trader',
     }
 )
 
-router.post('/get_cart_trader',
+router.get('/get_cart_trader',
     validateUtil.validate_token_trader(),
     productUtil.get_cart_trader(),
     (req, res) => {
@@ -68,6 +78,17 @@ router.post('/add_order',
     }
 )
 
+router.post('/update_status_order_trader',
+    validateUtil.validate_token_trader(),
+    productUtil.update_status_order_trader(),
+    (req,res) => {
+        res.status(200).json({
+            success: true,
+            message: "อัปเดตสถานะสินค้าสำเร็จ"
+        })
+    }
+)
+
 router.get('/get_order',
     validateUtil.validate_token_trader(),
     productUtil.get_order_trader(),
@@ -78,5 +99,19 @@ router.get('/get_order',
         })
     }
 )
+router.get('/image/:id',
+    function (req, res) {
+
+        require("fs").readFile(__dirname.replace("route", "") + 'image/product/' + req.params.id, (err, data) => {
+
+            if(err!==null){
+                res.sendFile(__dirname.replace("route", "") + 'image/default_product.png')
+            }else{
+            res.sendFile(__dirname.replace("route", "") + 'image/product/' + req.params.id)
+            }
+
+        })
+
+    })
 
 module.exports = router

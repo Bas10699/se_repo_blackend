@@ -59,11 +59,11 @@ router.get('/image/:id',
 
         require("fs").readFile(__dirname.replace("route", "") + 'image/product/' + req.params.id, (err, data) => {
 
-            // if(err!==null){
-            //     res.sendFile(__dirname.replace("route", "") + 'image/No_image.jpg')
-            // }else{
+            if(err!==null){
+                res.sendFile(__dirname.replace("route", "") + 'image/default_product.png')
+            }else{
             res.sendFile(__dirname.replace("route", "") + 'image/product/' + req.params.id)
-            // }
+            }
 
         })
 

@@ -1,4 +1,8 @@
 var db = require('../connect/test_connect')
+var moment = require('moment')
+var mm = moment()
+
+var date_time = mm.utc(7).format('YYMMDDHHmm')
 
 exports.get_product = () => {
     return (req, res, next) => {
@@ -99,7 +103,7 @@ exports.add_cart_trader = () => {
                 if (result[0]) {
                     console.log("update")
 
-                   let sum_amount = (Number(result[0].amount)+Number(req.body.amount))
+                    let sum_amount = (Number(result[0].amount) + Number(req.body.amount))
                     console.log("sum_amont", sum_amount)
 
                     db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND product_id = ?', [sum_amount, req.user_id, req.body.product_id], (err, result) => {
@@ -133,36 +137,74 @@ exports.get_cart_trader = () => {
     return (req, res, next) => {
         db.query('SELECT * FROM cart WHERE trader_id = ?', req.user_id, (err, result) => {
             if (err) throw err
+            if (!result[0]) {
+                res.status(200).json({
+                    success: false,
+                    error_message: "ไม่มีสินค้าในตะกร้า"
+                })
+                next()
+            }
             else {
-                db.query('SELECT * From product_information ', (err, result_product) => {
+                let sql = 'SELECT * From product_information INNER JOIN product_plan ON product_information.product_id = product_plan.product_id'
+                db.query(sql, (err, result_product) => {
                     if (err) throw err
                     else {
-                        let product = []
+
+                        db.query('SELECT * From plant_information', (err, result_plant) => {
+                            if (err) throw err
+                            else {
+                                let product = []
+                                result.map((element) => {
+                                    let product_obj = null
+                                    result_product.map((element_result_product) => {
+                                        if (element.product_id == element_result_product.product_id) {
+                                            product_obj = {
+                                                ...element,
+                                                ...element_result_product
+                                            }
+                                            product_obj.plant = JSON.parse(product_obj.plant)
+
+                                            product_obj.plant.map((element_plant, index) => {
+                                                //console.log("ID : ",element_plant)
+                                                let plant_all = null
+                                                result_plant.map((element_result_plant) => {
+
+                                                    if (element_plant.plant_id == element_result_plant.plant_id) {
+                                                        product_obj.plant[index] = {
+                                                            ...element_plant,
+                                                            ...element_result_plant
+                                                        }
+                                                    }
+                                                })
+
+                                            })
 
 
-                        result.map((element) => {
-                            let product_obj = null
-                            result_product.map((element_result_product) => {
-                                if (element.product_id == element_result_product.product_id) {
-                                    product_obj = {
-                                        ...element,
-                                        ...element_result_product
+
+
+                                        }
+                                    })
+
+                                    if (product_obj) {
+                                        product.push({
+                                            product_id: product_obj.product_id,
+                                            product_name: product_obj.product_name,
+                                            plant: product_obj.plant,
+                                            amount: product_obj.amount
+                                        })
                                     }
 
 
-                                }
-                            })
 
-                            if (product_obj) {
-                                product.push(product_obj)
+                                })
+                                // console.log(product)
+                                req.result = product
+                                next()
                             }
 
-
-
                         })
-                        console.log(product)
-                        req.result = product
-                        next()
+
+
 
                     }
 
@@ -173,28 +215,46 @@ exports.get_cart_trader = () => {
     }
 }
 
-exports.update_cart_trader =()=>{
-    return(req,res,next) =>{
-        let obj ={
-            ...req.body.data
-        }
-       
-        console.log(obj)
-        // db.query('UPDATE cart SET amount = ? WHERE trader_id = ?',(err,result)=>{
+exports.update_cart_trader = () => {
+    return (req, res, next) => {
 
-        // })
+        req.body.data.map((element) => {
+            db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND product_id = ?', [element.amount, req.user_id, element.product_id], (err, result) => {
+                if (err) throw err
+                next()
+            })
+        })
+
+    }
+}
+exports.delete_product_cart = () => {
+    return (req, res, next) => {
+        db.query('DELETE FROM cart WHERE trader_id = ? AND product_id = ?', [req.user_id, req.body.product_id], (err, result) => {
+            if (err) throw err;
+            next()
+        })
     }
 }
 
+// exports.delete_select_product_cart = () => {
+//     return (req, res, next) => {
+
+//         db.query('DELETE FROM cart WHERE trader_id = ? AND product_id = ?', [req.user_id, element.product_id], (err, result) => {
+//             if (err) throw err;
+//             next()
+//         })
+
+//     }
+// }
+
 exports.add_order_trader = () => {
     return (req, res, next) => {
-        let order = {
-            product_id: req.body.product_id,
-            volume: req.body.volume
-        }
-        let order_trader = JSON.stringify(order)
+
+        let order_trader = JSON.stringify(req.body.detail)
 
         let add_order = {
+            order_id: date_time,
+            order_date: mm.utc(7).format(),
             detail: order_trader,
             order_status: req.body.order_status,
             trader_id: req.user_id
@@ -203,11 +263,17 @@ exports.add_order_trader = () => {
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {
             if (err) throw err
             else {
-                next()
+                db.query('DELETE FROM cart WHERE trader_id = ?', req.user_id, (err) => {
+                    if (err) throw err
+                    next()
+                })
+
             }
         })
     }
 }
+
+
 
 exports.get_order_trader = () => {
     return (req, res, next) => {
@@ -221,6 +287,17 @@ exports.get_order_trader = () => {
                 req.result = result
                 next()
             }
+        })
+    }
+}
+
+exports.update_status_order_trader = () => {
+    return (req, res, next) => {
+        let order_id = req.body.order_id
+        let order_status = req.body.order_status
+        db.query('UPDATE order_trader SET order_status = ? WHERE order_id = ?', [order_status, order_id], (err) => {
+            if (err) throw err
+            next()
         })
     }
 }
