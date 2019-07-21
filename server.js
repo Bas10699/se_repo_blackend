@@ -38,7 +38,7 @@ app.use(function (req, res, next) {
 
 app.use(logger('dev'))
 var accessLogStream = fs.createWriteStream(path.join(__dirname, `logs`,`'${date}'.log`), { flags: 'a' })
-var configlog = `[${time}] [ip]: :remote-addr :remote-user [method]: :method [url]: :url HTTP/:http-version [status]: :status [response-time]: :response-time ms [client]: :user-agent`
+var configlog = `[:date[iso]] [ip]: :remote-addr :remote-user [method]: :method [url]: :url HTTP/:http-version [status]: :status [response-time]: :response-time ms [client]: :user-agent`
 app.use(logger(configlog, {
   stream: accessLogStream
 }))
