@@ -99,6 +99,18 @@ router.get('/get_order',
         })
     }
 )
+
+router.post('/get_order_info',
+    validateUtil.validate_token_trader(),
+    productUtil.get_order_info_trader(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: req.result
+        })
+    }
+)
+
 router.get('/image/:id',
     function (req, res) {
 

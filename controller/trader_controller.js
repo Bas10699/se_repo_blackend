@@ -254,7 +254,7 @@ exports.add_order_trader = () => {
         let random = randomstring.generate(3);
 
         let add_order = {
-            order_id: date_time + random+req.user_id,
+            order_id: date_time + random + req.user_id,
             order_date: moment().utc(7).format(),
             detail: order_trader,
             order_status: req.body.order_status,
@@ -286,6 +286,26 @@ exports.get_order_trader = () => {
                     element.detail = JSON.parse(element.detail)
                 })
                 req.result = result
+                next()
+            }
+        })
+    }
+}
+
+exports.get_order_info_trader = () => {
+    return (req, res, next) => {
+        console.log(req.body.order_id)
+        db.query('SELECT * FROM order_trader WHERE trader_id = ? AND order_id = ?', [req.user_id, req.body.order_id], (err, result) => {
+            if (err) throw err
+            if (!result[0]) {
+                res.status(200).json({
+                    success: false,
+                    error_message: "ไม่พบ ID ใบสั่งซื้อ หรือ ID ใบสั่งซื้อไม่ถูกต้อง"
+                })
+            }
+            else {
+                result[0].detail = JSON.parse(result[0].detail)
+                req.result = result[0]
                 next()
             }
         })
