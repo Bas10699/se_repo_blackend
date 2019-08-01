@@ -251,10 +251,7 @@ exports.add_order_trader = () => {
 
         let date_time = moment().utc(7).format('YYMMDDHHmm')
         let order_trader = JSON.stringify(req.body.detail)
-        let random = randomstring.generate(3);
-
         let add_order = {
-            order_id: date_time + random + req.user_id,
             order_date: moment().utc(7).format(),
             detail: order_trader,
             order_status: req.body.order_status,
@@ -264,11 +261,16 @@ exports.add_order_trader = () => {
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {
             if (err) throw err
             else {
-                db.query('DELETE FROM cart WHERE trader_id = ?', req.user_id, (err) => {
+                let order_id = date_time+'-'+result.insertId
+                db.query('UPDATE order_trader SET order_id = ? WHERE number = ?', [order_id,result.insertId], (err) => {
                     if (err) throw err
-                    next()
+                    else {
+                        db.query('DELETE FROM cart WHERE trader_id = ?', req.user_id, (err) => {
+                            if (err) throw err
+                            next()
+                        })
+                    }
                 })
-
             }
         })
     }
@@ -320,5 +322,32 @@ exports.update_status_order_trader = () => {
             if (err) throw err
             next()
         })
+    }
+}
+
+exports.get_quotation_trader = () => {
+    return (req, res, next) => {
+        let quotation_id = req.body.quotation_id
+        db.query('SELECT * FROM quotation WHERE quotation_id = ?', quotation_id, (err, result) => {
+            if (err) throw err
+            else {
+                if (!result[0]) {
+                    res.status(200).json({
+                        success: false,
+                        error_message: "ไม่พบ ID ใบเสนอราคา หรือ ID ใบเสนอราคาไม่ถูกต้อง"
+                    })
+                }
+                else {
+                    req.result = result[0]
+                    next()
+                }
+            }
+        })
+    }
+}
+
+exports.update_status_quotation_trader = () => {
+    return (req, res, next) => {
+
     }
 }

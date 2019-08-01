@@ -48,7 +48,7 @@ exports.User_Register = () =>{
                      let user_image = req.body.user_image.slice(req.body.user_image.indexOf(',') + 1)
                     require("fs").writeFile("./image/user/user" + result.insertId + '.png', user_image, 'base64', function (err) {
                         if (err) throw err;
-                        db.query(`UPDATE userprofile  SET user_image = 'user/image/user_${result.insertId}.png'  WHERE pro_id = ${result.insertId}`, function (err, result) {
+                        db.query(`UPDATE userprofile  SET user_image = 'user/image/user_${result.insertId}.png'  WHERE user_id = ${result.insertId}`, function (err, result) {
                             if (err) throw err;
                             next()
                         });
@@ -153,11 +153,13 @@ exports.user_update_data = () =>{
                 if (err) throw err;
                 if(req.body.user_image){
                     let user_image = req.body.user_image.slice(req.body.user_image.indexOf(',') + 1)
-                   require("fs").writeFile("./image/user/user" + result.insertId + '.png', user_image, 'base64', function (err) {
+                   require("fs").writeFile("./image/user/user_" + req.user_id + '.png', user_image, 'base64', function (err) {
                        if (err) throw err;
-                       db.query(`UPDATE userprofile  SET user_image = 'user/image/user_${result.insertId}.png'  WHERE pro_id = ${result.insertId}`, function (err, result) {
+                       db.query(`UPDATE userprofile  SET user_image = 'user/image/user_${req.user_id}.png'  WHERE user_id= ${req.user_id}`, function (err, result) {
                            if (err) throw err;
-                           next()
+                           else{
+                               next()
+                            }
                        });
                    });   
                    }
