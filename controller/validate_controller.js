@@ -69,7 +69,17 @@ exports.validate_show_product_info = () => {
     }
   }
 }
-
+exports.validate_add_cart = () =>{
+  return(req,res,next) => {
+    if (req.body.plant_id &&
+      req.body.amount) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
 
 exports.validate_add_product = () => {
   return (req, res, next) => {

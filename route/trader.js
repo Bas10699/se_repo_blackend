@@ -26,6 +26,7 @@ router.post('/get_product_information',
 
 router.post('/add_cart_trader',
     validateUtil.validate_token_trader(),
+    // validateUtil.validate_add_cart(),
     productUtil.add_cart_trader(),
     (req, res) => {
         res.status(200).json({

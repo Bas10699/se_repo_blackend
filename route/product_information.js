@@ -5,10 +5,12 @@ var productUtil = require('../controller/product_information_controller')
 
 router.get('/show_product_information',
     productUtil.get_product_information(),
+    productUtil.get_plant_send_all_year(),
     (req, res) => {
         res.status(200).json({
             success: true,
-            result: req.result
+            result: req.result,
+            result_1:req.result_1
         })
     }
 )

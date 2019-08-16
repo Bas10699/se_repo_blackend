@@ -8,8 +8,21 @@ exports.get_product = () => {
         db.query('SELECT * FROM product_information', (err, result) => {
             if (err) throw err
             else {
-                req.result = result
-                next()
+                db.query('SELECT * From plant_information', (err, result_plant) => {
+                    if (err) throw err
+                    else {
+                        result_plant.map((element) => {
+                            result.push({
+                                product_id: 'P ' + element.plant_id,
+                                product_name: element.plant_name
+                            })
+                        })
+
+                        req.result = result
+                        next()
+                    }
+                })
+
             }
         })
     }
@@ -18,115 +31,296 @@ exports.get_product = () => {
 exports.get_product_information = () => {
     return (req, res, next) => {
         console.log(req.body.product_id)
-
-        let sql = 'SELECT * From product_information INNER JOIN product_plan ON product_information.product_id = product_plan.product_id WHERE product_information.product_id = ?'
-        db.query(sql, req.body.product_id, (err, result) => {
-            if (err) throw err;
-            else {
-                let sql = 'SELECT * From plant_information'
-                db.query(sql, (err, result_plan) => {
-                    if (err) throw err;
-                    if (result[0]) {
-
-                        let plant = JSON.parse(result[0].plant)
-                        let plant_data = []
-
-                        plant.map((plant_element, plant_index) => {
-                            let plant_obj = null
-                            result_plan.map((result_plan_element) => {
-                                if (plant_element.plant_id == result_plan_element.plant_id) {
-                                    plant_obj = {
-                                        ...plant_element,
-                                        ...result_plan_element
-                                    }
-                                }
-
+        let product_id = req.body.product_id.split(" ");
+        let cmd = product_id[0];
+        if (cmd === 'P') {
+            db.query('SELECT * From plant_information WHERE plant_id = ?', product_id[1], (err, result) => {
+                if (err) throw err
+                if (result[0]) {
+                    let id_plant = result[0].plant_id
+                    let name_plant = result[0].plant_name
+                    db.query('SELECT `manufacture_information`.`plant_type` FROM `manufacture_information` INNER JOIN `farmer_information` ON `manufacture_information`.`farmer_id` = `farmer_information`.`farmer_id`'
+                        , (err, result_plant_type) => {
+                            if (err) throw err
+                            let result_plant = []
+                            let result = []
+                            result_plant_type.map((element) => {
+                                element.plant_type = JSON.parse(element.plant_type)
+                                element.plant_type.map((element) => {
+                                    end_plant = element.end_plant
+                                    volume = (element.deliver_value) * 1
+                                    plant = element.plant
+                                    result_plant.push({
+                                        name: plant,
+                                        end_plant: end_plant,
+                                        volume: volume,
+                                    })
+                                })
 
                             })
-                            if (plant_obj) {
-                                plant_data.push(plant_obj)
+                            let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
+                            let result_freq = []
+                            let plant_data = []
+                            result_plant.map((element) => {
+                                if (name_plant === element.name) {
+
+                                    if (element.end_plant === "มกราคม") {
+
+                                        jan += element.volume
+
+                                    } else if (element.end_plant === "กุมภาพันธ์") {
+
+                                        feb += element.volume
+                                        feb
+                                    } else if (element.end_plant === "มีนาคม") {
+
+                                        mar += element.volume
+
+                                    } else if (element.end_plant === "เมษายน") {
+
+                                        apr += element.volume
+
+                                    } else if (element.end_plant === "พฤษภาคม") {
+
+                                        may += element.volume
+
+                                    } else if (element.end_plant === "มิถุนายน") {
+
+                                        jul += element.volume
+
+                                    } else if (element.end_plant === "กรกฎาคม") {
+
+                                        jun += element.volume
+
+                                    } else if (element.end_plant === "สิงหาคม") {
+
+                                        aug += element.volume
+
+                                    } else if (element.end_plant === "กันยายน") {
+
+                                        sep += element.volume
+
+                                    } else if (element.end_plant === "ตุลาคม") {
+
+                                        oct += element.volume
+
+                                    } else if (element.end_plant === "พฤศจิกายน") {
+
+                                        nov += element.volume
+
+                                    } else if (element.end_plant === "ธันวาคม") {
+
+                                        dec += element.volume
+
+                                    } else { }
+                                    result.push(element)
+
+                                }
+
+                            })
+
+                            plant_data.push({
+                                plant_id: id_plant,
+                                plant_name: name_plant,
+                                volume: 1,
+                                data: [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
+                            })
+                            result_freq = {
+
+                                product_name: name_plant,
+                                plant: plant_data
                             }
 
+                            req.result = result_freq
+                            next();
                         })
-                        let result_all = null
-                        result_all = {
-                            ...result[0],
-                            plant: plant_data
+                }
+            })
+        }
+        else {
+            let sql = 'SELECT * From product_information INNER JOIN product_plan ON product_information.product_id = product_plan.product_id WHERE product_information.product_id = ?'
+            db.query(sql, req.body.product_id, (err, result) => {
+                if (err) throw err;
+                else {
+                    let sql = 'SELECT * From plant_information'
+                    db.query(sql, (err, result_plan) => {
+                        if (err) throw err;
+                        if (result[0]) {
+
+                            let plant = JSON.parse(result[0].plant)
+                            let plant_data = []
+                            db.query('SELECT `manufacture_information`.`plant_type` FROM `manufacture_information` INNER JOIN `farmer_information` ON `manufacture_information`.`farmer_id` = `farmer_information`.`farmer_id`'
+                                , (err, result_plant_type) => {
+                                    plant.map((plant_element, plant_index) => {
+                                        let plant_obj = null
+                                        result_plan.map((result_plan_element) => {
+                                            if (plant_element.plant_id == result_plan_element.plant_id) {
+                                                plant_obj = {
+                                                    ...plant_element,
+                                                    ...result_plan_element
+                                                }
+                                            }
+
+
+                                        })
+                                        if (plant_obj) {
+                                            plant_data.push(plant_obj)
+                                        }
+                                    })
+                                    let result_freq = []
+                                    let result_plant = []
+                                    result_plant_type.map((element) => {
+                                        element.plant_type = JSON.parse(element.plant_type)
+                                        element.plant_type.map((element) => {
+                                            end_plant = element.end_plant
+                                            volume = (element.deliver_value) * 1
+                                            plant = element.plant
+                                            result_plant.push({
+                                                name: plant,
+                                                end_plant: end_plant,
+                                                volume: volume,
+                                            })
+                                        })
+
+                                    })
+                                    plant_data.map((element_plant_data) => {
+                                        let name_plant = element_plant_data.plant_name
+                                        let result = []
+
+                                        let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
+
+                                        result_plant.map((element) => {
+                                            if (name_plant === element.name) {
+
+                                                if (element.end_plant === "มกราคม") {
+
+                                                    jan += element.volume
+
+                                                } else if (element.end_plant === "กุมภาพันธ์") {
+
+                                                    feb += element.volume
+                                                    feb
+                                                } else if (element.end_plant === "มีนาคม") {
+
+                                                    mar += element.volume
+
+                                                } else if (element.end_plant === "เมษายน") {
+
+                                                    apr += element.volume
+
+                                                } else if (element.end_plant === "พฤษภาคม") {
+
+                                                    may += element.volume
+
+                                                } else if (element.end_plant === "มิถุนายน") {
+
+                                                    jul += element.volume
+
+                                                } else if (element.end_plant === "กรกฎาคม") {
+
+                                                    jun += element.volume
+
+                                                } else if (element.end_plant === "สิงหาคม") {
+
+                                                    aug += element.volume
+
+                                                } else if (element.end_plant === "กันยายน") {
+
+                                                    sep += element.volume
+
+                                                } else if (element.end_plant === "ตุลาคม") {
+
+                                                    oct += element.volume
+
+                                                } else if (element.end_plant === "พฤศจิกายน") {
+
+                                                    nov += element.volume
+
+                                                } else if (element.end_plant === "ธันวาคม") {
+
+                                                    dec += element.volume
+
+                                                } else { }
+                                                result.push(element)
+
+                                            }
+
+                                        })
+                                        result_freq.push({
+                                            ...element_plant_data,
+                                            data: [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
+                                        })
+                                        // console.log("re55", result_freq)
+                                    })
+
+                                    let result_all = null
+                                    result_all = {
+                                        product_id: result[0].product_id,
+                                        product_name: result[0].product_name,
+                                        plant: result_freq
+                                    }
+                                    req.result = result_all
+                                    next();
+                                })
+
+
                         }
 
-                        // let element_obj = []
+                        else {
+                            res.status(200).json({
+                                success: false,
+                                error_message: "ไม่พบข้อมูลผลิตภัณฑ์"
+                            })
+                        }
+                    })
+                }
+            })
+        }
 
-                        // result[0].plant.map((element) => {
-                        //     let element_plant = JSON.parse(element.plant)
-                        //     let plant = []
-                        //     let result_plan_id = []
-
-                        //     element_plant.map((element) => {
-                        //         plant.push(element.plant_id)
-                        //         result_plan.map((ele) => {
-                        //             if (element.plant_id == ele.plant_id) {
-                        //                 result_plan_id.push(ele)
-                        //             }
-                        //         })
-                        //     })
-                        //     element_obj.push({
-                        //         product_id: element.product_id,
-                        //         product_name: element.product_name,
-                        //         plant: result_plan_id
-
-                        //     })
-                        // })
-
-
-                        req.result = result_all
-
-                        next();
-                    }
-                    else {
-                        res.status(200).json({
-                            success: false,
-                            error_message: "ไม่พบข้อมูลผลิตภัณฑ์"
-                        })
-                    }
-                })
-            }
-        })
     }
 }
 exports.add_cart_trader = () => {
     return (req, res, next) => {
+        // console.log(req.body)
+        // res.status(200).json({
+        //     success: false,
+        //     error_message: "นี่คือสิ่งที่มึงส่งมา"+JSON.stringify(req.body)+"\nไปแก้โค้ดมาใหม่\nมึงใช้ push ใส่ array ดิ"
+        // })
+        console.log('55555',req.body.data_plant)
+        req.body.data_plant.map((element) => {
 
-        db.query('SELECT * FROM cart WHERE trader_id = ? AND product_id = ?', [req.user_id, req.body.product_id], (err, result) => {
-            if (err) throw err
-            else {
-                if (result[0]) {
-                    console.log("update")
-
-                    let sum_amount = (Number(result[0].amount) + Number(req.body.amount))
-                    console.log("sum_amont", sum_amount)
-
-                    db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND product_id = ?', [sum_amount, req.user_id, req.body.product_id], (err, result) => {
-                        if (err) throw err
-                        else {
-                            next()
-                        }
-                    })
-                }
+            db.query('SELECT * FROM cart WHERE trader_id = ? AND plant_id = ?', [req.user_id, element.plant_id], (err, result) => {
+                if (err) throw err
                 else {
-                    console.log("INSERT")
-                    let cart = {
-                        trader_id: req.user_id,
-                        product_id: req.body.product_id,
-                        amount: req.body.amount
+                    if (result[0]) {
+                        console.log("update")
+
+                        let sum_amount = (Number(result[0].amount) + Number(element.total_plant))
+                        console.log("sum_amont", sum_amount)
+
+                        db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND plant_id = ?', [sum_amount, req.user_id, element.plant_id], (err, result) => {
+                            if (err) throw err
+                            else {
+                                next()
+                            }
+                        })
                     }
-                    db.query('INSERT INTO cart SET ?', cart, (err, result) => {
-                        if (err) throw err
-                        else {
-                            next()
+                    else {
+                        console.log("INSERT")
+                        let cart = {
+                            trader_id: req.user_id,
+                            plant_id: element.plant_id,
+                            amount: element.total_plant
                         }
-                    })
+                        db.query('INSERT INTO cart SET ?', cart, (err, result) => {
+                            if (err) throw err
+                            else {
+                                next()
+                            }
+                        })
+                    }
                 }
-            }
+            })
         })
 
     }
@@ -144,70 +338,38 @@ exports.get_cart_trader = () => {
                 next()
             }
             else {
-                let sql = 'SELECT * From product_information INNER JOIN product_plan ON product_information.product_id = product_plan.product_id'
-                db.query(sql, (err, result_product) => {
+
+
+                db.query('SELECT * From plant_information', (err, result_plant) => {
                     if (err) throw err
                     else {
-
-                        db.query('SELECT * From plant_information', (err, result_plant) => {
-                            if (err) throw err
-                            else {
-                                let product = []
-                                result.map((element) => {
-                                    let product_obj = null
-                                    result_product.map((element_result_product) => {
-                                        if (element.product_id == element_result_product.product_id) {
-                                            product_obj = {
-                                                ...element,
-                                                ...element_result_product
-                                            }
-                                            product_obj.plant = JSON.parse(product_obj.plant)
-
-                                            product_obj.plant.map((element_plant, index) => {
-                                                //console.log("ID : ",element_plant)
-                                                let plant_all = null
-                                                result_plant.map((element_result_plant) => {
-
-                                                    if (element_plant.plant_id == element_result_plant.plant_id) {
-                                                        product_obj.plant[index] = {
-                                                            ...element_plant,
-                                                            ...element_result_plant
-                                                        }
-                                                    }
-                                                })
-
-                                            })
-
-
-
-
-                                        }
-                                    })
-
-                                    if (product_obj) {
-                                        product.push({
-                                            product_id: product_obj.product_id,
-                                            product_name: product_obj.product_name,
-                                            plant: product_obj.plant,
-                                            amount: product_obj.amount
-                                        })
+                        let product = []
+                        result.map((element) => {
+                            let product_obj = null
+                            result_plant.map((element_result_plant) => {
+                                if (element.plant_id == element_result_plant.plant_id) {
+                                    product_obj = {
+                                        ...element,
+                                        ...element_result_plant
                                     }
 
-
-
-                                })
-                                // console.log(product)
-                                req.result = product
-                                next()
+                                }
+                            })
+                            console.log(product_obj)
+                            if (product_obj) {
+                                product.push(product_obj)
                             }
 
+
+
                         })
-
-
-
+                        // console.log(product)
+                        req.result = product
+                        next()
                     }
 
                 })
+
 
             }
         })
@@ -216,9 +378,8 @@ exports.get_cart_trader = () => {
 
 exports.update_cart_trader = () => {
     return (req, res, next) => {
-
         req.body.data.map((element) => {
-            db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND product_id = ?', [element.amount, req.user_id, element.product_id], (err, result) => {
+            db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND plant_id = ?', [element.amount, req.user_id, element.plant_id], (err, result) => {
                 if (err) throw err
                 next()
             })
@@ -228,7 +389,8 @@ exports.update_cart_trader = () => {
 }
 exports.delete_product_cart = () => {
     return (req, res, next) => {
-        db.query('DELETE FROM cart WHERE trader_id = ? AND product_id = ?', [req.user_id, req.body.product_id], (err, result) => {
+        console.log('555',req.body.plant_id)
+        db.query('DELETE FROM cart WHERE trader_id = ? AND plant_id = ?', [req.user_id, req.body.plant_id], (err, result) => {
             if (err) throw err;
             next()
         })
@@ -261,8 +423,8 @@ exports.add_order_trader = () => {
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {
             if (err) throw err
             else {
-                let order_id = date_time+'-'+result.insertId
-                db.query('UPDATE order_trader SET order_id = ? WHERE number = ?', [order_id,result.insertId], (err) => {
+                let order_id = date_time + '-' + result.insertId
+                db.query('UPDATE order_trader SET order_id = ? WHERE number = ?', [order_id, result.insertId], (err) => {
                     if (err) throw err
                     else {
                         db.query('DELETE FROM cart WHERE trader_id = ?', req.user_id, (err) => {
