@@ -1,6 +1,7 @@
 var db = require('../connect/test_connect')
 var moment = require('moment')
 var randomstring = require("randomstring");
+var errorMessages = require('../const/error_message')
 
 
 exports.get_product = () => {
@@ -267,10 +268,7 @@ exports.get_product_information = () => {
                         }
 
                         else {
-                            res.status(200).json({
-                                success: false,
-                                error_message: "ไม่พบข้อมูลผลิตภัณฑ์"
-                            })
+                            res.status(200).json(errorMessages.err_product_info)
                         }
                     })
                 }
@@ -286,7 +284,7 @@ exports.add_cart_trader = () => {
         //     success: false,
         //     error_message: "นี่คือสิ่งที่มึงส่งมา"+JSON.stringify(req.body)+"\nไปแก้โค้ดมาใหม่\nมึงใช้ push ใส่ array ดิ"
         // })
-        console.log('55555',req.body.data_plant)
+        console.log('55555', req.body.data_plant)
         req.body.data_plant.map((element) => {
 
             db.query('SELECT * FROM cart WHERE trader_id = ? AND plant_id = ?', [req.user_id, element.plant_id], (err, result) => {
@@ -389,7 +387,7 @@ exports.update_cart_trader = () => {
 }
 exports.delete_product_cart = () => {
     return (req, res, next) => {
-        console.log('555',req.body.plant_id)
+        console.log('555', req.body.plant_id)
         db.query('DELETE FROM cart WHERE trader_id = ? AND plant_id = ?', [req.user_id, req.body.plant_id], (err, result) => {
             if (err) throw err;
             next()
@@ -462,15 +460,22 @@ exports.get_order_info_trader = () => {
         db.query('SELECT * FROM order_trader WHERE trader_id = ? AND order_id = ?', [req.user_id, req.body.order_id], (err, result) => {
             if (err) throw err
             if (!result[0]) {
-                res.status(200).json({
-                    success: false,
-                    error_message: "ไม่พบ ID ใบสั่งซื้อ หรือ ID ใบสั่งซื้อไม่ถูกต้อง"
-                })
+                res.status(200).json(errorMessages.err_order_info)
             }
             else {
-                result[0].detail = JSON.parse(result[0].detail)
-                req.result = result[0]
-                next()
+                db.query('SELECT * FROM userprofile WHERE user_id = ?', req.user_id, (err, result_profile) => {
+                    if (err) throw err
+                    else {
+                        result[0].detail = JSON.parse(result[0].detail)
+                        req.result = {
+                            ...result[0],
+                            ...result_profile[0]
+                        }
+                        next()
+                    }
+
+                })
+
             }
         })
     }
@@ -500,6 +505,7 @@ exports.get_quotation_trader = () => {
                     })
                 }
                 else {
+
                     req.result = result[0]
                     next()
                 }

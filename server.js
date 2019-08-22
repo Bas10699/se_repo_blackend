@@ -48,6 +48,7 @@ var User = require('./route/User')
 var product = require('./route/product')
 var product_information = require('./route/product_information')
 var trader = require('./route/trader')
+var neutarlly = require('./route/neutrally')
 
 
 app.use(version +'show',show)
@@ -55,6 +56,7 @@ app.use(version +'user',User)
 app.use(version +'product',product)
 app.use(version +'product_information',product_information)
 app.use(version +'trader',trader)
+app.use(version +'neutarlly',neutarlly)
 
 
 app.listen(port, function () {

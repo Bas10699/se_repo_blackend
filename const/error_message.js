@@ -14,6 +14,7 @@ var errorMessage = {
   'err_wrong_login': { 'success': false, 'error_code': '20012', 'error_message': 'Wrong login. Please reset password.' },
 
   'err_product_info' : {'success': false, 'error_code' : '20013', 'error_message': 'ไม่พบข้อมูลสินค้า'},
+  'err_order_info' : {'success': false, 'error_code' : '20014', 'error_message': 'ไม่พบ ID ใบสั่งซื้อ หรือ ID ใบสั่งซื้อไม่ถูกต้อง'},
 
 
     // Token 30+000
