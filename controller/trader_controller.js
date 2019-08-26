@@ -40,6 +40,7 @@ exports.get_product_information = () => {
                 if (result[0]) {
                     let id_plant = result[0].plant_id
                     let name_plant = result[0].plant_name
+                    let price = result[0].price
                     db.query('SELECT `manufacture_information`.`plant_type` FROM `manufacture_information` INNER JOIN `farmer_information` ON `manufacture_information`.`farmer_id` = `farmer_information`.`farmer_id`'
                         , (err, result_plant_type) => {
                             if (err) throw err
@@ -123,6 +124,7 @@ exports.get_product_information = () => {
                             plant_data.push({
                                 plant_id: id_plant,
                                 plant_name: name_plant,
+                                price: price,
                                 volume: 1,
                                 data: [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
                             })
@@ -409,7 +411,7 @@ exports.delete_product_cart = () => {
 exports.add_order_trader = () => {
     return (req, res, next) => {
 
-        let date_time = moment().utc(7).format('YYMMDDHHmm')
+        let date_time = moment().utc(7).add('years', 543).format('DDMMYYYY')
         let order_trader = JSON.stringify(req.body.detail)
         let add_order = {
             order_date: moment().utc(7).format(),
