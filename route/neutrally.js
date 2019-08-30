@@ -48,9 +48,34 @@ router.get('/get_plant_information',
         })
     }
 )
+
+router.post('/get_plant',
+    neutrallyUtil.get_plant(),
+    (req, res) => {
+
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+
+)
+router.post('/get_plant_volume_all_se',
+    neutrallyUtil.get_plant_volume_all_se(),
+
+    function (req, res) {
+        // console.log(res.result)
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+
+)
+
 router.get('/gg',
     neutrallyUtil.add_warehouse_order(),
-    (req,res)=>{
+    (req, res) => {
         res.status(200).json({
             success: true,
             result: 'สำเร็จ'
