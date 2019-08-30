@@ -30,5 +30,32 @@ router.post('/add_quotation',
 router.post('/get_quotation',
     validateUtil.validate_token_se(),
 )
+router.post('/get_chart_frequency_all',
+    neutrallyUtil.get_chart_frequency_all(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: req.result
+        })
+    }
+)
+router.get('/get_plant_information',
+    neutrallyUtil.get_plant_information(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: req.result
+        })
+    }
+)
+router.get('/gg',
+    neutrallyUtil.add_warehouse_order(),
+    (req,res)=>{
+        res.status(200).json({
+            success: true,
+            result: 'สำเร็จ'
+        })
+    }
+)
 
 module.exports = router

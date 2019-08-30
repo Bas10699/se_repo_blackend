@@ -9,7 +9,7 @@ exports.get_product = () => {
         db.query('SELECT * FROM product_information', (err, result) => {
             if (err) throw err
             else {
-                db.query('SELECT * From plant_information', (err, result_plant) => {
+                db.query('SELECT * From plant_warehouse', (err, result_plant) => {
                     if (err) throw err
                     else {
                         result_plant.map((element) => {
@@ -35,29 +35,31 @@ exports.get_product_information = () => {
         let product_id = req.body.product_id.split(" ");
         let cmd = product_id[0];
         if (cmd === 'P') {
-            db.query('SELECT * From plant_information WHERE plant_id = ?', product_id[1], (err, result) => {
+            db.query('SELECT * From plant_warehouse WHERE plant_id = ?', product_id[1], (err, result) => {
                 if (err) throw err
                 if (result[0]) {
                     let id_plant = result[0].plant_id
                     let name_plant = result[0].plant_name
                     let price = result[0].price
-                    db.query('SELECT `manufacture_information`.`plant_type` FROM `manufacture_information` INNER JOIN `farmer_information` ON `manufacture_information`.`farmer_id` = `farmer_information`.`farmer_id`'
+                    db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3' order by manufacture_id DESC`
                         , (err, result_plant_type) => {
                             if (err) throw err
                             let result_plant = []
                             let result = []
                             result_plant_type.map((element) => {
                                 element.plant_type = JSON.parse(element.plant_type)
-                                element.plant_type.map((element) => {
-                                    end_plant = element.end_plant
-                                    volume = (element.deliver_value) * 1
-                                    plant = element.plant
-                                    result_plant.push({
-                                        name: plant,
-                                        end_plant: end_plant,
-                                        volume: volume,
+                                if (element.plant_type != null) {
+                                    element.plant_type.map((element) => {
+                                        end_plant = element.end_plant
+                                        volume = (element.deliver_value) * 1
+                                        plant = element.plant
+                                        result_plant.push({
+                                            name: plant,
+                                            end_plant: end_plant,
+                                            volume: volume,
+                                        })
                                     })
-                                })
+                                }
 
                             })
                             let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
@@ -65,6 +67,7 @@ exports.get_product_information = () => {
                             let plant_data = []
                             result_plant.map((element) => {
                                 if (name_plant === element.name) {
+                                    // console.log(element.end_plant, ':', element.volume)
 
                                     if (element.end_plant === "มกราคม") {
 
@@ -121,6 +124,8 @@ exports.get_product_information = () => {
 
                             })
 
+
+
                             plant_data.push({
                                 plant_id: id_plant,
                                 plant_name: name_plant,
@@ -145,14 +150,14 @@ exports.get_product_information = () => {
             db.query(sql, req.body.product_id, (err, result) => {
                 if (err) throw err;
                 else {
-                    let sql = 'SELECT * From plant_information'
+                    let sql = 'SELECT * From plant_warehouse'
                     db.query(sql, (err, result_plan) => {
                         if (err) throw err;
                         if (result[0]) {
 
                             let plant = JSON.parse(result[0].plant)
                             let plant_data = []
-                            db.query('SELECT `manufacture_information`.`plant_type` FROM `manufacture_information` INNER JOIN `farmer_information` ON `manufacture_information`.`farmer_id` = `farmer_information`.`farmer_id`'
+                            db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3' order by manufacture_id DESC`
                                 , (err, result_plant_type) => {
                                     plant.map((plant_element, plant_index) => {
                                         let plant_obj = null
@@ -174,81 +179,83 @@ exports.get_product_information = () => {
                                     let result_plant = []
                                     result_plant_type.map((element) => {
                                         element.plant_type = JSON.parse(element.plant_type)
-                                        element.plant_type.map((element) => {
-                                            end_plant = element.end_plant
-                                            volume = (element.deliver_value) * 1
-                                            plant = element.plant
-                                            result_plant.push({
-                                                name: plant,
-                                                end_plant: end_plant,
-                                                volume: volume,
+                                        if (element.plant_type) {
+                                            element.plant_type.map((element) => {
+                                                end_plant = element.end_plant
+                                                volume = (element.deliver_value) * 1
+                                                plant = element.plant
+                                                result_plant.push({
+                                                    name: plant,
+                                                    end_plant: end_plant,
+                                                    volume: volume,
+                                                })
                                             })
-                                        })
-
+                                        }
                                     })
                                     plant_data.map((element_plant_data) => {
                                         let name_plant = element_plant_data.plant_name
                                         let result = []
 
                                         let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
+                                        if (result_plant !== null) {
+                                            result_plant.map((element) => {
+                                                if (name_plant === element.name) {
 
-                                        result_plant.map((element) => {
-                                            if (name_plant === element.name) {
+                                                    if (element.end_plant === "มกราคม") {
 
-                                                if (element.end_plant === "มกราคม") {
+                                                        jan += element.volume
 
-                                                    jan += element.volume
+                                                    } else if (element.end_plant === "กุมภาพันธ์") {
 
-                                                } else if (element.end_plant === "กุมภาพันธ์") {
+                                                        feb += element.volume
+                                                        feb
+                                                    } else if (element.end_plant === "มีนาคม") {
 
-                                                    feb += element.volume
-                                                    feb
-                                                } else if (element.end_plant === "มีนาคม") {
+                                                        mar += element.volume
 
-                                                    mar += element.volume
+                                                    } else if (element.end_plant === "เมษายน") {
 
-                                                } else if (element.end_plant === "เมษายน") {
+                                                        apr += element.volume
 
-                                                    apr += element.volume
+                                                    } else if (element.end_plant === "พฤษภาคม") {
 
-                                                } else if (element.end_plant === "พฤษภาคม") {
+                                                        may += element.volume
 
-                                                    may += element.volume
+                                                    } else if (element.end_plant === "มิถุนายน") {
 
-                                                } else if (element.end_plant === "มิถุนายน") {
+                                                        jul += element.volume
 
-                                                    jul += element.volume
+                                                    } else if (element.end_plant === "กรกฎาคม") {
 
-                                                } else if (element.end_plant === "กรกฎาคม") {
+                                                        jun += element.volume
 
-                                                    jun += element.volume
+                                                    } else if (element.end_plant === "สิงหาคม") {
 
-                                                } else if (element.end_plant === "สิงหาคม") {
+                                                        aug += element.volume
 
-                                                    aug += element.volume
+                                                    } else if (element.end_plant === "กันยายน") {
 
-                                                } else if (element.end_plant === "กันยายน") {
+                                                        sep += element.volume
 
-                                                    sep += element.volume
+                                                    } else if (element.end_plant === "ตุลาคม") {
 
-                                                } else if (element.end_plant === "ตุลาคม") {
+                                                        oct += element.volume
 
-                                                    oct += element.volume
+                                                    } else if (element.end_plant === "พฤศจิกายน") {
 
-                                                } else if (element.end_plant === "พฤศจิกายน") {
+                                                        nov += element.volume
 
-                                                    nov += element.volume
+                                                    } else if (element.end_plant === "ธันวาคม") {
 
-                                                } else if (element.end_plant === "ธันวาคม") {
+                                                        dec += element.volume
 
-                                                    dec += element.volume
+                                                    } else { }
+                                                    result.push(element)
 
-                                                } else { }
-                                                result.push(element)
+                                                }
 
-                                            }
-
-                                        })
+                                            })
+                                        }
                                         result_freq.push({
                                             ...element_plant_data,
                                             data: [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
@@ -340,7 +347,7 @@ exports.get_cart_trader = () => {
             else {
 
 
-                db.query('SELECT * From plant_information', (err, result_plant) => {
+                db.query('SELECT * From plant_warehouse', (err, result_plant) => {
                     if (err) throw err
                     else {
                         let product = []
@@ -349,8 +356,9 @@ exports.get_cart_trader = () => {
                             result_plant.map((element_result_plant) => {
                                 if (element.plant_id == element_result_plant.plant_id) {
                                     product_obj = {
+                                        ...element_result_plant,
                                         ...element,
-                                        ...element_result_plant
+                                        
                                     }
 
                                 }
