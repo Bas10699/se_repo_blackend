@@ -43,35 +43,80 @@ exports.get_order_info_trader = () => {
         })
     }
 }
+exports.update_plant_stock = () => {
+    return (req, res, next) => {
+        let id = req.body.product_id.split(" ");
+        let check = id[0]
+        let pro_id = id[1]
+        
+        if (check === 'P') {
+            if (req.body.image) {
+                let pro_image = req.body.image.slice(req.body.image.indexOf(',') + 1)
+                require("fs").writeFile("./image/product/plant_" + pro_id + '.png', pro_image, 'base64', function (err) {
+                    if (err) throw err;
+                    else {
+                        db.query(`UPDATE plant_stock  SET image = 'trader/image/plant_${pro_id}.png'  WHERE plant_id = ${pro_id}`, function (err, result) {
+                            if (err) throw err;
+                            console.log('data', pro_id)
+                            next()
+                        });
+                    }
+                });
+            }
+        }
+        else {
+            if (req.body.image) {
+                let pro_image = req.body.image.slice(req.body.image.indexOf(',') + 1)
+                require("fs").writeFile("./image/product/product_" + req.body.product_id + '.png', pro_image, 'base64', function (err) {
+                    if (err) throw err;
+                    else {
+                        db.query(`UPDATE product_information SET image = 'trader/image/product_${req.body.pro_id.product_id}.png'  WHERE product_id = ${req.body.pro_id.product_id}`, function (err, result) {
+                            if (err) throw err;
+                            next()
+                        });
+                    }
+                });
+            }
+        }
+    }
+}
 
 exports.add_order_info_se_small = () => {
 
 }
 
-exports.get_quotation = () => {
+
+exports.add_invoice_neutrally = () => {
     return (req, res, next) => {
-        let quotation_id = req.body.quotation_id
-        db.query('SELECT * FROM quotation WHERE quotation_id = ?', quotation_id, (err, result) => {
-            if (err) throw err
-            else {
-                if (!result[0]) {
+        data = {
+            invoice_id: moment().utc(7).add('years', 543).format('HHmmDDMMYYYY'),
+            order_id: req.body.order_id,
+            invoice_detail: req.body.detail,
+            date: moment().utc(7).add('years', 543).format(),
+            date_send: req.body.date_send,
+            status: req.body.status
+        }
+        db.query('INSERT INTO invoice SET ?', data, (err) => {
+            if (err) {
+                console.log("error ocurred");
+                if (err.code === 'ER_DUP_ENTRY') {
+                    console.log("User Not");
                     res.status(200).json({
-                        success: false,
-                        error_message: "ไม่พบ ID ใบเสนอราคา หรือ ID ใบเสนอราคาไม่ถูกต้อง"
+                        'success': false,
+                        'error_message': 'กรุณาส่งใบสั่งซื้อใหม่'
                     })
                 }
-                else {
-                    req.result = result[0]
-                    next()
-                }
+                else
+                    throw err;
             }
-        })
-    }
-}
-exports.add_quotation_neutrally = () => {
-    return (req, res, next) => {
-        db.query('INSERT INTO quotation SET ?', (err) => {
-
+            else {
+                db.query('UPDATE order_trader SET order_status=1 WHERE order_id=?',req.body.order_id,(err)=>{
+                    if(err) throw err
+                    else{
+                        next()
+                    }
+                })
+            }
         })
     }
 }
@@ -302,12 +347,12 @@ exports.get_chart_frequency_all = function () {
 //     }
 // }
 
-exports.add_warehouse_order = () => {
+exports.add_stock_order = () => {
     return (req, res, next) => {
         db.query('SELECT * from plant_information', (err, result) => {
             if (err) throw err
             result.map((element, index) => {
-                db.query('INSERT INTO plant_warehouse SET ?', element, (err) => {
+                db.query('INSERT INTO plant_stock SET ?', element, (err) => {
                     if (err) throw err
                     console.log(index + 1)
 
@@ -318,11 +363,11 @@ exports.add_warehouse_order = () => {
 
     }
 }
-exports.get_plant_information = () =>{
-    return(req,res,next) => {
-        db.query('SELECT * from plant_information',(err,result)=>{
-            if(err) throw err
-            else{
+exports.get_plant_information = () => {
+    return (req, res, next) => {
+        db.query('SELECT * from plant_information', (err, result) => {
+            if (err) throw err
+            else {
                 req.result = result
                 next()
             }
@@ -359,8 +404,12 @@ exports.get_plant = function () {
                     element_obj.map((el, i) => {
 
                         index = disnict_plant.findIndex((find) => find === el.plant)
+
                         if (index < 0) {
-                            disnict_plant.push(el.plant)
+                            if (el.plant !== null && el.plant !== undefined) {
+                                disnict_plant.push(el.plant)
+
+                            }
                         } else {
 
                         }
@@ -502,7 +551,7 @@ exports.get_plant = function () {
                         }
 
                     })
-                    // console.log("total",total_volume)
+                    console.log("total", total_volume)
                     result_process.push({
                         name: element,
                         volume: total_volume
@@ -555,7 +604,9 @@ exports.get_plant = function () {
                                     volume_want = 0
                                 }
                             }
+
                         })
+                        // console.log(element)
 
                         result_new.push({
 
@@ -576,18 +627,18 @@ exports.get_plant = function () {
 
                     month_obj.map((element) => {
 
-                        if(element.name === req.body.plant_name){
+                        if (element.name === req.body.plant_name) {
                             volume_all = element.volume
-                        }else{
+                        } else {
 
                         }
                     })
 
-                    result_process.map((element)=>{
+                    result_process.map((element) => {
 
-                        if(element.name === req.body.plant_name){
+                        if (element.name === req.body.plant_name) {
                             volume_process = element.volume
-                        }else{
+                        } else {
 
                         }
 
@@ -595,9 +646,9 @@ exports.get_plant = function () {
 
                     volume_want = volume_process - volume_all
 
-                    if(volume_want<1){
+                    if (volume_want < 1) {
                         volume_want = 0
-                    }else{
+                    } else {
 
                     }
 
@@ -659,13 +710,13 @@ exports.get_plant_volume_all_se = function () {
                             let se_plant
                             let plant_value = 0
                             try {
-                               
-                                
+
+
                                 se_plant = JSON.parse(el.plant_type)
                                 // console.log(se_plant);
                                 se_plant.map((ele) => {
 
-                                 
+
                                     if (ele.plant === plant_info.plant && ele.end_plant) {
                                         plant_value = plant_value + (ele.deliver_frequency_number * ele.deliver_value)
 
@@ -686,7 +737,7 @@ exports.get_plant_volume_all_se = function () {
 
                 })
                 console.log(plant_value_total);
-                
+
 
                 if (plant_value_total > 0) {
                     se_result_obj.push(

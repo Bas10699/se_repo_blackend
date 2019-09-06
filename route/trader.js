@@ -4,7 +4,7 @@ var productUtil = require('../controller/trader_controller')
 var validateUtil = require('../controller/validate_controller')
 
 router.get('/get_product',
-    validateUtil.validate_token_trader(),
+    // validateUtil.validate_token_trader(),
     productUtil.get_product(),
     (req, res) => {
         res.status(200).json({
@@ -14,7 +14,7 @@ router.get('/get_product',
     }
 )
 router.post('/get_product_information',
-    validateUtil.validate_token_trader(),
+    // validateUtil.validate_token_trader(),
     productUtil.get_product_information(),
     (req, res) => {
         res.status(200).json({
@@ -104,6 +104,16 @@ router.get('/get_order',
 router.post('/get_order_info',
     validateUtil.validate_token_trader(),
     productUtil.get_order_info_trader(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: req.result
+        })
+    }
+)
+router.post('/get_invoice_trader',
+    validateUtil.validate_token_trader(),
+    productUtil.get_invoice_trader(),
     (req, res) => {
         res.status(200).json({
             success: true,

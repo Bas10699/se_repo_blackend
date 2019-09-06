@@ -9,13 +9,14 @@ exports.get_product = () => {
         db.query('SELECT * FROM product_information', (err, result) => {
             if (err) throw err
             else {
-                db.query('SELECT * From plant_warehouse', (err, result_plant) => {
+                db.query('SELECT * From plant_stock', (err, result_plant) => {
                     if (err) throw err
                     else {
                         result_plant.map((element) => {
                             result.push({
                                 product_id: 'P ' + element.plant_id,
-                                product_name: element.plant_name
+                                product_name: element.plant_name,
+                                image: element.image
                             })
                         })
 
@@ -35,12 +36,16 @@ exports.get_product_information = () => {
         let product_id = req.body.product_id.split(" ");
         let cmd = product_id[0];
         if (cmd === 'P') {
-            db.query('SELECT * From plant_warehouse WHERE plant_id = ?', product_id[1], (err, result) => {
+            db.query('SELECT * From plant_stock WHERE plant_id = ?', product_id[1], (err, result) => {
                 if (err) throw err
                 if (result[0]) {
                     let id_plant = result[0].plant_id
                     let name_plant = result[0].plant_name
                     let price = result[0].price
+                    let image = result[0].image
+                    let cost = result[0].cost
+                    let detail = result[0].detail
+                    let caption = result[0].caption
                     db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3' order by manufacture_id DESC`
                         , (err, result_plant_type) => {
                             if (err) throw err
@@ -134,9 +139,14 @@ exports.get_product_information = () => {
                                 data: [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
                             })
                             result_freq = {
-
+                                product_id: id_plant,
                                 product_name: name_plant,
-                                plant: plant_data
+                                plant: plant_data,
+                                image: image,
+                                cost: cost,
+                                detail: detail,
+                                caption: caption
+
                             }
 
                             req.result = result_freq
@@ -150,7 +160,7 @@ exports.get_product_information = () => {
             db.query(sql, req.body.product_id, (err, result) => {
                 if (err) throw err;
                 else {
-                    let sql = 'SELECT * From plant_warehouse'
+                    let sql = 'SELECT * From plant_stock'
                     db.query(sql, (err, result_plan) => {
                         if (err) throw err;
                         if (result[0]) {
@@ -267,6 +277,7 @@ exports.get_product_information = () => {
                                     result_all = {
                                         product_id: result[0].product_id,
                                         product_name: result[0].product_name,
+                                        image:result[0].image,
                                         plant: result_freq
                                     }
                                     req.result = result_all
@@ -347,7 +358,7 @@ exports.get_cart_trader = () => {
             else {
 
 
-                db.query('SELECT * From plant_warehouse', (err, result_plant) => {
+                db.query('SELECT * From plant_stock', (err, result_plant) => {
                     if (err) throw err
                     else {
                         let product = []
@@ -422,10 +433,12 @@ exports.add_order_trader = () => {
         let date_time = moment().utc(7).add('years', 543).format('DDMMYYYY')
         let order_trader = JSON.stringify(req.body.detail)
         let add_order = {
-            order_date: moment().utc(7).format(),
+            order_date: moment().utc(7).add('years', 543).format(),
             detail: order_trader,
             order_status: req.body.order_status,
-            trader_id: req.user_id
+            trader_id: req.user_id,
+            date_send:req.body.date_send,
+            address_send:req.body.address_send,
         }
 
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {
@@ -502,30 +515,26 @@ exports.update_status_order_trader = () => {
     }
 }
 
-exports.get_quotation_trader = () => {
+
+exports.get_invoice_trader = () => {
     return (req, res, next) => {
-        let quotation_id = req.body.quotation_id
-        db.query('SELECT * FROM quotation WHERE quotation_id = ?', quotation_id, (err, result) => {
+        let order_id = req.body.order_id
+        db.query('SELECT * FROM invoice INNER JOIN order_trader ON invoice.order_id = order_trader.order_id WHERE invoice.order_id =?', order_id, (err, result) => {
             if (err) throw err
             else {
                 if (!result[0]) {
                     res.status(200).json({
                         success: false,
-                        error_message: "ไม่พบ ID ใบเสนอราคา หรือ ID ใบเสนอราคาไม่ถูกต้อง"
+                        error_message: "ไม่พบ ID ใบแจ้งหนี้ หรือ ID ใบแจ้งหนี้ไม่ถูกต้อง"
                     })
                 }
                 else {
-
+                    result[0].detail = JSON.parse(result[0].detail)
+                    result[0].invoice_detail = JSON.parse(result[0].invoice_detail)
                     req.result = result[0]
                     next()
                 }
             }
         })
-    }
-}
-
-exports.update_status_quotation_trader = () => {
-    return (req, res, next) => {
-
     }
 }

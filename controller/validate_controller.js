@@ -7,10 +7,10 @@ exports.validate_user_register = () => {
   return (req, res, next) => {
     if (req.body.username &&
       req.body.password &&
-      req.body.role&&
-      req.body.name&&
-      req.body.lastname&&
-      req.body.address&&
+      req.body.role &&
+      req.body.name &&
+      req.body.lastname &&
+      req.body.address &&
       req.body.phone) {
       next();
     }
@@ -69,8 +69,8 @@ exports.validate_show_product_info = () => {
     }
   }
 }
-exports.validate_add_cart = () =>{
-  return(req,res,next) => {
+exports.validate_add_cart = () => {
+  return (req, res, next) => {
     if (req.body.plant_id &&
       req.body.amount) {
       next()
@@ -96,16 +96,36 @@ exports.validate_add_product = () => {
     }
   }
 }
-
-exports.validate_update_product = () => {
+exports.validate_update_plant_stock = () => {
   return (req, res, next) => {
-    if (req.body.pro_id &&
-      req.body.pro_name &&
-      req.body.pro_cost &&
-      req.body.pro_price &&
-      req.body.pro_amount &&
-      req.body.pro_details &&
-      req.body.pro_status) {
+    console.log(req.body)
+    if (req.body.product_id) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
+
+exports.validate_add_invoice_neutrally = () => {
+  return (req, res, next) => {
+    console.log(req.body)
+    if (req.body.order_id &&
+      req.body.detail &&
+      req.body.date_send 
+      ) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
+
+exports.validate_get_order_info = () => {
+  return (req, res, next) => {
+    if (req.body.order_id) {
       next()
     }
     else {
@@ -211,34 +231,34 @@ exports.validate_token_se_small = () => {
   }
 }
 
-exports.validate_token_se = () =>{
-  return(req,res,next)=>{
-    if(!Boolean(req.headers["authorization"])){
+exports.validate_token_se = () => {
+  return (req, res, next) => {
+    if (!Boolean(req.headers["authorization"])) {
       res.status(200).json({
-        success : false,
-        message : errorMessages.err_required_token
+        success: false,
+        message: errorMessages.err_required_token
       })
     }
-    else{
+    else {
       jsonwebToken.verify(req.headers.authorization,
         constance.sign,
-        (err,decode) =>{
-          if(err){
+        (err, decode) => {
+          if (err) {
             res.status(200).json({
-              success : false,
-              message : errorMessages.err_required_fingerprint_token
+              success: false,
+              message: errorMessages.err_required_fingerprint_token
             })
           }
-          else{
-            if(decode.type>3){
+          else {
+            if (decode.type > 3) {
               req.user_id = decode.id
               next()
             }
-            else{
-              console.log('type : ',decode.type)
+            else {
+              console.log('type : ', decode.type)
               res.status(200).json({
-                success : false,
-                message : errorMessages.err_required_fingerprint_token
+                success: false,
+                message: errorMessages.err_required_fingerprint_token
               })
             }
           }

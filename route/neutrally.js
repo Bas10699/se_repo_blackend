@@ -3,6 +3,17 @@ var router = express.Router()
 var neutrallyUtil = require('../controller/neutrally_controller')
 var validateUtil = require('../controller/validate_controller')
 
+router.post('/update_plant_stock',
+    validateUtil.validate_token_se(),
+    validateUtil.validate_update_plant_stock(),
+    neutrallyUtil.update_plant_stock(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: 'แก้ไขสินค้าสำเร็จ'
+        })
+    }
+)
 router.get('/get_order_all',
     validateUtil.validate_token_se(),
     neutrallyUtil.get_order_trader(),
@@ -14,6 +25,7 @@ router.get('/get_order_all',
     }
 )
 router.post('/get_order_info',
+    validateUtil.validate_get_order_info(),
     validateUtil.validate_token_se(),
     neutrallyUtil.get_order_info_trader(),
     (req, res) => {
@@ -23,13 +35,18 @@ router.post('/get_order_info',
         })
     }
 )
-router.post('/add_quotation',
+router.post('/add_invoice_neutrally',
     validateUtil.validate_token_se(),
+    validateUtil.validate_add_invoice_neutrally(),
+    neutrallyUtil.add_invoice_neutrally(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: 'เพิ่มใบแจ้งหนี้สำเร็จ'
+        })
+    }
 )
 
-router.post('/get_quotation',
-    validateUtil.validate_token_se(),
-)
 router.post('/get_chart_frequency_all',
     neutrallyUtil.get_chart_frequency_all(),
     (req, res) => {
@@ -74,7 +91,7 @@ router.post('/get_plant_volume_all_se',
 )
 
 router.get('/gg',
-    neutrallyUtil.add_warehouse_order(),
+    neutrallyUtil.add_stock_order(),
     (req, res) => {
         res.status(200).json({
             success: true,
