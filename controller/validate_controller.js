@@ -133,6 +133,18 @@ exports.validate_get_order_info = () => {
     }
   }
 }
+exports.validate_add_proof_of_payment_trader = () =>{
+  return(req,res,next) =>{
+    if(req.body.order_id&&
+      req.body.date_proof&&
+      req.body.time_proof&&
+      req.body.image_proof){
+        next()
+      }else{
+        res.status(200).json(errorMessages.invalid_data)
+      }
+  }
+}
 
 
 

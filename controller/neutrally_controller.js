@@ -88,6 +88,7 @@ exports.add_order_info_se_small = () => {
 
 exports.add_invoice_neutrally = () => {
     return (req, res, next) => {
+
         data = {
             invoice_id: moment().utc(7).add('years', 543).format('HHmmDDMMYYYY'),
             order_id: req.body.order_id,

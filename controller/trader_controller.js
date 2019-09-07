@@ -277,7 +277,7 @@ exports.get_product_information = () => {
                                     result_all = {
                                         product_id: result[0].product_id,
                                         product_name: result[0].product_name,
-                                        image:result[0].image,
+                                        image: result[0].image,
                                         plant: result_freq
                                     }
                                     req.result = result_all
@@ -369,7 +369,7 @@ exports.get_cart_trader = () => {
                                     product_obj = {
                                         ...element_result_plant,
                                         ...element,
-                                        
+
                                     }
 
                                 }
@@ -437,8 +437,8 @@ exports.add_order_trader = () => {
             detail: order_trader,
             order_status: req.body.order_status,
             trader_id: req.user_id,
-            date_send:req.body.date_send,
-            address_send:req.body.address_send,
+            date_send: req.body.date_send,
+            address_send: req.body.address_send,
         }
 
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {
@@ -534,6 +534,50 @@ exports.get_invoice_trader = () => {
                     req.result = result[0]
                     next()
                 }
+            }
+        })
+    }
+}
+
+exports.add_proof_of_payment_trader = () => {
+    return (req, res, next) => {
+        let PoP = {
+            order_id: req.body.order_id,
+            date_proof: req.body.date_proof,
+            time_proof: req.body.time_proof,
+        }
+        db.query('INSERT INTO proofofpayment SET ?', PoP, (err) => {
+            if (err) throw err;
+            else {
+                if (req.body.image_proof) {
+                    let image_proof = req.body.image_proof.slice(req.body.image_proof.indexOf(',') + 1)
+                    require("fs").writeFile("./image/payment/payment_" + req.body.order_id + '.png', image_proof, 'base64', function (err) {
+                        if (err) throw err;
+                        console.log('1')
+                        db.query(`UPDATE proofofpayment SET image_proof= 'trader/image/payment_${req.body.order_id}.png'  WHERE order_id= '${req.body.order_id}'`, function (err, result) {
+                            if (err) throw err;
+                            else {
+                                db.query('UPDATE order_trader SET order_status=2 WHERE order_id=?', req.body.order_id, (err) => {
+                                    if (err) throw err
+                                    else {
+                                        next()
+                                    }
+                                })
+                            }
+                        });
+                    });
+                }
+            }
+        })
+    }
+}
+exports.get_proof_of_payment_trader = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM ProofOfPayment WHERE order_id=?',req.body.order_id,(err,result)=>{
+            if(err) throw err
+            else{
+                req.result=result[0]
+                next()
             }
         })
     }

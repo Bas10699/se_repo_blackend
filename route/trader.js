@@ -39,17 +39,17 @@ router.post('/add_cart_trader',
 router.post('/delete_cart_product_tarder',
     validateUtil.validate_token_trader(),
     productUtil.delete_product_cart(),
-    (req,res)=>{
+    (req, res) => {
         res.status(200).json({
             success: true,
-            message:"ลบสินค้าในตะกร้าสำเร็จ"
+            message: "ลบสินค้าในตะกร้าสำเร็จ"
         })
     })
 
 router.post('/update_cart_trader',
     validateUtil.validate_token_trader(),
     productUtil.update_cart_trader(),
-    (req,res) => {
+    (req, res) => {
         res.status(200).json({
             success: true,
             message: "แก้ไขจำนวนสินค้าสำเร็จ"
@@ -82,7 +82,7 @@ router.post('/add_order',
 router.post('/update_status_order_trader',
     validateUtil.validate_token_trader(),
     productUtil.update_status_order_trader(),
-    (req,res) => {
+    (req, res) => {
         res.status(200).json({
             success: true,
             message: "อัปเดตสถานะสินค้าสำเร็จ"
@@ -121,16 +121,51 @@ router.post('/get_invoice_trader',
         })
     }
 )
+router.post('/add_proof_of_payment_trader',
+    validateUtil.validate_token_trader(),
+    validateUtil.validate_add_proof_of_payment_trader(),
+    productUtil.add_proof_of_payment_trader(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: 'ส่งหลักฐานการชำระเงินแล้ว'
+        })
+    }
+)
+router.post('/get_proof_of_payment_trader',
+    validateUtil.validate_token_trader(),
+    productUtil.get_proof_of_payment_trader(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: req.result
+        })
+    }
+)
 
 router.get('/image/:id',
     function (req, res) {
 
         require("fs").readFile(__dirname.replace("route", "") + 'image/product/' + req.params.id, (err, data) => {
 
-            if(err!==null){
+            if (err !== null) {
                 res.sendFile(__dirname.replace("route", "") + 'image/default_product.png')
-            }else{
-            res.sendFile(__dirname.replace("route", "") + 'image/product/' + req.params.id)
+            } else {
+                res.sendFile(__dirname.replace("route", "") + 'image/product/' + req.params.id)
+            }
+
+        })
+
+    })
+    router.get('/image/payment/:id',
+    function (req, res) {
+
+        require("fs").readFile(__dirname.replace("route", "") + 'image/payment/' + req.params.id, (err, data) => {
+
+            if (err !== null) {
+                res.sendFile(__dirname.replace("route", "") + 'image/default_product.png')
+            } else {
+                res.sendFile(__dirname.replace("route", "") + 'image/payment/' + req.params.id)
             }
 
         })
