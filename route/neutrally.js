@@ -35,6 +35,16 @@ router.post('/get_order_info',
         })
     }
 )
+router.post('/update_status_order_trader',
+    validateUtil.validate_token_se(),
+    neutrallyUtil.update_status_order_trader(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: 'อัปเดตสถานะสำเร็จ'
+        })
+    }
+)
 router.post('/add_invoice_neutrally',
     validateUtil.validate_token_se(),
     validateUtil.validate_add_invoice_neutrally(),

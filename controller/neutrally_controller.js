@@ -4,7 +4,7 @@ var errorMessages = require('../const/error_message')
 
 exports.get_order_trader = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_trader', (err, result) => {
+        db.query('SELECT * FROM order_trader INNER JOIN userprofile ON order_trader.trader_id = userprofile.user_id', (err, result) => {
             if (err) throw err
             else {
 
@@ -43,12 +43,26 @@ exports.get_order_info_trader = () => {
         })
     }
 }
+exports.update_status_order_trader = () => {
+    return (req, res, next) => {
+        let obj = {
+            order_status: req.body.status,
+            check_payment_date: moment().utc(7).add('years', 543).format(),
+        }
+        db.query('UPDATE order_trader SET ? WHERE order_id=?', [obj,req.body.order_id], (err, result) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+    }
+}
 exports.update_plant_stock = () => {
     return (req, res, next) => {
         let id = req.body.product_id.split(" ");
         let check = id[0]
         let pro_id = id[1]
-        
+
         if (check === 'P') {
             if (req.body.image) {
                 let pro_image = req.body.image.slice(req.body.image.indexOf(',') + 1)
@@ -111,9 +125,9 @@ exports.add_invoice_neutrally = () => {
                     throw err;
             }
             else {
-                db.query('UPDATE order_trader SET order_status=1 WHERE order_id=?',req.body.order_id,(err)=>{
-                    if(err) throw err
-                    else{
+                db.query('UPDATE order_trader SET order_status=1 WHERE order_id=?', req.body.order_id, (err) => {
+                    if (err) throw err
+                    else {
                         next()
                     }
                 })
@@ -353,13 +367,131 @@ exports.add_stock_order = () => {
         db.query('SELECT * from plant_information', (err, result) => {
             if (err) throw err
             result.map((element, index) => {
-                db.query('INSERT INTO plant_stock SET ?', element, (err) => {
-                    if (err) throw err
-                    console.log(index + 1)
 
+
+                db.query('SELECT * From plant_stock WHERE plant_id= ?', element.plant_id, (err, result) => {
+                    if (err) throw err
+                    if (result[0]) {
+                        let id_plant = result[0].plant_id
+                        let name_plant = result[0].plant_name
+                        let price = result[0].price
+                        let image = result[0].image
+                        let cost = result[0].cost
+                        let detail = result[0].detail
+                        let caption = result[0].caption
+                        db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3' order by manufacture_id DESC`
+                            , (err, result_plant_type) => {
+                                if (err) throw err
+                                let result_plant = []
+                                let result = []
+                                result_plant_type.map((element) => {
+                                    element.plant_type = JSON.parse(element.plant_type)
+                                    if (element.plant_type != null) {
+                                        element.plant_type.map((element) => {
+                                            end_plant = element.end_plant
+                                            volume = (element.deliver_value) * 1
+                                            plant = element.plant
+                                            result_plant.push({
+                                                name: plant,
+                                                end_plant: end_plant,
+                                                volume: volume,
+                                            })
+                                        })
+                                    }
+
+                                })
+                                let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
+                                let result_freq = []
+                                let plant_data = []
+                                result_plant.map((element) => {
+                                    if (name_plant === element.name) {
+                                        // console.log(element.end_plant, ':', element.volume)
+
+                                        if (element.end_plant === "มกราคม") {
+
+                                            jan += element.volume
+
+                                        } else if (element.end_plant === "กุมภาพันธ์") {
+
+                                            feb += element.volume
+                                            feb
+                                        } else if (element.end_plant === "มีนาคม") {
+
+                                            mar += element.volume
+
+                                        } else if (element.end_plant === "เมษายน") {
+
+                                            apr += element.volume
+
+                                        } else if (element.end_plant === "พฤษภาคม") {
+
+                                            may += element.volume
+
+                                        } else if (element.end_plant === "มิถุนายน") {
+
+                                            jul += element.volume
+
+                                        } else if (element.end_plant === "กรกฎาคม") {
+
+                                            jun += element.volume
+
+                                        } else if (element.end_plant === "สิงหาคม") {
+
+                                            aug += element.volume
+
+                                        } else if (element.end_plant === "กันยายน") {
+
+                                            sep += element.volume
+
+                                        } else if (element.end_plant === "ตุลาคม") {
+
+                                            oct += element.volume
+
+                                        } else if (element.end_plant === "พฤศจิกายน") {
+
+                                            nov += element.volume
+
+                                        } else if (element.end_plant === "ธันวาคม") {
+
+                                            dec += element.volume
+
+                                        } else { }
+                                        result.push(element)
+
+                                    }
+
+                                })
+
+
+
+
+                                result_freq = {
+                                    product_id: id_plant,
+                                    product_name: name_plant,
+                                    plant: jan + feb + mar + apr + may + jun + jul + aug + sep + oct + nov + dec
+                                    // image: image,
+                                    // cost: cost,
+                                    // detail: detail,
+                                    // caption: caption
+
+                                }
+                                db.query('UPDATE plant_stock SET amount = ? WHERE plant_id=? ', [result_freq.plant, result_freq.product_id], (err) => {
+                                    if (err) throw err
+                                    console.log(result_freq)
+                                    next();
+                                })
+
+
+                                // req.result = result_freq
+
+                            })
+                    }
                 })
+
+
+
             })
-            next()
+
         })
 
     }
