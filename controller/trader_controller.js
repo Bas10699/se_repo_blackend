@@ -444,7 +444,7 @@ exports.add_order_trader = () => {
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {
             if (err) throw err
             else {
-                let order_id = date_time + '-' + result.insertId
+                let order_id = 'PO'+date_time + '-' + result.insertId
                 db.query('UPDATE order_trader SET order_id = ? WHERE number = ?', [order_id, result.insertId], (err) => {
                     if (err) throw err
                     else {

@@ -104,7 +104,7 @@ exports.add_invoice_neutrally = () => {
     return (req, res, next) => {
 
         data = {
-            invoice_id: moment().utc(7).add('years', 543).format('HHmmDDMMYYYY'),
+            invoice_id: 'INV'+moment().utc(7).add('years', 543).format('HHmmDDMMYYYY'),
             order_id: req.body.order_id,
             invoice_detail: req.body.detail,
             date: moment().utc(7).add('years', 543).format(),
