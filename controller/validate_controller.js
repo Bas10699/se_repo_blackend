@@ -98,7 +98,7 @@ exports.validate_add_product = () => {
 }
 exports.validate_update_plant_stock = () => {
   return (req, res, next) => {
-    console.log(req.body)
+    // console.log(req.body)
     if (req.body.product_id) {
       next()
     }

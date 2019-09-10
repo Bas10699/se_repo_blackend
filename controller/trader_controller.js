@@ -41,11 +41,13 @@ exports.get_product_information = () => {
                 if (result[0]) {
                     let id_plant = result[0].plant_id
                     let name_plant = result[0].plant_name
-                    let price = result[0].price
+                    let price = JSON.parse(result[0].price)
                     let image = result[0].image
                     let cost = result[0].cost
-                    let detail = result[0].detail
+                    let details = result[0].details
                     let caption = result[0].caption
+                    let amount_stock = result[0].amount_stock
+                    let volume_sold = result[0].volume_sold
                     db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3' order by manufacture_id DESC`
                         , (err, result_plant_type) => {
                             if (err) throw err
@@ -144,8 +146,11 @@ exports.get_product_information = () => {
                                 plant: plant_data,
                                 image: image,
                                 cost: cost,
-                                detail: detail,
-                                caption: caption
+                                price: price,
+                                details: details,
+                                caption: caption,
+                                amount_stock: amount_stock,
+                                volume_sold: volume_sold
 
                             }
 
@@ -203,6 +208,7 @@ exports.get_product_information = () => {
                                         }
                                     })
                                     plant_data.map((element_plant_data) => {
+                                        element_plant_data.price = JSON.parse(element_plant_data.price)
                                         let name_plant = element_plant_data.plant_name
                                         let result = []
 
@@ -278,7 +284,12 @@ exports.get_product_information = () => {
                                         product_id: result[0].product_id,
                                         product_name: result[0].product_name,
                                         image: result[0].image,
-                                        plant: result_freq
+                                        plant: result_freq,
+                                        cost: result[0].cost,
+                                        price: JSON.parse(result[0].price),
+                                        details: result[0].details,
+                                        amount_stock: result[0].amount_stock,
+                                        volume_sold: result[0].volume_sold
                                     }
                                     req.result = result_all
                                     next();
@@ -444,7 +455,7 @@ exports.add_order_trader = () => {
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {
             if (err) throw err
             else {
-                let order_id = 'PO'+date_time + '-' + result.insertId
+                let order_id = 'PO' + date_time + '-' + result.insertId
                 db.query('UPDATE order_trader SET order_id = ? WHERE number = ?', [order_id, result.insertId], (err) => {
                     if (err) throw err
                     else {
@@ -519,7 +530,7 @@ exports.update_status_order_trader = () => {
 exports.get_invoice_trader = () => {
     return (req, res, next) => {
         let order_id = req.body.order_id
-        db.query('SELECT * FROM invoice INNER JOIN order_trader ON invoice.order_id = order_trader.order_id WHERE invoice.order_id =?', order_id, (err, result) => {
+        db.query('SELECT * FROM invoice INNER JOIN order_trader ON invoice.order_id = order_trader.order_id  WHERE invoice.order_id =?', order_id, (err, result) => {
             if (err) throw err
             else {
                 if (!result[0]) {
@@ -554,7 +565,7 @@ exports.add_proof_of_payment_trader = () => {
                     require("fs").writeFile("./image/payment/payment_" + req.body.order_id + '.png', image_proof, 'base64', function (err) {
                         if (err) throw err;
                         console.log('1')
-                        db.query(`UPDATE proofofpayment SET image_proof= 'trader/image/payment_${req.body.order_id}.png'  WHERE order_id= '${req.body.order_id}'`, function (err, result) {
+                        db.query(`UPDATE proofofpayment SET image_proof= 'trader/image/payment/payment_${req.body.order_id}.png'  WHERE order_id= '${req.body.order_id}'`, function (err, result) {
                             if (err) throw err;
                             else {
                                 db.query('UPDATE order_trader SET order_status=2 WHERE order_id=?', req.body.order_id, (err) => {
@@ -573,10 +584,10 @@ exports.add_proof_of_payment_trader = () => {
 }
 exports.get_proof_of_payment_trader = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM ProofOfPayment WHERE order_id=?',req.body.order_id,(err,result)=>{
-            if(err) throw err
-            else{
-                req.result=result[0]
+        db.query('SELECT * FROM ProofOfPayment WHERE order_id=?', req.body.order_id, (err, result) => {
+            if (err) throw err
+            else {
+                req.result = result[0]
                 next()
             }
         })
