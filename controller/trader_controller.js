@@ -16,7 +16,8 @@ exports.get_product = () => {
                             result.push({
                                 product_id: 'P ' + element.plant_id,
                                 product_name: element.plant_name,
-                                image: element.image
+                                image: element.image,
+                                amount_stock: element.amount_stock
                             })
                         })
 
@@ -377,6 +378,7 @@ exports.get_cart_trader = () => {
                             let product_obj = null
                             result_plant.map((element_result_plant) => {
                                 if (element.plant_id == element_result_plant.plant_id) {
+                                    element_result_plant.price = JSON.parse(element_result_plant.price)
                                     product_obj = {
                                         ...element_result_plant,
                                         ...element,
@@ -461,6 +463,19 @@ exports.add_order_trader = () => {
                     else {
                         db.query('DELETE FROM cart WHERE trader_id = ?', req.user_id, (err) => {
                             if (err) throw err
+
+                            req.body.detail.map((element) => {
+                                console.log(element)
+                                db.query('SELECT * FROM plant_stock WHERE plant_id=?', element.plant_id, (err, result) => {
+                                    if (err) throw err
+                                    else {
+                                        let stock = result[0].amount_stock - element.amount
+                                        db.query('UPDATE plant_stock SET amount_stock=? WHERE plant_id=?', [stock, element.plant_id], (err) => {
+                                            if (err) throw err
+                                        })
+                                    }
+                                })
+                            })
                             next()
                         })
                     }

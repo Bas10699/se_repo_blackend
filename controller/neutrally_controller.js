@@ -45,6 +45,7 @@ exports.get_order_info_trader = () => {
 }
 exports.update_status_order_trader = () => {
     return (req, res, next) => {
+        // console.log(req.body)
         let obj = {
             order_status: req.body.status,
             check_payment_date: moment().utc(7).add('years', 543).format(),

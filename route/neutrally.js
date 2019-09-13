@@ -36,7 +36,7 @@ router.post('/get_order_info',
     }
 )
 router.post('/update_status_order_trader',
-    validateUtil.validate_token_se(),
+    validateUtil.validate_token_trader(),
     neutrallyUtil.update_status_order_trader(),
     (req, res) => {
         res.status(200).json({
