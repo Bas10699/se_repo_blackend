@@ -63,7 +63,7 @@ exports.update_plant_stock = () => {
         let id = req.body.product_id.split(" ");
         let check = id[0]
         let pro_id = id[1]
-        console.log(req.body)
+        // console.log(req.body)
 
         if (check === 'P') {
             let object = {

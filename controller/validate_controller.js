@@ -99,7 +99,9 @@ exports.validate_add_product = () => {
 exports.validate_update_plant_stock = () => {
   return (req, res, next) => {
     // console.log(req.body)
-    if (req.body.product_id) {
+    if (req.body.product_id &&
+      req.body.product_name &&
+      req.body.price) {
       next()
     }
     else {
@@ -113,8 +115,8 @@ exports.validate_add_invoice_neutrally = () => {
     console.log(req.body)
     if (req.body.order_id &&
       req.body.detail &&
-      req.body.date_send 
-      ) {
+      req.body.date_send
+    ) {
       next()
     }
     else {
@@ -133,16 +135,16 @@ exports.validate_get_order_info = () => {
     }
   }
 }
-exports.validate_add_proof_of_payment_trader = () =>{
-  return(req,res,next) =>{
-    if(req.body.order_id&&
-      req.body.date_proof&&
-      req.body.time_proof&&
-      req.body.image_proof){
-        next()
-      }else{
-        res.status(200).json(errorMessages.invalid_data)
-      }
+exports.validate_add_proof_of_payment_trader = () => {
+  return (req, res, next) => {
+    if (req.body.order_id &&
+      req.body.date_proof &&
+      req.body.time_proof &&
+      req.body.image_proof) {
+      next()
+    } else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
   }
 }
 
