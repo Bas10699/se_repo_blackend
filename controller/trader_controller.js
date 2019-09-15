@@ -533,8 +533,11 @@ exports.get_order_info_trader = () => {
 exports.update_status_order_trader = () => {
     return (req, res, next) => {
         let order_id = req.body.order_id
-        let order_status = req.body.order_status
-        db.query('UPDATE order_trader SET order_status = ? WHERE order_id = ?', [order_status, order_id], (err) => {
+        let order_status = {
+            order_status: req.body.order_status,
+            date_end: moment().utc(7).add('years', 543).format(),
+        }
+        db.query('UPDATE order_trader SET ? WHERE order_id = ?', [order_status, order_id], (err) => {
             if (err) throw err
             next()
         })
@@ -583,7 +586,11 @@ exports.add_proof_of_payment_trader = () => {
                         db.query(`UPDATE proofofpayment SET image_proof= 'trader/image/payment/payment_${req.body.order_id}.png'  WHERE order_id= '${req.body.order_id}'`, function (err, result) {
                             if (err) throw err;
                             else {
-                                db.query('UPDATE order_trader SET order_status=2 WHERE order_id=?', req.body.order_id, (err) => {
+                                let sd = {
+                                    order_status: 2,
+                                    date_of_payment: moment().utc(7).add('years', 543).format(),
+                                }
+                                db.query('UPDATE order_trader SET ? WHERE order_id=?', [sd, req.body.order_id], (err) => {
                                     if (err) throw err
                                     else {
                                         next()

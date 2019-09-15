@@ -96,6 +96,16 @@ exports.validate_add_product = () => {
     }
   }
 }
+exports.validate_add_order = () => {
+  return (req, res, next) => {
+    if (req.body.date_send && req.body.address_send) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
 exports.validate_update_plant_stock = () => {
   return (req, res, next) => {
     // console.log(req.body)

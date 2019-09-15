@@ -58,6 +58,22 @@ exports.update_status_order_trader = () => {
         })
     }
 }
+
+exports.update_status_date_of_delivery_order_trader = () => {
+    return (req, res, next) => {
+        // console.log(req.body)
+        let obj = {
+            order_status: req.body.status,
+            date_of_delivery: moment().utc(7).add('years', 543).format(),
+        }
+        db.query('UPDATE order_trader SET ? WHERE order_id=?', [obj, req.body.order_id], (err, result) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+    }
+}
 exports.update_plant_stock = () => {
     return (req, res, next) => {
         let id = req.body.product_id.split(" ");

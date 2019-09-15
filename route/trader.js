@@ -70,6 +70,7 @@ router.get('/get_cart_trader',
 
 router.post('/add_order',
     validateUtil.validate_token_trader(),
+    validateUtil.validate_add_order(),
     productUtil.add_order_trader(),
     (req, res) => {
         res.status(200).json({
