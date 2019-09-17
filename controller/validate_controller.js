@@ -137,6 +137,7 @@ exports.validate_add_invoice_neutrally = () => {
 
 exports.validate_get_order_info = () => {
   return (req, res, next) => {
+    console.log(req.body)
     if (req.body.order_id) {
       next()
     }

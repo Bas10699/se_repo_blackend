@@ -7,37 +7,39 @@ var moment = require('moment')
 var logger = require('morgan')
 var fs = require('fs')
 var path = require('path')
- 
 
- var mm = moment()
- var date = mm.utc(7).format('DD-MM-YYYY')
- var time = mm.utc(7).format('HH: mm: ss')
- console.log(date,time)
+
+var mm = moment()
+var date = mm.utc(7).format('DD-MM-YYYY')
+var time = mm.utc(7).format('HH: mm: ss')
+console.log(date, time)
+
+
 
 
 app.use(bodyParser.urlencoded({
-    extended: true,
-    limit: '50mb'
-  }));
-  app.use(bodyParser.json({
-    limit: '50mb'
-  }));
-  
-  
+  extended: true,
+  limit: '50mb'
+}));
+app.use(bodyParser.json({
+  limit: '50mb'
+}));
+
+
 
 app.use(function (req, res, next) {
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization, X-Access-Token')
-    res.setHeader('Access-Control-Allow-Credentials', true)
-  
-    // Pass to next layer of middleware
-    next()
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization, X-Access-Token')
+  res.setHeader('Access-Control-Allow-Credentials', true)
+
+  // Pass to next layer of middleware
+  next()
 });
 
 app.use(logger('dev'))
-var accessLogStream = fs.createWriteStream(path.join(__dirname, `logs`,`'${date}'.log`), { flags: 'a' })
+var accessLogStream = fs.createWriteStream(path.join(__dirname, `logs`, `'${date}'.log`), { flags: 'a' })
 var configlog = `[:date[iso]] [ip]: :remote-addr :remote-user [method]: :method [url]: :url HTTP/:http-version [status]: :status [response-time]: :response-time ms [client]: :user-agent`
 app.use(logger(configlog, {
   stream: accessLogStream
@@ -50,14 +52,14 @@ var product_information = require('./route/product_information')
 var trader = require('./route/trader')
 var neutrally = require('./route/neutrally')
 
-app.use(version +'show',show)
-app.use(version +'user',User)
+app.use(version + 'show', show)
+app.use(version + 'user', User)
 // app.use(version +'product',product)
-app.use(version +'product_information',product_information)
-app.use(version +'trader',trader)
-app.use(version +'neutrally',neutrally)
+app.use(version + 'product_information', product_information)
+app.use(version + 'trader', trader)
+app.use(version + 'neutrally', neutrally)
 
 
 app.listen(port, function () {
-    console.log('Example app listening on port '+port)
- })
+  console.log('Example app listening on port ' + port)
+})

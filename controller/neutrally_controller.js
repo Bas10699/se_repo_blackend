@@ -210,6 +210,7 @@ exports.get_chart_frequency_all = function () {
 
             let result_obj = []
             let result_se = []
+            let sum = 0
             se_obj.map((element) => {
 
                 let frequency = []
@@ -261,7 +262,7 @@ exports.get_chart_frequency_all = function () {
 
                 frequency.map((el) => {
 
-                    let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
+                    let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0 
 
                     result.map((ele) => {
 
@@ -279,7 +280,7 @@ exports.get_chart_frequency_all = function () {
                                             // console.log("deliver",elem.deliver_frequency_number)
                                             if (elem.deliver_value !== null && elem.deliver_value !== '') {
                                                 if (elem.deliver_frequency_number >= el) {
-
+                                                    sum += parseInt(elem.deliver_value)
                                                     if (elem.end_plant === "มกราคม") {
 
                                                         jan += parseInt(elem.deliver_value)
@@ -350,6 +351,7 @@ exports.get_chart_frequency_all = function () {
 
                 })
                 if (result_freq.length !== 0) {
+
                     result_se.push({
                         name: element,
                         rang: result_freq
@@ -362,7 +364,8 @@ exports.get_chart_frequency_all = function () {
 
             result_obj.push({
                 plant: plant,
-                se: result_se
+                se: result_se,
+                sum : sum
             })
 
             req.result = result_obj;
