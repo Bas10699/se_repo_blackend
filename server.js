@@ -14,6 +14,21 @@ var date = mm.utc(7).format('DD-MM-YYYY')
 var time = mm.utc(7).format('HH: mm: ss')
 console.log(date, time)
 
+// const { exec } = require('child_process');
+// let dumpFile = 'dump.sql';	
+
+// // Database connection settings.
+// let exportFrom = {
+// 	host: "localhost",
+// 	user: "root",
+// 	password: "",
+// 	database: "abc_shop"
+// }
+// // Execute a MySQL Dump and redirect the output to the file in dumpFile variable.
+// exec(`mysqldump -u${exportFrom.user} -p${exportFrom.password} -h${exportFrom.host} --compact ${exportFrom.database} > ${dumpFile}`, (err, stdout, stderr) => {
+// 	if (err) { console.error(`exec error: ${err}`); return; }
+// });
+
 
 
 
