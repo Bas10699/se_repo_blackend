@@ -36,13 +36,13 @@ router.post('/user_update_password',
     function (req, res) {
         res.status(200).json({
             'success': true,
-            message: "แก้ไขรหัสผ่านเรียบร้อย"
+            'message': "แก้ไขรหัสผ่านเรียบร้อย"
         })
     }
 )
 
 router.post('/user_update_data',
-    //validateUtil.validate_user_update_data(),
+    validateUtil.validate_user_update_data(),
     validateUtil.validate_token_user(),
     userUtil.user_update_data(),
     function (req, res) {
