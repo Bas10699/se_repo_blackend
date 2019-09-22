@@ -110,13 +110,23 @@ router.post('/get_plant_volume_all_se',
 )
 router.post('/add_order_se',
     neutrallyUtil.add_order_se(),
-    (req,res)=>{
+    (req, res) => {
         res.status(200).json({
             'success': true,
             result: 'ออกใบสั่งซื้อสำเร็จ'
         })
     }
-    )
+)
+
+router.get('/get_order_se_all',
+    neutrallyUtil.get_order_se(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
 
 router.get('/gg',
     neutrallyUtil.add_stock_order(),

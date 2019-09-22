@@ -984,7 +984,8 @@ exports.add_order_se = () => {
                             plant_name: element.plant,
                             se_name: element.name,
                             amount: parseInt(element.amount),
-                            order_trader_id:req.body.order_trader_id
+                            order_trader_id:req.body.order_trader_id,
+                            order_se_date: moment().utc(7).add('years', 543).format()
                         }
                         console.log(obj)
                         db.query('INSERT INTO order_se SET ?', obj, (err, result) => {
@@ -1004,5 +1005,17 @@ exports.add_order_se = () => {
             }
         })
 
+    }
+}
+
+exports.get_order_se = () =>{
+    return(req,res,next)=>{
+        db.query('SELECT * FROM order_se',(err,result)=>{
+            if(err) throw err
+            else{
+                req.result=result
+                next()
+            }
+        })
     }
 }

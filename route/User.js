@@ -5,7 +5,7 @@ var validateUtil = require('../controller/validate_controller')
 
 
 router.post('/user_register', 
-    
+    validateUtil.validate_user_register(),
     userUtil.User_Register(),
     (req,res) => {
         res.status(200).json({

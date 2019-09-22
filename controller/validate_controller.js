@@ -7,7 +7,7 @@ exports.validate_user_register = () => {
   return (req, res, next) => {
     if (req.body.username &&
       req.body.password &&
-      req.body.role &&
+      req.body.user_type &&
       req.body.name &&
       req.body.lastname &&
       req.body.address &&
