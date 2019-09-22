@@ -87,7 +87,7 @@ exports.update_plant_stock = () => {
                 cost: req.body.cost,
                 volume_sold: req.body.volume_sold,
                 price: req.body.price,
-                details:req.body.details
+                details: req.body.details
             }
 
             db.query('UPDATE plant_stock SET ? WHERE plant_id=?', [object, pro_id], (err) => {
@@ -118,7 +118,7 @@ exports.update_plant_stock = () => {
                 cost: req.body.cost,
                 volume_sold: req.body.volume_sold,
                 price: req.body.price,
-                details:req.body.details
+                details: req.body.details
             }
 
             db.query('UPDATE product_information SET ? WHERE product_id=?', [object, req.body.product_id], (err) => {
@@ -262,7 +262,7 @@ exports.get_chart_frequency_all = function () {
 
                 frequency.map((el) => {
 
-                    let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0 
+                    let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
 
                     result.map((ele) => {
 
@@ -365,7 +365,7 @@ exports.get_chart_frequency_all = function () {
             result_obj.push({
                 plant: plant,
                 se: result_se,
-                sum : sum
+                sum: sum
             })
 
             req.result = result_obj;
@@ -962,5 +962,47 @@ exports.get_plant_volume_all_se = function () {
 
 
         })
+    }
+}
+
+exports.add_order_se = () => {
+    return (req, res, next) => {
+        let order_se = req.body.order_se
+        let detail_order_trader = req.body.detail_order_trader
+
+        detail_order_trader.map((ele_de)=>{
+            if(ele_de.plant_name === req.body.plant_name)
+                ele_de.status=1
+        })
+        let detail = JSON.stringify(detail_order_trader)
+        db.query('UPDATE order_trader SET detail=? WHERE order_id=?', [detail,req.body.order_trader_id], (err) => {
+            if (err) throw err
+            else {
+                order_se.map((element) => {
+                    if (parseInt(element.amount) > 0) {
+                        let obj = {
+                            plant_name: element.plant,
+                            se_name: element.name,
+                            amount: parseInt(element.amount),
+                            order_trader_id:req.body.order_trader_id
+                        }
+                        console.log(obj)
+                        db.query('INSERT INTO order_se SET ?', obj, (err, result) => {
+                            if (err) throw err
+                            else {
+                                let order_se_id = 'PO' + moment().utc(7).add('years', 543).format('DDMMYYYY') + '-' + result.insertId
+                                db.query('UPDATE order_se SET order_se_id=? WHERE id=?', [order_se_id, result.insertId], (err) => {
+                                    if (err) throw err
+                                    else {
+                                        next()
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
+
     }
 }
