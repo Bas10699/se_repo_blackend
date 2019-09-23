@@ -179,3 +179,29 @@ exports.user_update_data = () => {
     }
 }
 
+exports.delete_user = () => {
+    return (req, res, next) => {
+        db.query('DELETE useraccount,userprofile FROM useraccount INNER JOIN userprofile ON useraccount.user_id = userprofile.user_id WHERE useraccount.user_id=?',
+            req.body.user_id, (err) => {
+                if (err) throw err
+                else {
+                    next()
+                }
+            })
+    }
+}
+
+exports.show_user = () => {
+    return (req, res, next) => {
+        let User_ID = req.body.user_id
+        console.log(User_ID)
+        let sql = 'SELECT * From useraccount INNER JOIN userprofile ON useraccount.User_ID = userprofile.User_ID WHERE useraccount.User_ID = ?'
+        db.query(sql, User_ID, (err, result) => {
+            if (err) throw err;
+            else {
+                req.result = result[0]
+                next()
+            }
+        })
+    }
+}

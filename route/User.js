@@ -4,10 +4,10 @@ var userUtil = require('../controller/user_controller')
 var validateUtil = require('../controller/validate_controller')
 
 
-router.post('/user_register', 
+router.post('/user_register',
     validateUtil.validate_user_register(),
     userUtil.User_Register(),
-    (req,res) => {
+    (req, res) => {
         res.status(200).json({
             'success': true,
             message: "สมัครสมาชิกสำเร็จ"
@@ -27,7 +27,7 @@ router.post('/user_login',
     }
 
 )
- 
+
 
 router.post('/user_update_password',
     validateUtil.validate_user_update_password(),
@@ -52,17 +52,39 @@ router.post('/user_update_data',
         })
     }
 )
+
+router.post('/delete_user',
+    validateUtil.validate_token_admin(),
+    userUtil.delete_user(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: "ลบบัญชีผู้ใช้เรียบร้อย"
+        })
+    }
+)
+
+router.post('/show_user',
+    userUtil.show_user(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result : req.result
+        })
+    }
+)
+
 router.get('/image/:id',
     function (req, res) {
 
-        console.log("image",req.params.id)
+        console.log("image", req.params.id)
 
         require("fs").readFile(__dirname.replace("route", "") + 'image/user/' + req.params.id, (err, data) => {
 
-            if(err!==null){
+            if (err !== null) {
                 res.sendFile(__dirname.replace("route", "") + 'image/default_product.png')
-            }else{
-            res.sendFile(__dirname.replace("route", "") + 'image/user/' + req.params.id)
+            } else {
+                res.sendFile(__dirname.replace("route", "") + 'image/user/' + req.params.id)
             }
 
         })
