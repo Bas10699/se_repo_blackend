@@ -8,6 +8,9 @@ var logger = require('morgan')
 var fs = require('fs')
 var path = require('path')
 
+var http = require('http').Server(app)
+var io = require('socket.io')(http)
+
 
 var mm = moment()
 var date = mm.utc(7).format('DD-MM-YYYY')
@@ -75,6 +78,25 @@ app.use(version + 'trader', trader)
 app.use(version + 'neutrally', neutrally)
 
 
-app.listen(port, function () {
+var clients = 0
+io.on('connection', client => {
+  console.log('user connected')
+  clients++
+  io.sockets.emit('broadcast', { message: clients + ' client connected!' })
+  // เมื่อ Client ตัดการเชื่อมต่อ
+  client.on('disconnect', () => {
+    console.log('user disconnected')
+    clients--
+    io.sockets.emit('broadcast', { message: clients + ' client connected!' })
+  })
+
+  // ส่งข้อมูลไปยัง Client ทุกตัวที่เขื่อมต่อแบบ Realtime
+  client.on('sent-message', function (message) {
+    io.sockets.emit('new-message', {message})
+  })
+})
+
+
+http.listen(port, function () {
   console.log('Example app listening on port ' + port)
 })
