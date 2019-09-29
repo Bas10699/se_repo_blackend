@@ -239,7 +239,7 @@ exports.validate_token_se_small = () => {
             res.status(200).json(errorMessages.err_required_fingerprint_token)
           }
           else {
-            if (decode > 2) {
+            if (decode.type > 2) {
               req.user_id = decode.id
               next()
             }

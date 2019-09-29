@@ -69,6 +69,7 @@ var product = require('./route/product')
 var product_information = require('./route/product_information')
 var trader = require('./route/trader')
 var neutrally = require('./route/neutrally')
+var neoFirm = require('./route/neo_firm')
 
 app.use(version + 'show', show)
 app.use(version + 'user', User)
@@ -76,6 +77,7 @@ app.use(version + 'user', User)
 app.use(version + 'product_information', product_information)
 app.use(version + 'trader', trader)
 app.use(version + 'neutrally', neutrally)
+app.use(version + 'neo_firm', neoFirm)
 
 
 var clients = 0
@@ -92,7 +94,7 @@ io.on('connection', client => {
 
   // ส่งข้อมูลไปยัง Client ทุกตัวที่เขื่อมต่อแบบ Realtime
   client.on('sent-message', function (message) {
-    io.sockets.emit('new-message', {message})
+    io.sockets.emit('new-message', { message })
   })
 })
 
