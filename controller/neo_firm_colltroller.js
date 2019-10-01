@@ -63,7 +63,7 @@ exports.get_linechart_some_se = function () {
 
                     let test_result = []
                     let keep_req = result_se[0].name
-                    console.log(result[0].name,req.user_id)
+                    console.log(result_se[0].name, req.user_id)
 
                     let plant_el = []
                     let se_plant_el = []
@@ -206,12 +206,32 @@ exports.get_linechart_some_se = function () {
     }
 }
 
-exports.get_farmer_se = () =>{
-    return(req,res,next)=>{
-        db.query('SELECT * from farmer_information INNER JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id WHERE user_id=?',req.user_id,(err,result)=>{
-            if(err) throw err
-            else{
-                req.result=result
+exports.get_farmer_se = () => {
+    return (req, res, next) => {
+        let farmer = []
+        let plant = []
+        db.query('SELECT * from farmer_information INNER JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id WHERE user_id=?', req.user_id, (err, result) => {
+            if (err) throw err
+            else {
+                result.map((element) => {
+                    element.plant_type = JSON.parse(element.plant_type)
+                    element.plant_type.map((ele) => {
+                        farmer.push({
+                            title_name: element.title_name,
+                            first_name: element.first_name,
+                            last_name: element.last_name,
+                            plant: ele.plant,
+                            year_value: ele.year_value,
+                            year_value_unit: ele.year_value_unit,
+                            deliver_value: ele.deliver_value,
+                            product_value: ele.product_value,
+                            // growingArea: ele.growingarea,
+                        })
+
+                    })
+
+                })
+                req.result = farmer
                 next()
             }
         })
