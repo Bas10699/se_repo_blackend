@@ -30,180 +30,295 @@ exports.get_order_se = () => {
 
 exports.get_linechart_some_se = function () {
     return function (req, res, next) {
+        db.query(`SELECT userprofile.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((userprofile LEFT JOIN farmer_information ON userprofile.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE userprofile.user_id = ?`, req.user_id, function (err, result) {
+            if (err) throw err;
+            // let name_se = []
+            // let test_result = []
+            // let keep_req = result[0].name
+            // console.log(result[0].name, req.user_id)
 
-        db.query('SELECT * FROM userprofile WHERE user_id = ?', req.user_id, (err, result_se) => {
-            if (err) throw err
-            else {
-                db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3'`, function (err, result) {
-                    if (err) throw err;
-                    // req.result = result
-                    let element_obj
-                    let se_obj = []
-                    // let se_plant = []
+            // let plant_el = []
+            // let month = []
 
-                    result.map((element) => {
-                        let index
-                        index = se_obj.findIndex((el) => el === element.name)
+            // result.map((el) => {
+
+            //     if (el.name === keep_req) {
+
+
+            //         let se_plant
+            //         try {
+            //             se_plant = JSON.parse(el.plant_type)
+
+            //             se_plant.map((ele) => {
+
+            //                 test_result.push(
+            //                     {
+            //                         name: keep_req,
+            //                         plant: ele.plant,
+            //                         eliver_frequency_number: ele.eliver_frequency_number,
+            //                         deliver_value: ele.deliver_value,
+            //                         value: ele.eliver_frequency_number * ele.deliver_value,
+            //                         month: ele.end_plant
+            //                     }
+
+            //                 )
+
+            //                 index = plant_el.findIndex((elem) => elem === ele.plant)
+            //                 if (index < 0) {
+            //                     if (ele.plant !== null) {
+            //                         plant_el.push(
+            //                             ele.plant
+            //                         )
+            //                     }
+            //                 } else {
+
+            //                 }
+
+            //             })
+            //         } catch (err) {
+
+            //         }
+
+            //     }
+
+
+
+            // })
+
+            // plant_el.map((el_plant, index) => {
+
+            //     let january = 0
+            //     let febuary = 0
+            //     let march = 0
+            //     let april = 0
+            //     let may = 0
+            //     let june = 0
+            //     let july = 0
+            //     let august = 0
+            //     let september = 0
+            //     let october = 0
+            //     let november = 0
+            //     let december = 0
+
+            //     result.map((elem_plant) => {
+
+            //         let element_plant
+            //         try {
+            //             element_plant = JSON.parse(elem_plant.plant_type)
+            //         }
+            //         catch (err) {
+
+            //         }
+            //         // console.log(element_plant)
+            //         if (element_plant) {
+
+
+            //             element_plant.map((elem_plant_obj) => {
+            //                 if (el_plant === elem_plant_obj.plant && keep_req === elem_plant.name) {
+
+            //                     if (elem_plant_obj.end_plant == "มกราคม") {
+            //                         january = january + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "กุมภาพันธ์") {
+            //                         febuary = febuary + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "มีนาคม") {
+            //                         march = march + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "เมษายน") {
+            //                         april = april + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "พฤษภาคม") {
+            //                         may = may + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "มิถุนายน") {
+            //                         june = june + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "กรกฎาคม") {
+            //                         july = july + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "สิงหาคม") {
+            //                         august = august + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "กันยายน") {
+            //                         september = september + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "ตุลาคม") {
+            //                         october = october + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "พฤศจิกายน") {
+            //                         november = november + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     } else if (elem_plant_obj.end_plant == "ธันวาคม") {
+            //                         december = december + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
+            //                     }
+
+            //                 }
+
+
+            //             })
+
+
+
+
+            //         }
+            //     })
+
+            //     month.push({
+            //         name: el_plant,
+            //         data: [january, febuary, march, april, may, june, july, august, september, october, november, december]
+            //     })
+            // })
+            // name_se.push(
+            //     {
+            //         se_name: keep_req,
+            //         plant: month
+            //     }
+            // )
+
+            let plant_name = []
+
+            result.map((element) => {
+                element.plant_type = JSON.parse(element.plant_type)
+                let plant_type = element.plant_type
+                if (plant_type !== null) {
+                    plant_type.map((ele_pla) => {
+
+
+                        index = plant_name.findIndex((elem) => elem === ele_pla.plant)
                         if (index < 0) {
-                            if (element.plant_type !== null) {
-                                try {
-                                    JSON.parse(element.plant_type)
-                                    se_obj.push(
-                                        element.name
-                                    )
-                                } catch (err) {
+                            if (ele_pla.plant !== null) {
+                                // console.log(ele_pla.plant)
+                                plant_name.push(
+                                    ele_pla.plant
+                                )
+                            }
+                        }
+                    })
+                }
+            })
+            let plant_se = []
+            let month = []
+
+            plant_name.map((ele_plant) => {
+                let january = 0, febuary = 0, march = 0, april = 0, may = 0, june = 0, july = 0, august = 0, september = 0, october = 0, november = 0, december = 0
+                let jan = [], feb = [], mar = [], apr = [], ma = [], jun = [], jul = [], aug = [], sep = [], oct = [], nov = [], dec = []
+
+                result.map((element) => {
+                    let plant_type = element.plant_type
+                    if (plant_type !== null) {
+                        plant_type.map((ele_pla) => {
+                            if (ele_plant === ele_pla.plant) {
+
+                                if (ele_pla.end_plant == "มกราคม") {
+                                    january = january + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    jan.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "กุมภาพันธ์") {
+                                    febuary = febuary + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    feb.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "มีนาคม") {
+                                    march = march + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    mar.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "เมษายน") {
+                                    april = april + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    apr.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "พฤษภาคม") {
+                                    may = may + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    ma.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "มิถุนายน") {
+                                    june = june + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    jun.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "กรกฎาคม") {
+                                    july = july + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    jul.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "สิงหาคม") {
+                                    august = august + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    aug.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "กันยายน") {
+                                    september = september + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    sep.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "ตุลาคม") {
+                                    october = october + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    oct.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "พฤศจิกายน") {
+                                    november = november + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    nov.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
+                                } else if (ele_pla.end_plant == "ธันวาคม") {
+                                    december = december + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    dec.push({
+                                        ...ele_pla,
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                    })
                                 }
 
-                            } else { }
-                        } else {
-
-                        }
-                    })
-                    let name_se = []
-
-                    let test_result = []
-                    let keep_req = result_se[0].name
-                    console.log(result_se[0].name, req.user_id)
-
-                    let plant_el = []
-                    let se_plant_el = []
-                    let month = []
-
-                    result.map((el) => {
-
-                        if (el.name === keep_req) {
-
-
-                            let se_plant
-                            try {
-                                se_plant = JSON.parse(el.plant_type)
-
-                                se_plant.map((ele) => {
-
-                                    test_result.push(
-                                        {
-                                            name: keep_req,
-                                            plant: ele.plant,
-                                            eliver_frequency_number: ele.eliver_frequency_number,
-                                            deliver_value: ele.deliver_value,
-                                            value: ele.eliver_frequency_number * ele.deliver_value,
-                                            month: ele.end_plant
-                                        }
-
-                                    )
-
-                                    index = plant_el.findIndex((elem) => elem === ele.plant)
-                                    if (index < 0) {
-                                        plant_el.push(
-                                            ele.plant
-                                        )
-                                    } else {
-
-                                    }
-
-                                })
-                            } catch (err) {
-
-                            }
-
-                        }
-
-
-
-                    })
-
-                    plant_el.map((el_plant, index) => {
-
-                        let january = 0
-                        let febuary = 0
-                        let march = 0
-                        let april = 0
-                        let may = 0
-                        let june = 0
-                        let july = 0
-                        let august = 0
-                        let september = 0
-                        let october = 0
-                        let november = 0
-                        let december = 0
-
-                        result.map((elem_plant) => {
-
-                            let element_plant
-                            try {
-                                element_plant = JSON.parse(elem_plant.plant_type)
-                            }
-                            catch (err) {
-
-                            }
-                            // console.log(element_plant)
-                            if (element_plant) {
-
-
-                                element_plant.map((elem_plant_obj) => {
-                                    if (el_plant === elem_plant_obj.plant && keep_req === elem_plant.name) {
-
-                                        if (elem_plant_obj.end_plant == "มกราคม") {
-                                            january = january + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "กุมภาพันธ์") {
-                                            febuary = febuary + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "มีนาคม") {
-                                            march = march + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "เมษายน") {
-                                            april = april + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "พฤษภาคม") {
-                                            may = may + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "มิถุนายน") {
-                                            june = june + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "กรกฎาคม") {
-                                            july = july + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "สิงหาคม") {
-                                            august = august + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "กันยายน") {
-                                            september = september + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "ตุลาคม") {
-                                            october = october + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "พฤศจิกายน") {
-                                            november = november + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        } else if (elem_plant_obj.end_plant == "ธันวาคม") {
-                                            december = december + (elem_plant_obj.deliver_frequency_number * elem_plant_obj.deliver_value)
-                                        }
-
-                                    }
-
-
-                                })
-
-
-
-
                             }
                         })
-
-                        month.push({
-                            name: el_plant,
-                            data: [january, febuary, march, april, may, june, july, august, september, october, november, december]
-                        })
-                    })
-                    name_se.push(
-                        {
-                            se_name: keep_req,
-                            plant: month
-                        }
-                    )
-
-
-
-                    req.result = name_se
-                    next();
-
-
+                    }
                 })
-            }
+                month.push({
+                    name: ele_plant,
+                    data: [january, febuary, march, april, may, june, july, august, september, october, november, december],
+                    detail: [jan, feb, mar, apr, ma, jun, jul, aug, sep, oct, nov, dec]
+                })
+            })
+            plant_se.push({
+                se_name: result[0].name,
+                plant: month
+            })
+
+            req.result = plant_se
+            next();
+
+
         })
-
-
     }
+
 }
 
 exports.get_farmer_se = () => {
@@ -216,21 +331,28 @@ exports.get_farmer_se = () => {
                 result.map((element) => {
                     element.plant_type = JSON.parse(element.plant_type)
                     element.plant_type.map((ele) => {
-                        farmer.push({
-                            title_name: element.title_name,
-                            first_name: element.first_name,
-                            last_name: element.last_name,
-                            plant: ele.plant,
-                            year_value: ele.year_value,
-                            year_value_unit: ele.year_value_unit,
-                            deliver_value: ele.deliver_value,
-                            product_value: ele.product_value,
-                            // growingArea: ele.growingarea,
-                        })
+                        if (ele.year_value_unit === 'ตัน') {
+                            ele.year_value = ele.year_value * 1000
+                        }
+                        if (ele.plant !== null && ele.plant !== '') {
+                            farmer.push({
+                                title_name: element.title_name,
+                                first_name: element.first_name,
+                                last_name: element.last_name,
+                                plant: ele.plant,
+                                year_value: ele.year_value * 1,
+                                year_value_unit: ele.year_value_unit,
+                                deliver_value: ele.deliver_value * 1,
+                                product_value: ele.product_value * 1,
+                                growingArea: ele.growingarea * 1,
+                            })
+                        }
+
 
                     })
 
                 })
+                // req.result = result[0]
                 req.result = farmer
                 next()
             }

@@ -70,6 +70,12 @@ var product_information = require('./route/product_information')
 var trader = require('./route/trader')
 var neutrally = require('./route/neutrally')
 var neoFirm = require('./route/neo_firm')
+var socIo = require('./socket.io/socket.io')
+
+app.use(function(req, res, next){
+  res.io = io;
+  next();
+})
 
 app.use(version + 'show', show)
 app.use(version + 'user', User)
@@ -78,25 +84,8 @@ app.use(version + 'product_information', product_information)
 app.use(version + 'trader', trader)
 app.use(version + 'neutrally', neutrally)
 app.use(version + 'neo_firm', neoFirm)
+app.use(version + 'ss',socIo)
 
-
-var clients = 0
-io.on('connection', client => {
-  console.log('user connected')
-  clients++
-  io.sockets.emit('broadcast', { message: clients + ' client connected!' })
-  // เมื่อ Client ตัดการเชื่อมต่อ
-  client.on('disconnect', () => {
-    console.log('user disconnected')
-    clients--
-    io.sockets.emit('broadcast', { message: clients + ' client connected!' })
-  })
-
-  // ส่งข้อมูลไปยัง Client ทุกตัวที่เขื่อมต่อแบบ Realtime
-  client.on('sent-message', function (message) {
-    io.sockets.emit('new-message', { message })
-  })
-})
 
 
 http.listen(port, function () {
