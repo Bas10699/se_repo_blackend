@@ -28,6 +28,27 @@ exports.get_order_se = () => {
     }
 }
 
+exports.get_detail_order_se = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM order_se WHERE order_se_id = ?',req.body.order_id , (err, result) => {
+            if (err) throw err
+            else {
+                if (!result) {
+                    res.status(200).json({
+                        'success': false,
+                        'error_message': 'ไม่มีรายการของ ' + name
+                    })
+                }
+                else {
+                    req.result = result[0]
+                    next()
+                }
+            }
+        })
+
+    }
+}
+
 exports.get_linechart_some_se = function () {
     return function (req, res, next) {
         db.query(`SELECT userprofile.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((userprofile LEFT JOIN farmer_information ON userprofile.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE userprofile.user_id = ?`, req.user_id, function (err, result) {

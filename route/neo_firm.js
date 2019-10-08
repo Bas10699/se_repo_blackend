@@ -13,6 +13,16 @@ router.get('/get_order_se',
         })
     }
 )
+router.post('/get_detail_order_se',
+    validateUtil.validate_token_se_small(),
+    neoFirmUtil.get_detail_order_se(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
 router.get('/get_plant_in_network',
     validateUtil.validate_token_se_small(),
     neoFirmUtil.get_linechart_some_se(),
