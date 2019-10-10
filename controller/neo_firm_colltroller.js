@@ -27,10 +27,15 @@ exports.get_order_se = () => {
 
     }
 }
+exports.add_invoice_se = () => {
+    return (req, res, next) => {
+        console.log(req.body)
+    }
+}
 
 exports.get_detail_order_se = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_se WHERE order_se_id = ?',req.body.order_id , (err, result) => {
+        db.query('SELECT * FROM order_se WHERE order_se_id = ?', req.body.order_id, (err, result) => {
             if (err) throw err
             else {
                 if (!result) {
@@ -356,17 +361,25 @@ exports.get_farmer_se = () => {
                             ele.year_value = ele.year_value * 1000
                         }
                         if (ele.plant !== null && ele.plant !== '') {
-                            farmer.push({
-                                title_name: element.title_name,
-                                first_name: element.first_name,
-                                last_name: element.last_name,
-                                plant: ele.plant,
-                                year_value: ele.year_value * 1,
-                                year_value_unit: ele.year_value_unit,
-                                deliver_value: ele.deliver_value * 1,
-                                product_value: ele.product_value * 1,
-                                growingArea: ele.growingarea * 1,
-                            })
+                            if (ele.year_value !== null) {
+                                if (((ele.deliver_value * 1) !== 0) || ((ele.year_value * 1) !== 0)) {
+                                    farmer.push({
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                        plant: ele.plant,
+                                        year_value: ele.year_value * 1,
+                                        year_value_unit: ele.year_value_unit,
+                                        deliver_value: ele.deliver_value * 1,
+                                        product_value: ele.product_value * 1,
+                                        growingArea: ele.growingarea * 1,
+                                        end_plant: ele.end_plant,
+                                        deliver_frequency_number: ele.deliver_frequency_number
+                                    })
+                                }
+                            }
+
+
                         }
 
 

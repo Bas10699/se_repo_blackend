@@ -70,9 +70,10 @@ var product_information = require('./route/product_information')
 var trader = require('./route/trader')
 var neutrally = require('./route/neutrally')
 var neoFirm = require('./route/neo_firm')
+var reseacher = require('./route/researcher')
 var socIo = require('./socket.io/socket.io')
 
-app.use(function(req, res, next){
+app.use(function (req, res, next) {
   res.io = io;
   next();
 })
@@ -84,7 +85,8 @@ app.use(version + 'product_information', product_information)
 app.use(version + 'trader', trader)
 app.use(version + 'neutrally', neutrally)
 app.use(version + 'neo_firm', neoFirm)
-app.use(version + 'ss',socIo)
+app.use(version + 'researcher', reseacher)
+app.use(version + 'ss', socIo)
 
 
 

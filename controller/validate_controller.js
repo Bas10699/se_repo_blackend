@@ -189,6 +189,39 @@ exports.validate_token_user = function () {
   };
 };
 
+exports.validate_token_researcher = function () {
+  return function (req, res, next) {
+    // console.log(req.session.token)
+    if (!Boolean(req.headers["authorization"])) {
+      res.status(200).json({
+        success: false,
+        message: errorMessagess.err_required_token
+      });
+    } else {
+      // console.log("token")
+      jsonwebToken.verify(
+        req.headers.authorization,
+        constance.sign,
+        (err, decode) => {
+          if (err) {
+            res.status(200).json(errorMessagess.err_required_fingerprint_token);
+          } else {
+            if (decode.type > 0) {
+              req.user_id = decode.id;
+              next();
+            } else {
+              // console.log(decode.type)
+              res
+                .status(200)
+                .json(errorMessagess.err_required_fingerprint_token);
+            }
+          }
+        }
+      );
+    }
+  };
+};
+
 exports.validate_token_trader = function () {
   return function (req, res, next) {
     // console.log(req.session.token)
