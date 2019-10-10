@@ -148,6 +148,7 @@ exports.user_update_data = () => {
             lastname: req.body.lastname,
             address: req.body.address,
             phone: req.body.phone,
+            bank_information: req.body.bank_information
         }
         let data_account = {
             username: req.body.username,
@@ -188,6 +189,26 @@ exports.delete_user = () => {
                     next()
                 }
             })
+    }
+}
+
+exports.get_user = () => {
+    return (req, res, next) => {
+        let User_ID = req.user_id
+        let sql = 'SELECT * From useraccount INNER JOIN userprofile ON useraccount.User_ID = userprofile.User_ID WHERE useraccount.User_ID = ?'
+        db.query(sql, User_ID, (err, result) => {
+            if (err) throw err;
+            else {
+                result.map((element) => {
+                    if (element.bank_information !== null && element.bank_information !== '') {
+                        element.bank_information = JSON.parse(element.bank_information)
+                    }
+
+                })
+                req.result = result[0]
+                next()
+            }
+        })
     }
 }
 

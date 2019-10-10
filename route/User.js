@@ -64,6 +64,17 @@ router.post('/delete_user',
     }
 )
 
+router.get('/get_user',
+    validateUtil.validate_token_user(),
+    userUtil.get_user(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result : req.result
+        })
+    }
+)
+
 router.post('/show_user',
     userUtil.show_user(),
     (req, res) => {

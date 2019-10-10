@@ -45,4 +45,15 @@ router.get('/get_farmer_se',
     }
 )
 
+router.get('/up_stock_se',
+    // validateUtil.validate_token_se_small(),
+    neoFirmUtil.up_stock_se(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
 module.exports = router

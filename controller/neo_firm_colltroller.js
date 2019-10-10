@@ -394,4 +394,54 @@ exports.get_farmer_se = () => {
     }
 }
 
+exports.up_stock_se = () => {
+    return (req, res, next) => {
+        let plant_name = []
+        let name_se = []
+        db.query('SELECT user_information.user_id,user_information.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = 3', (err, result) => {
+            if (err) throw err
+            else {
+                result.map((element) => {
+                    index = name_se.findIndex((elem) => elem.id === element.user_id)
+                    if (index < 0) {
+                        name_se.push({
+                            id: element.user_id,
+                            name: element.name
+                        })
+                    }
+                })
+                name_se.map((ele_name) => {
+                    result.map((element) => {
+            
+                        if (ele_name.name === element.name) {
+                            element.plant_type = JSON.parse(element.plant_type)
+                            let plant_type = element.plant_type
+                            if (plant_type !== null) {
+                                plant_type.map((ele_pla) => {
+
+
+                                    index = plant_name.findIndex((elem) => elem.plant_name === ele_pla.plant)
+                                    if (index < 0) {
+                                        if (ele_pla.plant !== null && ele_pla.plant !== undefined) {
+                                            // console.log(ele_pla.plant)
+                                            plant_name.push({
+                                                id_se: element.user_id,
+                                                name_se: element.name,
+                                                plant_name: ele_pla.plant
+                                            })
+                                        }
+                                    }
+                                })
+                            }
+                        }
+                    })
+                })
+
+                req.result = plant_name
+                next()
+            }
+        })
+    }
+}
+
 //$2a$10$bq/BRgH.XI8b/SSJrK4he.f8YL7RNohKz8F4g9cNXjhr0FLafrmjK
