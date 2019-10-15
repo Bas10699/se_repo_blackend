@@ -387,7 +387,7 @@ exports.get_cart_trader = () => {
 
                                 }
                             })
-                            console.log(product_obj)
+                            // console.log(product_obj)
                             if (product_obj) {
                                 product.push(product_obj)
                             }

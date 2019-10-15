@@ -119,6 +119,16 @@ router.post('/add_order_se',
 )
 
 router.get('/get_order_se_all',
+    neutrallyUtil.get_order_se_all(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+router.post('/get_order_se',
     neutrallyUtil.get_order_se(),
     (req, res) => {
         res.status(200).json({

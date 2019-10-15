@@ -1008,12 +1008,25 @@ exports.add_order_se = () => {
     }
 }
 
-exports.get_order_se = () =>{
+exports.get_order_se_all = () =>{
     return(req,res,next)=>{
         db.query('SELECT * FROM order_se',(err,result)=>{
             if(err) throw err
             else{
                 req.result=result
+                next()
+            }
+        })
+    }
+}
+
+exports.get_order_se = () =>{
+    return(req,res,next)=>{
+        console.log(req.body)
+        db.query('SELECT * FROM order_se WHERE order_se_id=?',req.body.order_id,(err,result)=>{
+            if(err) throw err
+            else{
+                req.result=result[0]
                 next()
             }
         })

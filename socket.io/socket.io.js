@@ -13,11 +13,12 @@ module.exports = function(io){
         // })
     
         // ส่งข้อมูลไปยัง Client ทุกตัวที่เขื่อมต่อแบบ Realtime
-        console.log(client.handshake)
+        // console.log(client)
         client.on('sent-message', function (message) {
             let mes = {
                 mes: message,
-                add: client.handshake.address
+                add: client.handshake.address,
+                time: client.handshake.time
             }
             io.of('/admin').emit('new-message', mes)
         })
