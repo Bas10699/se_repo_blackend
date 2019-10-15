@@ -8,8 +8,9 @@ var logger = require('morgan')
 var fs = require('fs')
 var path = require('path')
 
-var http = require('http').Server(app)
-// var io = require('socket.io')(http)
+var http = require('http')
+var server = http.createServer(app)
+var io = require('socket.io')(server)
 
 
 var mm = moment()
@@ -77,7 +78,7 @@ var socIo = require('./socket.io/socket.io')
 //   res.io = io;
 //   next();
 // })
-app.io = require('socket.io')()
+// app.io = require('socket.io')()
 
 app.use(version + 'show', show)
 app.use(version + 'user', User)
@@ -87,11 +88,13 @@ app.use(version + 'trader', trader)
 app.use(version + 'neutrally', neutrally)
 app.use(version + 'neo_firm', neoFirm)
 app.use(version + 'researcher', reseacher)
-app.use(version + 'ss', socIo(app.io))
+app.use(version + 'ss', socIo(io))
 
 
 
-http.listen(port, function () {
+
+server.listen(port, function () {
   console.log('Example app listening on port ' + port)
 })
-app.io.listen(http)
+
+// app.io.listen(server)
