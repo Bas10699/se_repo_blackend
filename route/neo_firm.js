@@ -45,6 +45,17 @@ router.get('/get_farmer_se',
     }
 )
 
+router.post('/add_order_farmer',
+    validateUtil.validate_token_se_small(),
+    neoFirmUtil.add_order_farmer(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: "สั่งวัตถุดิบเกษตรกรสำเร็จ"
+        })
+    }
+)
+
 router.get('/up_stock_se',
     // validateUtil.validate_token_se_small(),
     neoFirmUtil.up_stock_se(),

@@ -444,4 +444,10 @@ exports.up_stock_se = () => {
     }
 }
 
+exports.add_order_farmer = () =>{
+    return(req,res)=>{
+        console.log(req.body)
+    }
+}
+
 //$2a$10$bq/BRgH.XI8b/SSJrK4he.f8YL7RNohKz8F4g9cNXjhr0FLafrmjK
