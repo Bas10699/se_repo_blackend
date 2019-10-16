@@ -17,3 +17,9 @@ exports.get_plant_se = () =>{
         })
     }
 }
+
+exports.add_want_ = () =>{
+    return(req,res,next)=>{
+        console.log(req.body)
+    }
+}
