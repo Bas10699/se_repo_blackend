@@ -21,5 +21,19 @@ exports.get_plant_se = () =>{
 exports.add_want_ = () =>{
     return(req,res,next)=>{
         console.log(req.body)
+        db.query('INSERT INTO product_information SET ?',(err,result)=>{
+            if(err) throw err
+        })
+    }
+}
+
+exports.get_want_trader = () =>{
+    return(req,res,next)=>{
+        db.query('SELECT * FROM product_information',(err,result)=>{
+            if(err) throw err
+            else{
+                next()
+            }
+        })
     }
 }

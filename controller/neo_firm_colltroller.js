@@ -15,8 +15,7 @@ exports.get_order_se = () => {
                                 'success': false,
                                 'error_message': 'ไม่มีรายการของ ' + name
                             })
-                        }
-                        else {
+                        } else {
                             req.result = result
                             next()
                         }
@@ -30,12 +29,18 @@ exports.get_order_se = () => {
 exports.add_invoice_se = () => {
     return (req, res, next) => {
         console.log(req.body)
+        db.query('INSERT INTO order_se_invoice SET ?',(err)=>{
+            if(err) throw err
+            else{
+                next()
+            }
+        })
     }
 }
 
 exports.get_detail_order_se = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_se WHERE order_se_id = ?', req.body.order_id, (err, result) => {
+        db.query('SELECT * FROM order_se_invoice RIGHT JOIN order_se ON order_se_invoice.order_se_id = order_se.order_se_id WHERE order_se.order_se_id = ?', req.body.order_id, (err, result) => {
             if (err) throw err
             else {
                 if (!result) {
@@ -43,8 +48,7 @@ exports.get_detail_order_se = () => {
                         'success': false,
                         'error_message': 'ไม่มีรายการของ ' + name
                     })
-                }
-                else {
+                } else {
                     req.result = result[0]
                     next()
                 }
@@ -54,9 +58,9 @@ exports.get_detail_order_se = () => {
     }
 }
 
-exports.get_linechart_some_se = function () {
-    return function (req, res, next) {
-        db.query(`SELECT userprofile.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((userprofile LEFT JOIN farmer_information ON userprofile.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE userprofile.user_id = ?`, req.user_id, function (err, result) {
+exports.get_linechart_some_se = function() {
+    return function(req, res, next) {
+        db.query(`SELECT userprofile.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((userprofile LEFT JOIN farmer_information ON userprofile.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE userprofile.user_id = ?`, req.user_id, function(err, result) {
             if (err) throw err;
             // let name_se = []
             // let test_result = []
@@ -216,8 +220,30 @@ exports.get_linechart_some_se = function () {
             let month = []
 
             plant_name.map((ele_plant) => {
-                let january = 0, febuary = 0, march = 0, april = 0, may = 0, june = 0, july = 0, august = 0, september = 0, october = 0, november = 0, december = 0
-                let jan = [], feb = [], mar = [], apr = [], ma = [], jun = [], jul = [], aug = [], sep = [], oct = [], nov = [], dec = []
+                let january = 0,
+                    febuary = 0,
+                    march = 0,
+                    april = 0,
+                    may = 0,
+                    june = 0,
+                    july = 0,
+                    august = 0,
+                    september = 0,
+                    october = 0,
+                    november = 0,
+                    december = 0
+                let jan = [],
+                    feb = [],
+                    mar = [],
+                    apr = [],
+                    ma = [],
+                    jun = [],
+                    jul = [],
+                    aug = [],
+                    sep = [],
+                    oct = [],
+                    nov = [],
+                    dec = []
 
                 result.map((element) => {
                     let plant_type = element.plant_type
@@ -355,38 +381,38 @@ exports.get_farmer_se = () => {
             if (err) throw err
             else {
                 result.map((element) => {
-                    element.plant_type = JSON.parse(element.plant_type)
-                    element.plant_type.map((ele) => {
-                        if (ele.year_value_unit === 'ตัน') {
-                            ele.year_value = ele.year_value * 1000
-                        }
-                        if (ele.plant !== null && ele.plant !== '') {
-                            if (ele.year_value !== null) {
-                                if (((ele.deliver_value * 1) !== 0) || ((ele.year_value * 1) !== 0)) {
-                                    farmer.push({
-                                        title_name: element.title_name,
-                                        first_name: element.first_name,
-                                        last_name: element.last_name,
-                                        plant: ele.plant,
-                                        year_value: ele.year_value * 1,
-                                        year_value_unit: ele.year_value_unit,
-                                        deliver_value: ele.deliver_value * 1,
-                                        product_value: ele.product_value * 1,
-                                        growingArea: ele.growingarea * 1,
-                                        end_plant: ele.end_plant,
-                                        deliver_frequency_number: ele.deliver_frequency_number
-                                    })
+                        element.plant_type = JSON.parse(element.plant_type)
+                        element.plant_type.map((ele) => {
+                            if (ele.year_value_unit === 'ตัน') {
+                                ele.year_value = ele.year_value * 1000
+                            }
+                            if (ele.plant !== null && ele.plant !== '') {
+                                if (ele.year_value !== null) {
+                                    if (((ele.deliver_value * 1) !== 0) || ((ele.year_value * 1) !== 0)) {
+                                        farmer.push({
+                                            title_name: element.title_name,
+                                            first_name: element.first_name,
+                                            last_name: element.last_name,
+                                            plant: ele.plant,
+                                            year_value: ele.year_value * 1,
+                                            year_value_unit: ele.year_value_unit,
+                                            deliver_value: ele.deliver_value * 1,
+                                            product_value: ele.product_value * 1,
+                                            growingArea: ele.growingarea * 1,
+                                            end_plant: ele.end_plant,
+                                            deliver_frequency_number: ele.deliver_frequency_number
+                                        })
+                                    }
                                 }
+
+
                             }
 
 
-                        }
-
+                        })
 
                     })
-
-                })
-                // req.result = result[0]
+                    // req.result = result[0]
                 req.result = farmer
                 next()
             }
@@ -412,7 +438,7 @@ exports.up_stock_se = () => {
                 })
                 name_se.map((ele_name) => {
                     result.map((element) => {
-            
+
                         if (ele_name.name === element.name) {
                             element.plant_type = JSON.parse(element.plant_type)
                             let plant_type = element.plant_type
@@ -445,7 +471,7 @@ exports.up_stock_se = () => {
 }
 
 exports.add_order_farmer = () =>{
-    return(req,res)=>{
+    return (req,res,next)=>{
         console.log(req.body)
     }
 }

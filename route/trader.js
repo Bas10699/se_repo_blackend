@@ -144,6 +144,29 @@ router.post('/get_proof_of_payment_trader',
     }
 )
 
+router.post('/add_send_demand',
+    validateUtil.validate_token_trader(),
+    validateUtil.validate_add_send_demand(),
+    productUtil.add_send_demand(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            message: "ส่งความต้องการสำเร็จ"
+        })
+    }
+)
+router.get('/get_send_demand',
+    validateUtil.validate_token_trader(),
+    productUtil.get_send_demand(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: req.result
+        })
+    }
+)
+
+
 router.get('/image/:id',
     function (req, res) {
 
@@ -158,7 +181,7 @@ router.get('/image/:id',
         })
 
     })
-    router.get('/image/payment/:id',
+router.get('/image/payment/:id',
     function (req, res) {
 
         require("fs").readFile(__dirname.replace("route", "") + 'image/payment/' + req.params.id, (err, data) => {

@@ -6,9 +6,10 @@ var errorMessages = require('../const/error_message')
 
 exports.get_product = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM product_information', (err, result) => {
-            if (err) throw err
-            else {
+        let result = []
+        // db.query('SELECT * FROM product_information', (err, result) => {
+        //     if (err) throw err
+        //     else {
                 db.query('SELECT * From plant_stock', (err, result_plant) => {
                     if (err) throw err
                     else {
@@ -26,8 +27,8 @@ exports.get_product = () => {
                     }
                 })
 
-            }
-        })
+            // }
+        // })
     }
 }
 
@@ -610,6 +611,35 @@ exports.get_proof_of_payment_trader = () => {
             if (err) throw err
             else {
                 req.result = result[0]
+                next()
+            }
+        })
+    }
+}
+
+exports.add_send_demand = () =>{
+    return(req,res,next) =>{
+        let object = {
+            product_name: req.body.product_name,
+            nutrient: req.body.nutrient,
+            product_status: req.body.product_status,
+            trader_id: req.user_id
+        }
+        db.query('INSERT INTO product_information SET ?',object,(err)=>{
+            if(err) throw err
+            else{
+                next()
+            }
+        })
+    }
+}
+
+exports.get_send_demand = () =>{
+    return(req,res,next) =>{
+        db.query('SELECT * FROM product_information',(err,result)=>{
+            if(err) throw err
+            else{
+                req.result = result
                 next()
             }
         })

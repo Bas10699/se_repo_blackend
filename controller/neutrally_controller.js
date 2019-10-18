@@ -970,12 +970,12 @@ exports.add_order_se = () => {
         let order_se = req.body.order_se
         let detail_order_trader = req.body.detail_order_trader
 
-        detail_order_trader.map((ele_de)=>{
-            if(ele_de.plant_name === req.body.plant_name)
-                ele_de.status=1
+        detail_order_trader.map((ele_de) => {
+            if (ele_de.plant_name === req.body.plant_name)
+                ele_de.status = 1
         })
         let detail = JSON.stringify(detail_order_trader)
-        db.query('UPDATE order_trader SET detail=? WHERE order_id=?', [detail,req.body.order_trader_id], (err) => {
+        db.query('UPDATE order_trader SET detail=? WHERE order_id=?', [detail, req.body.order_trader_id], (err) => {
             if (err) throw err
             else {
                 order_se.map((element) => {
@@ -984,7 +984,7 @@ exports.add_order_se = () => {
                             plant_name: element.plant,
                             se_name: element.name,
                             amount: parseInt(element.amount),
-                            order_trader_id:req.body.order_trader_id,
+                            order_trader_id: req.body.order_trader_id,
                             order_se_date: moment().utc(7).add('years', 543).format()
                         }
                         console.log(obj)
@@ -1008,25 +1008,25 @@ exports.add_order_se = () => {
     }
 }
 
-exports.get_order_se_all = () =>{
-    return(req,res,next)=>{
-        db.query('SELECT * FROM order_se',(err,result)=>{
-            if(err) throw err
-            else{
-                req.result=result
+exports.get_order_se_all = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM order_se', (err, result) => {
+            if (err) throw err
+            else {
+                req.result = result
                 next()
             }
         })
     }
 }
 
-exports.get_order_se = () =>{
-    return(req,res,next)=>{
+exports.get_order_se = () => {
+    return (req, res, next) => {
         console.log(req.body)
-        db.query('SELECT * FROM order_se WHERE order_se_id=?',req.body.order_id,(err,result)=>{
-            if(err) throw err
-            else{
-                req.result=result[0]
+        db.query('SELECT * FROM order_se LEFT JOIN order_se_invoice ON order_se.order_se_id = order_se_invoice.order_se_id WHERE order_se.order_se_id=?', req.body.order_id, (err, result) => {
+            if (err) throw err
+            else {
+                req.result = result[0]
                 next()
             }
         })

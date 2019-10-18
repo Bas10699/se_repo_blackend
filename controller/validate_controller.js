@@ -1,7 +1,6 @@
 var errorMessages = require('../const/error_message')
 var jsonwebToken = require('jsonwebtoken')
 var constance = require('../const/constance')
-var errorMessagess = require('../const/error_message')
 
 exports.validate_user_register = () => {
   return (req, res, next) => {
@@ -158,7 +157,17 @@ exports.validate_add_proof_of_payment_trader = () => {
     }
   }
 }
-
+exports.validate_add_send_demand = () =>{
+  return(req,res,next) => {
+    if(req.body.product_name&&
+      req.body.nutrient){
+        next()
+      }
+      else{
+        res.status(200).json(errorMessages.invalid_data)
+      }
+  }
+}
 
 
 exports.validate_token_user = function () {
@@ -195,7 +204,7 @@ exports.validate_token_researcher = function () {
     if (!Boolean(req.headers["authorization"])) {
       res.status(200).json({
         success: false,
-        message: errorMessagess.err_required_token
+        message: errorMessages.err_required_token
       });
     } else {
       // console.log("token")
@@ -204,7 +213,7 @@ exports.validate_token_researcher = function () {
         constance.sign,
         (err, decode) => {
           if (err) {
-            res.status(200).json(errorMessagess.err_required_fingerprint_token);
+            res.status(200).json(errorMessages.err_required_fingerprint_token);
           } else {
             if (decode.type > 0) {
               req.user_id = decode.id;
@@ -213,7 +222,7 @@ exports.validate_token_researcher = function () {
               // console.log(decode.type)
               res
                 .status(200)
-                .json(errorMessagess.err_required_fingerprint_token);
+                .json(errorMessages.err_required_fingerprint_token);
             }
           }
         }
@@ -228,7 +237,7 @@ exports.validate_token_trader = function () {
     if (!Boolean(req.headers["authorization"])) {
       res.status(200).json({
         success: false,
-        message: errorMessagess.err_required_token
+        message: errorMessages.err_required_token
       });
     } else {
       // console.log("token")
@@ -237,7 +246,7 @@ exports.validate_token_trader = function () {
         constance.sign,
         (err, decode) => {
           if (err) {
-            res.status(200).json(errorMessagess.err_required_fingerprint_token);
+            res.status(200).json(errorMessages.err_required_fingerprint_token);
           } else {
             if (decode.type > 1) {
               req.user_id = decode.id;
@@ -246,7 +255,7 @@ exports.validate_token_trader = function () {
               // console.log(decode.type)
               res
                 .status(200)
-                .json(errorMessagess.err_required_fingerprint_token);
+                .json(errorMessages.err_required_fingerprint_token);
             }
           }
         }
@@ -280,7 +289,7 @@ exports.validate_token_se_small = () => {
               console.log(decode.type)
               res
                 .status(200)
-                .json(errorMessagess.err_required_fingerprint_token);
+                .json(errorMessages.err_required_fingerprint_token);
             }
           }
         }
@@ -331,7 +340,7 @@ exports.validate_token_admin = function () {
     if (!Boolean(req.headers["authorization"])) {
       res.status(200).json({
         success: false,
-        message: errorMessagess.err_required_token
+        message: errorMessages.err_required_token
       });
     } else {
       // console.log("token")
@@ -341,7 +350,7 @@ exports.validate_token_admin = function () {
         (err, decode) => {
           if (err) {
             // console.log(decode.type)
-            res.status(200).json(errorMessagess.err_required_fingerprint_token);
+            res.status(200).json(errorMessages.err_required_fingerprint_token);
           } else {
             if (decode.type > 4) {
               req.user_id = decode.id;
@@ -350,7 +359,7 @@ exports.validate_token_admin = function () {
               console.log(decode.type)
               res
                 .status(200)
-                .json(errorMessagess.err_required_fingerprint_token);
+                .json(errorMessages.err_required_fingerprint_token);
             }
           }
         }
