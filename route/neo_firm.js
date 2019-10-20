@@ -56,6 +56,16 @@ router.post('/add_order_farmer',
     }
 )
 
+router.get('/get_Certified',
+    validateUtil.validate_token_se_small(),
+    neoFirmUtil.get_Certified(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
+
 router.get('/up_stock_se',
     // validateUtil.validate_token_se_small(),
     neoFirmUtil.up_stock_se(),

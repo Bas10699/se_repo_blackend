@@ -75,6 +75,7 @@ router.post('/add_order',
     (req, res) => {
         res.status(200).json({
             success: true,
+            result: req.result,
             message: "สั่งซื้อสินค้าสำเร็จ"
         })
     }

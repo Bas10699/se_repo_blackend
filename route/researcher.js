@@ -13,4 +13,13 @@ router.get('/get_plant_se',
     }
 )
 
+router.get('/get_demand_trader_all',
+    researcherUtil.get_demand_trader_all(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
+
 module.exports = router

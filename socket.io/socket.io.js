@@ -1,30 +1,28 @@
-module.exports = function(io){
+module.exports = function (io) {
     var express = require('express')
     var router = express.Router()
+    var db = require('../connect/test_connect')
+    var moment = require('moment')
 
 
-    // รอการ connect จาก client
-    io.of('/admin').on('connection', client => {
+    io.of('/api/v1/').on('connection', client => {
         // console.log('user connected')
-      
+        // console.log('conn')
         // เมื่อ Client ตัดการเชื่อมต่อ
         // client.on('disconnect', () => {
         //     console.log('user disconnected')
         // })
-    
+
         // ส่งข้อมูลไปยัง Client ทุกตัวที่เขื่อมต่อแบบ Realtime
         // console.log(client)
-        client.on('sent-message', function (message) {
-            let mes = {
-                mes: message,
-                add: client.handshake.address,
-                time: client.handshake.time
-            }
-            io.of('/admin').emit('new-message', mes)
+        client.on('send-noti', function (message) {
+            io.of('/api/v1/').emit('new-noti', message)
+            console.log('gg', message)
+        })
+        client.on('send-noti-se', function (message) {
+            io.of('/api/v1/').emit('new-noti-se', message)
+            console.log('gg', message)
         })
     })
-    
-
     return router
-
 }

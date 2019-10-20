@@ -10,24 +10,27 @@ exports.get_product = () => {
         // db.query('SELECT * FROM product_information', (err, result) => {
         //     if (err) throw err
         //     else {
-                db.query('SELECT * From plant_stock', (err, result_plant) => {
-                    if (err) throw err
-                    else {
-                        result_plant.map((element) => {
-                            result.push({
-                                product_id: 'P ' + element.plant_id,
-                                product_name: element.plant_name,
-                                image: element.image,
-                                amount_stock: element.amount_stock
-                            })
+        db.query('SELECT * From plant_stock', (err, result_plant) => {
+            if (err) throw err
+            else {
+                result_plant.map((element) => {
+                    if (element.amount_stock !== 0) {
+                        result.push({
+                            product_id: 'P ' + element.plant_id,
+                            product_name: element.plant_name,
+                            image: element.image,
+                            amount_stock: element.amount_stock
                         })
-
-                        req.result = result
-                        next()
                     }
+
                 })
 
-            // }
+                req.result = result
+                next()
+            }
+        })
+
+        // }
         // })
     }
 }
@@ -453,6 +456,8 @@ exports.add_order_trader = () => {
             trader_id: req.user_id,
             date_send: req.body.date_send,
             address_send: req.body.address_send,
+            noti_status: 1,
+            noti_date: dateTime
         }
 
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {
@@ -477,6 +482,7 @@ exports.add_order_trader = () => {
                                     }
                                 })
                             })
+                            req.result = order_id
                             next()
                         })
                     }
@@ -617,28 +623,28 @@ exports.get_proof_of_payment_trader = () => {
     }
 }
 
-exports.add_send_demand = () =>{
-    return(req,res,next) =>{
+exports.add_send_demand = () => {
+    return (req, res, next) => {
         let object = {
             product_name: req.body.product_name,
             nutrient: req.body.nutrient,
             product_status: req.body.product_status,
             trader_id: req.user_id
         }
-        db.query('INSERT INTO product_information SET ?',object,(err)=>{
-            if(err) throw err
-            else{
+        db.query('INSERT INTO product_information SET ?', object, (err) => {
+            if (err) throw err
+            else {
                 next()
             }
         })
     }
 }
 
-exports.get_send_demand = () =>{
-    return(req,res,next) =>{
-        db.query('SELECT * FROM product_information',(err,result)=>{
-            if(err) throw err
-            else{
+exports.get_send_demand = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM product_information', (err, result) => {
+            if (err) throw err
+            else {
                 req.result = result
                 next()
             }

@@ -108,6 +108,17 @@ router.post('/get_plant_volume_all_se',
         })
     }
 )
+router.get('/get_plant_all_se',
+    neutrallyUtil.get_linechart_some_se(),
+
+    function (req, res) {
+        // console.log(res.result)
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
 router.post('/add_order_se',
     neutrallyUtil.add_order_se(),
     (req, res) => {

@@ -29,9 +29,9 @@ exports.get_order_se = () => {
 exports.add_invoice_se = () => {
     return (req, res, next) => {
         console.log(req.body)
-        db.query('INSERT INTO order_se_invoice SET ?',(err)=>{
-            if(err) throw err
-            else{
+        db.query('INSERT INTO order_se_invoice SET ?', (err) => {
+            if (err) throw err
+            else {
                 next()
             }
         })
@@ -58,9 +58,9 @@ exports.get_detail_order_se = () => {
     }
 }
 
-exports.get_linechart_some_se = function() {
-    return function(req, res, next) {
-        db.query(`SELECT userprofile.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((userprofile LEFT JOIN farmer_information ON userprofile.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE userprofile.user_id = ?`, req.user_id, function(err, result) {
+exports.get_linechart_some_se = function () {
+    return function (req, res, next) {
+        db.query(`SELECT userprofile.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((userprofile LEFT JOIN farmer_information ON userprofile.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE userprofile.user_id = ?`, req.user_id, function (err, result) {
             if (err) throw err;
             // let name_se = []
             // let test_result = []
@@ -206,7 +206,7 @@ exports.get_linechart_some_se = function() {
 
                         index = plant_name.findIndex((elem) => elem === ele_pla.plant)
                         if (index < 0) {
-                            if (ele_pla.plant !== null) {
+                            if (ele_pla.plant !== null && ele_pla.plant !== undefined) {
                                 // console.log(ele_pla.plant)
                                 plant_name.push(
                                     ele_pla.plant
@@ -381,38 +381,38 @@ exports.get_farmer_se = () => {
             if (err) throw err
             else {
                 result.map((element) => {
-                        element.plant_type = JSON.parse(element.plant_type)
-                        element.plant_type.map((ele) => {
-                            if (ele.year_value_unit === 'ตัน') {
-                                ele.year_value = ele.year_value * 1000
-                            }
-                            if (ele.plant !== null && ele.plant !== '') {
-                                if (ele.year_value !== null) {
-                                    if (((ele.deliver_value * 1) !== 0) || ((ele.year_value * 1) !== 0)) {
-                                        farmer.push({
-                                            title_name: element.title_name,
-                                            first_name: element.first_name,
-                                            last_name: element.last_name,
-                                            plant: ele.plant,
-                                            year_value: ele.year_value * 1,
-                                            year_value_unit: ele.year_value_unit,
-                                            deliver_value: ele.deliver_value * 1,
-                                            product_value: ele.product_value * 1,
-                                            growingArea: ele.growingarea * 1,
-                                            end_plant: ele.end_plant,
-                                            deliver_frequency_number: ele.deliver_frequency_number
-                                        })
-                                    }
+                    element.plant_type = JSON.parse(element.plant_type)
+                    element.plant_type.map((ele) => {
+                        if (ele.year_value_unit === 'ตัน') {
+                            ele.year_value = ele.year_value * 1000
+                        }
+                        if (ele.plant !== null && ele.plant !== '' && ele.plant !== undefined) {
+                            if (ele.year_value !== null) {
+                                if (((ele.deliver_value * 1) !== 0) || ((ele.year_value * 1) !== 0)) {
+                                    farmer.push({
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                        plant: ele.plant,
+                                        year_value: ele.year_value * 1,
+                                        year_value_unit: ele.year_value_unit,
+                                        deliver_value: ele.deliver_value * 1,
+                                        product_value: ele.product_value * 1,
+                                        growingArea: ele.growingarea * 1,
+                                        end_plant: ele.end_plant,
+                                        deliver_frequency_number: ele.deliver_frequency_number
+                                    })
                                 }
-
-
                             }
 
 
-                        })
+                        }
+
 
                     })
-                    // req.result = result[0]
+
+                })
+                // req.result = result[0]
                 req.result = farmer
                 next()
             }
@@ -470,9 +470,34 @@ exports.up_stock_se = () => {
     }
 }
 
-exports.add_order_farmer = () =>{
-    return (req,res,next)=>{
+exports.add_order_farmer = () => {
+    return (req, res, next) => {
         console.log(req.body)
+    }
+}
+
+exports.get_Certified = () => {
+    return (req, res, next) => {
+        console.log(req.user_id)
+        let data = []
+        db.query('SELECT * from farmer_information INNER JOIN area_information ON farmer_information.farmer_id = area_information.farmer_id WHERE user_id=?', req.user_id, (err, result) => {
+            if (err) throw err
+            else {
+
+
+                result.map((element) => {
+                    data.push({
+                        title_name: element.title_name,
+                        first_name: element.first_name,
+                        last_name: element.last_name,
+                        area_storage: element.area_storage,
+                        chemical_date: element.chemical_date
+                    })
+                })
+                req.result = data
+                next()
+            }
+        })
     }
 }
 
