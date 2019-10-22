@@ -56,6 +56,28 @@ router.post('/add_order_farmer',
     }
 )
 
+router.post('/get_order_farmer',
+    validateUtil.validate_token_se_small(),
+    neoFirmUtil.get_order_farmer(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+router.post('/add_invoice_se',
+    validateUtil.validate_token_se_small(),
+    neoFirmUtil.add_invoice_se(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
 router.get('/get_Certified',
     validateUtil.validate_token_se_small(),
     neoFirmUtil.get_Certified(),

@@ -3,6 +3,29 @@ module.exports = function (io) {
     var router = express.Router()
     var db = require('../connect/test_connect')
     var moment = require('moment')
+    var socketUtil = require('./socket_controller')
+
+
+    router.get('/noti_trader',
+        socketUtil.get_notiOrderTrader(),
+        (req, res) => {
+            res.status(200).json({
+                'success': true,
+                result: req.result
+            })
+        }
+
+    )
+    router.get('/noti_SE_Middle',
+        socketUtil.get_noti_Middle(),
+        (req, res) => {
+            res.status(200).json({
+                'success': true,
+                result: req.result
+            })
+        }
+
+    )
 
 
     io.of('/api/v1/').on('connection', client => {

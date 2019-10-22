@@ -86,7 +86,7 @@ router.get('/get_plant_information',
     }
 )
 
-router.post('/get_plant',
+router.get('/get_plant',
     neutrallyUtil.get_plant(),
     (req, res) => {
 
@@ -141,6 +141,16 @@ router.get('/get_order_se_all',
 
 router.post('/get_order_se',
     neutrallyUtil.get_order_se(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+router.get('/get_plant_name',
+    neutrallyUtil.get_plant_name(),
     (req, res) => {
         res.status(200).json({
             'success': true,

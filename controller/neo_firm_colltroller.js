@@ -28,29 +28,40 @@ exports.get_order_se = () => {
 }
 exports.add_invoice_se = () => {
     return (req, res, next) => {
-        console.log(req.body)
-        db.query('INSERT INTO order_se_invoice SET ?', (err) => {
-            if (err) throw err
-            else {
-                next()
-            }
-        })
+        console.log('add_invoice_se', req.body)
+        
+        // db.query('INSERT INTO order_se_invoice SET ?', (err) => {
+        //     if (err) throw err
+        //     else {
+        //         next()
+        //     }
+        // })
     }
 }
 
 exports.get_detail_order_se = () => {
     return (req, res, next) => {
+        let order = null
         db.query('SELECT * FROM order_se_invoice RIGHT JOIN order_se ON order_se_invoice.order_se_id = order_se.order_se_id WHERE order_se.order_se_id = ?', req.body.order_id, (err, result) => {
             if (err) throw err
             else {
                 if (!result) {
+
                     res.status(200).json({
                         'success': false,
                         'error_message': 'ไม่มีรายการของ ' + name
                     })
                 } else {
-                    req.result = result[0]
-                    next()
+                    db.query('SELECT cost FROM plant_stock WHERE plant_name=?', result[0].plant_name, (err, result_plant) => {
+                        if (err) throw err
+                        order = {
+                            ...result[0],
+                            ...result_plant[0]
+                        }
+                        req.result = order
+                        next()
+                    })
+
                 }
             }
         })
@@ -472,13 +483,46 @@ exports.up_stock_se = () => {
 
 exports.add_order_farmer = () => {
     return (req, res, next) => {
-        console.log(req.body)
+
+        req.body.object.map((element) => {
+            let obj = {
+                order_farmer_id: 'Mr' + req.user_id + moment().utc(7).add('years', 543).format('YYYYMMDD'),
+                order_farmer_title_name: element.title_name,
+                order_farmer_name: element.first_name,
+                order_farmer_lastname: element.last_name,
+                order_farmer_plant: element.plant,
+                order_farmer_plant_volume: element.amount,
+                order_farmer_plant_cost: req.body.cost,
+                order_se_id: req.body.order_se_id,
+                order_farmer_status: 0
+
+            }
+            db.query('INSERT INTO order_farmer SET ?', obj, (err) => {
+                if (err) throw err
+                else {
+                    next()
+                }
+            })
+        })
+
+    }
+}
+
+exports.get_order_farmer = () => {
+    return(req,res,next)=>{
+        db.query('SELECT * FROM order_farmer WHERE order_se_id = ?',req.body.order_se_id,(err,result)=>{
+            if(err) throw err
+            else{
+                req.result = result
+                next()
+            }
+        })
     }
 }
 
 exports.get_Certified = () => {
     return (req, res, next) => {
-        console.log(req.user_id)
+        // console.log(req.user_id)
         let data = []
         db.query('SELECT * from farmer_information INNER JOIN area_information ON farmer_information.farmer_id = area_information.farmer_id WHERE user_id=?', req.user_id, (err, result) => {
             if (err) throw err

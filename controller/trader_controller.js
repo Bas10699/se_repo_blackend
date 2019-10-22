@@ -457,7 +457,7 @@ exports.add_order_trader = () => {
             date_send: req.body.date_send,
             address_send: req.body.address_send,
             noti_status: 1,
-            noti_date: dateTime
+            noti_date: moment().utc(7).add('years', 543).format()
         }
 
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {

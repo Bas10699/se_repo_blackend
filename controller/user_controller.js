@@ -215,7 +215,7 @@ exports.get_user = () => {
 exports.show_user = () => {
     return (req, res, next) => {
         let User_ID = req.body.user_id
-        console.log(User_ID)
+        console.log('User_ID',User_ID)
         let sql = 'SELECT * From useraccount INNER JOIN userprofile ON useraccount.User_ID = userprofile.User_ID WHERE useraccount.User_ID = ?'
         db.query(sql, User_ID, (err, result) => {
             if (err) throw err;
