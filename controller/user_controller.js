@@ -195,7 +195,6 @@ exports.get_user = () => {
 exports.show_user = () => {
     return (req, res, next) => {
         let data = ''
-        console.log('User_ID', User_ID)
         let sql = 'SELECT * From user_information'
         db.query(sql, (err, result) => {
             if (err) throw err;
