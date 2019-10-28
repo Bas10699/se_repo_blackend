@@ -4,7 +4,7 @@ var errorMessages = require('../const/error_message')
 
 exports.get_order_trader = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_trader INNER JOIN userprofile ON order_trader.trader_id = userprofile.user_id', (err, result) => {
+        db.query('SELECT * FROM order_trader INNER JOIN user_information ON order_trader.trader_id = user_information.user_id', (err, result) => {
             if (err) throw err
             else {
 
@@ -27,7 +27,7 @@ exports.get_order_info_trader = () => {
                 res.status(200).json(errorMessages.err_order_info)
             }
             else {
-                db.query('SELECT * FROM userprofile WHERE user_id = ?', result[0].trader_id, (err, result_profile) => {
+                db.query('SELECT * FROM user_information WHERE user_id = ?', result[0].trader_id, (err, result_profile) => {
                     if (err) throw err
                     else {
                         result[0].detail = JSON.parse(result[0].detail)

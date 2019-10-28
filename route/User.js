@@ -75,7 +75,19 @@ router.get('/get_user',
     }
 )
 
-router.post('/show_user',
+router.get('/get_all_user',
+    validateUtil.validate_token_admin(),
+    userUtil.get_all_user(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result : req.result
+        })
+    }
+)
+
+router.get('/show_user',
+    validateUtil.validate_token_user(),
     userUtil.show_user(),
     (req, res) => {
         res.status(200).json({

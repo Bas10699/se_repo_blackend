@@ -4,7 +4,7 @@ var errorMessages = require('../const/error_message')
 
 exports.get_order_se = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM userprofile WHERE user_id = ?', req.user_id, (err, result) => {
+        db.query('SELECT * FROM user_information WHERE user_id = ?', req.user_id, (err, result) => {
             if (err) throw err
             else {
                 db.query('SELECT * FROM order_se WHERE se_name = ?', result[0].name, (err, result) => {
@@ -71,7 +71,7 @@ exports.get_detail_order_se = () => {
 
 exports.get_linechart_some_se = function () {
     return function (req, res, next) {
-        db.query(`SELECT userprofile.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((userprofile LEFT JOIN farmer_information ON userprofile.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE userprofile.user_id = ?`, req.user_id, function (err, result) {
+        db.query(`SELECT user_information.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.user_id = ?`, req.user_id, function (err, result) {
             if (err) throw err;
             // let name_se = []
             // let test_result = []

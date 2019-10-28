@@ -7,7 +7,7 @@ var fs = require('fs')
 
 router.get('/',function(req,res){
     //res.status(200).json('Wellcome to Project')
-    let sql = 'SELECT * From useraccount INNER JOIN userprofile ON useraccount.User_ID = userprofile.User_ID'
+    let sql = 'SELECT * From user_information '
     db.query(sql, (err,result)=> {
         res.send({success: true,
             result: result})
@@ -15,7 +15,7 @@ router.get('/',function(req,res){
 })
 
 router.get('/show_user',(req,res)=>{
-
+        let data = ''
         if (!Boolean(req.headers["authorization"])) {
             res.status(200).json({
               success: false,
@@ -33,12 +33,16 @@ router.get('/show_user',(req,res)=>{
                 } else {
                     //console.log(decode.Username)
                     let User_ID = decode.id
-                    let sql = 'SELECT * From useraccount INNER JOIN userprofile ON useraccount.User_ID = userprofile.User_ID WHERE useraccount.User_ID = ?'
+                    let sql = 'SELECT * From user_information WHERE user_id = ?'
                     db.query(sql,User_ID, (err,result)=> {
                       if(err) throw err;
+                      data = {
+                        ...result[0],
+                        user_type: result[0].type_user
+                     }
                     res.status(200).json({
                         success: true,
-                        result : result[0]
+                        result : data
                       })
                     })
                 }
