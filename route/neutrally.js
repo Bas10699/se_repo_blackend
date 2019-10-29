@@ -149,6 +149,18 @@ router.post('/get_order_se',
     }
 )
 
+router.post('/add_order_se_payment',
+    validateUtil.validate_token_se(),
+    neutrallyUtil.add_order_se_payment(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: 'ส่งหลักฐานการชำระเงินสำเร็จ'
+            // result: req.result
+        })
+    }
+)
+
 router.get('/get_plant_name',
     neutrallyUtil.get_plant_name(),
     (req, res) => {

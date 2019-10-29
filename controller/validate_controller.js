@@ -4,11 +4,12 @@ var constance = require('../const/constance')
 
 exports.validate_user_register = () => {
   return (req, res, next) => {
+    console.log(req.body)
     if (req.body.username &&
       req.body.password &&
       req.body.type_user &&
       req.body.name &&
-      req.body.lastname &&
+      req.body.last_name &&
       req.body.address &&
       req.body.phone) {
       next();
@@ -47,7 +48,7 @@ exports.validate_user_update_data = () => {
   return (req, res, next) => {
     if (req.body.username &&
       req.body.name &&
-      req.body.lastname &&
+      req.body.last_name &&
       req.body.address &&
       req.body.phone) {
       next()

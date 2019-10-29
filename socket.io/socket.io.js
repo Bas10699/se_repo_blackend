@@ -4,6 +4,7 @@ module.exports = function (io) {
     var db = require('../connect/test_connect')
     var moment = require('moment')
     var socketUtil = require('./socket_controller')
+    var version = '/api/v1/'
 
 
     router.get('/noti_trader',
@@ -28,7 +29,7 @@ module.exports = function (io) {
     )
 
 
-    io.of('/api/v1/').on('connection', client => {
+    io.of(version).on('connection', client => {
         // console.log('user connected')
         // console.log('conn')
         // เมื่อ Client ตัดการเชื่อมต่อ
@@ -39,11 +40,11 @@ module.exports = function (io) {
         // ส่งข้อมูลไปยัง Client ทุกตัวที่เขื่อมต่อแบบ Realtime
         // console.log(client)
         client.on('send-noti', function (message) {
-            io.of('/api/v1/').emit('new-noti', message)
+            io.of(version).emit('new-noti', message)
             console.log('gg', message)
         })
         client.on('send-noti-se', function (message) {
-            io.of('/api/v1/').emit('new-noti-se', message)
+            io.of(version).emit('new-noti-se', message)
             console.log('gg', message)
         })
     })

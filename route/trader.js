@@ -92,6 +92,17 @@ router.post('/update_status_order_trader',
     }
 )
 
+router.post('/finish_trader_order',
+    validateUtil.validate_token_trader(),
+    productUtil.finish_trader_order(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            message: "อัปเดตสถานะสินค้าสำเร็จ"
+        })
+    }
+)
+
 router.get('/get_order',
     validateUtil.validate_token_trader(),
     productUtil.get_order_trader(),

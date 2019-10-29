@@ -1244,7 +1244,8 @@ exports.add_order_se = () => {
                             se_name: element.name,
                             amount: parseInt(element.amount),
                             order_trader_id: req.body.order_trader_id,
-                            order_se_date: moment().utc(7).add('years', 543).format()
+                            order_se_date: moment().utc(7).add('years', 543).format(),
+                            order_se_status: 0
                         }
                         console.log(obj)
                         db.query('INSERT INTO order_se SET ?', obj, (err, result) => {
@@ -1282,11 +1283,54 @@ exports.get_order_se_all = () => {
 exports.get_order_se = () => {
     return (req, res, next) => {
         console.log(req.body)
-        db.query('SELECT * FROM order_se LEFT JOIN order_se_invoice ON order_se.order_se_id = order_se_invoice.order_se_id WHERE order_se.order_se_id=?', req.body.order_id, (err, result) => {
+        db.query('SELECT * FROM order_se_payment RIGHT JOIN order_se_invoice ON  order_se_payment.order_se_id=order_se_invoice.order_se_id RIGHT JOIN order_se ON order_se_invoice.order_se_id = order_se.order_se_id WHERE order_se.order_se_id = ?', req.body.order_id, (err, result) => {
+        // db.query('SELECT * FROM order_se LEFT JOIN order_se_payment ON order_se_payment.order_se_id=order_se.order_se_id LEFT JOIN order_se_invoice ON order_se.order_se_id = order_se_invoice.order_se_id WHERE order_se.order_se_id=?', req.body.order_id, (err, result) => {
             if (err) throw err
             else {
+                try {
+                    result[0].order_se_invoice_detail = JSON.parse(result[0].order_se_invoice_detail)
+                }
+                catch (error) {
+                    console.log(error)
+                }
                 req.result = result[0]
                 next()
+            }
+        })
+    }
+}
+
+exports.add_order_se_payment = () => {
+    return (req, res, next) => {
+        // console.log(req.body)
+        let object = {
+            order_se_Payment_id: 'PAY' + req.user_id + moment().utc(7).add('years', 543).format('YYYYMMDDHHMM'),
+            order_se_Payment_date: req.body.order_se_Payment_date,
+            order_se_Payment_time: req.body.order_se_Payment_time,
+            order_se_id: req.body.order_se_id,
+        }
+        db.query('INSERT INTO order_se_payment SET ?', object, (err) => {
+            if (err) throw err
+            else {
+                if (req.body.image_proof) {
+                    let image_proof = req.body.image_proof.slice(req.body.image_proof.indexOf(',') + 1)
+                    require("fs").writeFile("./image/payment/payment_" + object.order_se_Payment_id + '.png', image_proof, 'base64', function (err) {
+                        if (err) throw err;
+                        // console.log('1')
+                        db.query(`UPDATE order_se_payment SET order_se_payment_image= 'trader/image/payment/payment_${object.order_se_Payment_id}.png'  WHERE order_se_id= '${req.body.order_se_id}'`, function (err, result) {
+                            if (err) throw err;
+                            else {
+                                db.query('UPDATE order_se SET order_se_status=2 WHERE order_se_id=?', req.body.order_se_id, (err) => {
+                                    if (err) throw err
+                                    else {
+                                        next()
+                                    }
+                                })
+                            }
+                        });
+                    });
+                }
+                
             }
         })
     }

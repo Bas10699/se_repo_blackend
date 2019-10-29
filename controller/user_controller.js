@@ -13,7 +13,7 @@ exports.User_Register = () => {
             password: encrytp.encrytp(req.body.password),
             type_user: req.body.type_user,
             name: req.body.name,
-            last_name: req.body.lastname,
+            last_name: req.body.last_name,
             address: req.body.address,
             phone: req.body.phone,
             user_informationcol: '-',
@@ -133,7 +133,7 @@ exports.user_update_data = () => {
         let data_update = {
             username: req.body.username,
             name: req.body.name,
-            last_name: req.body.lastname,
+            last_name: req.body.last_name,
             address: req.body.address,
             phone: req.body.phone,
             bank_information: req.body.bank_information
@@ -195,8 +195,8 @@ exports.get_user = () => {
 exports.show_user = () => {
     return (req, res, next) => {
         let data = ''
-        let sql = 'SELECT * From user_information'
-        db.query(sql, (err, result) => {
+        let sql = 'SELECT * From user_information WHERE user_id=?'
+        db.query(sql,req.user_id, (err, result) => {
             if (err) throw err;
 
             else {

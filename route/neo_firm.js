@@ -78,6 +78,17 @@ router.post('/add_invoice_se',
     }
 )
 
+router.post('/update_order_se_status',
+    validateUtil.validate_token_se_small(),
+    neoFirmUtil.update_order_se_status(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: "ออกใบเสร็จสำเร็จ"
+        })
+    }
+)
+
 router.get('/get_Certified',
     validateUtil.validate_token_se_small(),
     neoFirmUtil.get_Certified(),

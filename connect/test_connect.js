@@ -6,6 +6,12 @@ var con = mysql.createConnection({
     password: '12345678',
     database: 'ofse'
 });
+// var con = mysql.createConnection({
+//     host: 'localhost',
+//     user: 'root',
+//     password: '',
+//     database: 'abc_shop'
+// });
 
 con.connect(function (err) {
     if (err) throw err;

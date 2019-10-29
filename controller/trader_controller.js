@@ -7,9 +7,6 @@ var errorMessages = require('../const/error_message')
 exports.get_product = () => {
     return (req, res, next) => {
         let result = []
-        // db.query('SELECT * FROM product_information', (err, result) => {
-        //     if (err) throw err
-        //     else {
         db.query('SELECT * From plant_stock', (err, result_plant) => {
             if (err) throw err
             else {
@@ -30,14 +27,12 @@ exports.get_product = () => {
             }
         })
 
-        // }
-        // })
     }
 }
 
 exports.get_product_information = () => {
     return (req, res, next) => {
-        console.log(req.body.product_id)
+        console.log('product_id', req.body.product_id)
         let product_id = req.body.product_id.split(" ");
         let cmd = product_id[0];
         if (cmd === 'P') {
@@ -58,22 +53,29 @@ exports.get_product_information = () => {
                             if (err) throw err
                             let result_plant = []
                             let result = []
+
                             result_plant_type.map((element) => {
-                                element.plant_type = JSON.parse(element.plant_type)
-                                if (element.plant_type != null) {
-                                    element.plant_type.map((element) => {
-                                        end_plant = element.end_plant
-                                        volume = (element.deliver_value) * 1
-                                        plant = element.plant
-                                        result_plant.push({
-                                            name: plant,
-                                            end_plant: end_plant,
-                                            volume: volume,
+                                try {
+                                    element.plant_type = JSON.parse(element.plant_type)
+                                    if (element.plant_type != null) {
+                                        element.plant_type.map((element) => {
+                                            end_plant = element.end_plant
+                                            volume = (element.deliver_value) * 1
+                                            plant = element.plant
+                                            result_plant.push({
+                                                name: plant,
+                                                end_plant: end_plant,
+                                                volume: volume,
+                                            })
                                         })
-                                    })
+                                    }
+                                }
+                                catch (error) {
+                                    console.log(error)
                                 }
 
                             })
+
                             let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
                             let result_freq = []
                             let plant_data = []
@@ -457,7 +459,9 @@ exports.add_order_trader = () => {
             date_send: req.body.date_send,
             address_send: req.body.address_send,
             noti_status: 1,
-            noti_date: moment().utc(7).add('years', 543).format()
+            noti_date: moment().utc(7).add('years', 543).format(),
+            order_se_status: 0,
+            noti_status_trader: 0
         }
 
         db.query('INSERT INTO order_trader SET ?', add_order, (err, result) => {
@@ -519,7 +523,7 @@ exports.get_order_info_trader = () => {
                 res.status(200).json(errorMessages.err_order_info)
             }
             else {
-                db.query('SELECT * FROM userprofile WHERE user_id = ?', req.user_id, (err, result_profile) => {
+                db.query('SELECT * FROM user_information WHERE user_id = ?', req.user_id, (err, result_profile) => {
                     if (err) throw err
                     else {
                         result[0].detail = JSON.parse(result[0].detail)
@@ -613,7 +617,7 @@ exports.add_proof_of_payment_trader = () => {
 }
 exports.get_proof_of_payment_trader = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM ProofOfPayment WHERE order_id=?', req.body.order_id, (err, result) => {
+        db.query('SELECT * FROM proofofpayment WHERE order_id=?', req.body.order_id, (err, result) => {
             if (err) throw err
             else {
                 req.result = result[0]
@@ -648,6 +652,25 @@ exports.get_send_demand = () => {
                 req.result = result
                 next()
             }
+        })
+    }
+}
+
+exports.finish_trader_order = () => {
+    return (req, res, next) => {
+        let order_id = req.body.order_id
+        let order_status = {
+            order_status: req.body.order_status,
+            date_end: moment().utc(7).add('years', 543).format(),
+        }
+        db.query('UPDATE order_trader SET ? WHERE order_id = ?', [order_status, order_id], (err) => {
+            if (err) throw err
+            db.query('UPDATE order_se SET order_se_status=? WHERE order_trader_id = ?', [req.body.order_status, req.body.order_id], (err) => {
+                if (err) throw err
+                else {
+                    next()
+                }
+            })
         })
     }
 }

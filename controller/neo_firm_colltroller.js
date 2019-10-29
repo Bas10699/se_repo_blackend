@@ -29,20 +29,34 @@ exports.get_order_se = () => {
 exports.add_invoice_se = () => {
     return (req, res, next) => {
         console.log('add_invoice_se', req.body)
-        
-        // db.query('INSERT INTO order_se_invoice SET ?', (err) => {
-        //     if (err) throw err
-        //     else {
-        //         next()
-        //     }
-        // })
+        let object = {
+            order_se_invoice_id: 'INV' + req.user_id + moment().utc(7).add('years', 543).format('YYYYMMDDHHMM'),
+            order_se_id: req.body.order_se_id,
+            order_se_invoice_date: req.body.order_se_invoice_date,
+            order_se_invoice_date_send: req.body.order_se_invoice_date_send,
+            order_se_invoice_detail: req.body.order_se_invoice_detail
+        }
+
+        db.query('INSERT INTO order_se_invoice SET ?', object, (err, result) => {
+            if (err) throw err
+            else {
+                db.query('UPDATE order_se SET order_se_status=1 WHERE order_se_id=?', req.body.order_se_id, (err, result) => {
+                    if (err) throw err
+                    else {
+                        next()
+                    }
+                })
+
+            }
+        })
     }
 }
 
 exports.get_detail_order_se = () => {
     return (req, res, next) => {
         let order = null
-        db.query('SELECT * FROM order_se_invoice RIGHT JOIN order_se ON order_se_invoice.order_se_id = order_se.order_se_id WHERE order_se.order_se_id = ?', req.body.order_id, (err, result) => {
+        db.query('SELECT * FROM order_se_payment RIGHT JOIN order_se_invoice ON  order_se_payment.order_se_id=order_se_invoice.order_se_id RIGHT JOIN order_se ON order_se_invoice.order_se_id = order_se.order_se_id WHERE order_se.order_se_id = ?', req.body.order_id, (err, result) => {
+            // db.query('SELECT * FROM order_se LEFT JOIN order_se_payment ON order_se_payment.order_se_id=order_se.order_se_id LEFT JOIN order_se_invoice ON order_se.order_se_id = order_se_invoice.order_se_id WHERE order_se.order_se_id=?', req.body.order_id, (err, result) => {
             if (err) throw err
             else {
                 if (!result) {
@@ -483,10 +497,10 @@ exports.up_stock_se = () => {
 
 exports.add_order_farmer = () => {
     return (req, res, next) => {
-
+        console.log(req.body)
         req.body.object.map((element) => {
             let obj = {
-                order_farmer_id: 'Mr' + req.user_id + moment().utc(7).add('years', 543).format('YYYYMMDD'),
+                order_farmer_id: 'Mr' + req.user_id + moment().utc(7).add('years', 543).format('YYYYMMDDHHMM'),
                 order_farmer_title_name: element.title_name,
                 order_farmer_name: element.first_name,
                 order_farmer_lastname: element.last_name,
@@ -494,25 +508,44 @@ exports.add_order_farmer = () => {
                 order_farmer_plant_volume: element.amount,
                 order_farmer_plant_cost: req.body.cost,
                 order_se_id: req.body.order_se_id,
-                order_farmer_status: 0
+                order_farmer_status: 1
 
             }
             db.query('INSERT INTO order_farmer SET ?', obj, (err) => {
                 if (err) throw err
                 else {
-                    next()
-                }
+        db.query('UPDATE order_se SET order_farmer_status=1 WHERE order_se_id=?', req.body.order_se_id, (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+
+    }
             })
         })
 
     }
 }
 
+exports.update_order_se_status = () => {
+    return (req, res, next) => {
+        console.log(req.body)
+        db.query('UPDATE order_se SET order_se_status=? WHERE order_se_id = ?', [req.body.status, req.body.order_se_id], (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+
+    }
+}
+
 exports.get_order_farmer = () => {
-    return(req,res,next)=>{
-        db.query('SELECT * FROM order_farmer WHERE order_se_id = ?',req.body.order_se_id,(err,result)=>{
-            if(err) throw err
-            else{
+    return (req, res, next) => {
+        db.query('SELECT * FROM order_farmer WHERE order_se_id = ?', req.body.order_se_id, (err, result) => {
+            if (err) throw err
+            else {
                 req.result = result
                 next()
             }
@@ -544,5 +577,7 @@ exports.get_Certified = () => {
         })
     }
 }
+
+// exports.get_invoice_order_se = ()
 
 //$2a$10$bq/BRgH.XI8b/SSJrK4he.f8YL7RNohKz8F4g9cNXjhr0FLafrmjK
