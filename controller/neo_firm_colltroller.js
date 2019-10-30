@@ -7,7 +7,7 @@ exports.get_order_se = () => {
         db.query('SELECT * FROM user_information WHERE user_id = ?', req.user_id, (err, result) => {
             if (err) throw err
             else {
-                db.query('SELECT * FROM order_se WHERE se_name = ?', result[0].name, (err, result) => {
+                db.query('SELECT * FROM order_se WHERE se_name = ? ORDER BY id DESC ', result[0].name, (err, result) => {
                     if (err) throw err
                     else {
                         if (!result) {

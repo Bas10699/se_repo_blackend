@@ -4,7 +4,7 @@ var errorMessages = require('../const/error_message')
 
 exports.get_order_trader = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_trader INNER JOIN user_information ON order_trader.trader_id = user_information.user_id', (err, result) => {
+        db.query('SELECT * FROM order_trader INNER JOIN user_information ON order_trader.trader_id = user_information.user_id ORDER BY number DESC', (err, result) => {
             if (err) throw err
             else {
 
@@ -1270,7 +1270,7 @@ exports.add_order_se = () => {
 
 exports.get_order_se_all = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_se', (err, result) => {
+        db.query('SELECT * FROM order_se ORDER BY id DESC', (err, result) => {
             if (err) throw err
             else {
                 req.result = result
