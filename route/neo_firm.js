@@ -112,7 +112,7 @@ router.get('/get_planing_farmer',
     })
 
 router.post('/add_planing_farmer',
-    validateUtil.validate_token_se_small(),
+    validateUtil.validate_token_user(),
     neoFirmUtil.add_planing_farmer(),
     (req, res) => {
         res.status(200).json({

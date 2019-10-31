@@ -514,14 +514,14 @@ exports.add_order_farmer = () => {
             db.query('INSERT INTO order_farmer SET ?', obj, (err) => {
                 if (err) throw err
                 else {
-        db.query('UPDATE order_se SET order_farmer_status=1 WHERE order_se_id=?', req.body.order_se_id, (err) => {
-            if (err) throw err
-            else {
-                next()
-            }
-        })
+                    db.query('UPDATE order_se SET order_farmer_status=1 WHERE order_se_id=?', req.body.order_se_id, (err) => {
+                        if (err) throw err
+                        else {
+                            next()
+                        }
+                    })
 
-    }
+                }
             })
         })
 
@@ -578,11 +578,11 @@ exports.get_Certified = () => {
     }
 }
 
-exports.get_year_round_se = () =>{
-    return(req,res,next)=>{
-        db.query('SELECT * FROM year_round_planing WHERE se_id=? ORDER BY plan_id DESC',req.user_id,(err,result)=>{
-            if(err) throw err
-            else{
+exports.get_year_round_se = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM year_round_planing WHERE se_id=? ORDER BY plan_id DESC', req.user_id, (err, result) => {
+            if (err) throw err
+            else {
                 req.result = result
                 next()
             }
@@ -590,11 +590,11 @@ exports.get_year_round_se = () =>{
     }
 }
 
-exports.get_planing_farmer = () =>{
-    return(req,res,next)=>{
-        db.query('SELECT * FROM year_round_planing_farmer WHERE neo_firm_id=? ORDER BY planing_farmer_id DESC',req.user_id,(err,result)=>{
-            if(err) throw err
-            else{
+exports.get_planing_farmer = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM year_round_planing_farmer WHERE neo_firm_id=? ORDER BY planing_farmer_id DESC', req.user_id, (err, result) => {
+            if (err) throw err
+            else {
                 req.result = result
                 next()
             }
@@ -602,17 +602,27 @@ exports.get_planing_farmer = () =>{
     }
 }
 
-exports.add_planing_farmer = () =>{
-    return(req,res,next)=>{
-        console.log(req.body)
-        // db.query('INSERT INTO year_round_planing_farmer SET ?',(err)=>{
-        //     if(err) throw err
-        //     else{
-        //         next()
-        //     }
-        // })
+exports.add_planing_farmer = () => {
+    return (req, res, next) => {
+        // console.log(req.body)
+        req.body.check_array.map((element) => {
+            let obj = {
+                neo_firm_id : req.user_id,
+                planing_farmer_name : element.check,
+                planing_farmer_status : 0,
+                planing_farmer_volume : element.amount,
+                planing_farmer_plant : req.body.name_plant,
+                planing_farmer_date: req.body.date
+            }
+            db.query('INSERT INTO year_round_planing_farmer SET ?', obj, (err) => {
+                if (err) throw err
+            })
+        })
+        next()
+
     }
 }
+
 
 // exports.get_invoice_order_se = ()
 
