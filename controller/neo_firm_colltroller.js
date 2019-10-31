@@ -578,6 +578,42 @@ exports.get_Certified = () => {
     }
 }
 
+exports.get_year_round_se = () =>{
+    return(req,res,next)=>{
+        db.query('SELECT * FROM year_round_planing WHERE se_id=? ORDER BY plan_id DESC',req.user_id,(err,result)=>{
+            if(err) throw err
+            else{
+                req.result = result
+                next()
+            }
+        })
+    }
+}
+
+exports.get_planing_farmer = () =>{
+    return(req,res,next)=>{
+        db.query('SELECT * FROM year_round_planing_farmer WHERE neo_firm_id=? ORDER BY planing_farmer_id DESC',req.user_id,(err,result)=>{
+            if(err) throw err
+            else{
+                req.result = result
+                next()
+            }
+        })
+    }
+}
+
+exports.add_planing_farmer = () =>{
+    return(req,res,next)=>{
+        console.log(req.body)
+        // db.query('INSERT INTO year_round_planing_farmer SET ?',(err)=>{
+        //     if(err) throw err
+        //     else{
+        //         next()
+        //     }
+        // })
+    }
+}
+
 // exports.get_invoice_order_se = ()
 
 //$2a$10$bq/BRgH.XI8b/SSJrK4he.f8YL7RNohKz8F4g9cNXjhr0FLafrmjK

@@ -1596,3 +1596,29 @@ exports.get_plant = function () {
         })
     }
 }
+
+exports.add_year_round = function () {
+    return function (req, res, next) {
+        // db.query(`SELECT * FROM user_information where name ='${req.body.name}'`, function (err, result) {
+        //     if (err) throw err;
+        //     console.log(result)
+        db.query(`INSERT INTO  year_round_planing (plan_id,plant,volume,volume_type,se_name) VALUES(null,'${req.body.plant}','${req.body.volume}','${req.body.volume_type}', '${req.body.name}')`, function (err, resultUser) {
+            if (err) throw err;
+            // req.result = result
+            next();
+            // })
+        })
+    }
+}
+
+exports.get_year_round = () =>{
+    return (req,res,next)=>{
+        db.query('SELECT * FROM year_round_planing ORDER BY plan_id DESC',(err,result)=>{
+            if(err) throw err
+            else{
+                req.result = result
+                next()
+            }
+        })
+    }
+}
