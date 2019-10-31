@@ -911,7 +911,7 @@ exports.get_plant = function () {
 
 exports.get_plant_volume_all_se = function () {
     return function (req, res, next) {
-
+        console.log(req.body)
         let plant_info = {
             plant: req.body.name_plant
         }
@@ -976,7 +976,7 @@ exports.get_plant_volume_all_se = function () {
 
 
                 })
-                console.log(plant_value_total);
+                // console.log(plant_value_total);
 
 
                 if (plant_value_total > 0) {
@@ -1284,7 +1284,7 @@ exports.get_order_se = () => {
     return (req, res, next) => {
         console.log(req.body)
         db.query('SELECT * FROM order_se_payment RIGHT JOIN order_se_invoice ON  order_se_payment.order_se_id=order_se_invoice.order_se_id RIGHT JOIN order_se ON order_se_invoice.order_se_id = order_se.order_se_id WHERE order_se.order_se_id = ?', req.body.order_id, (err, result) => {
-        // db.query('SELECT * FROM order_se LEFT JOIN order_se_payment ON order_se_payment.order_se_id=order_se.order_se_id LEFT JOIN order_se_invoice ON order_se.order_se_id = order_se_invoice.order_se_id WHERE order_se.order_se_id=?', req.body.order_id, (err, result) => {
+            // db.query('SELECT * FROM order_se LEFT JOIN order_se_payment ON order_se_payment.order_se_id=order_se.order_se_id LEFT JOIN order_se_invoice ON order_se.order_se_id = order_se_invoice.order_se_id WHERE order_se.order_se_id=?', req.body.order_id, (err, result) => {
             if (err) throw err
             else {
                 try {
@@ -1330,7 +1330,7 @@ exports.add_order_se_payment = () => {
                         });
                     });
                 }
-                
+
             }
         })
     }
@@ -1341,12 +1341,13 @@ exports.add_year_round = function () {
         // db.query(`SELECT * FROM user_information where name ='${req.body.name}'`, function (err, result) {
         //     if (err) throw err;
         //     console.log(result)
-        db.query(`INSERT INTO  year_round_planing (plan_id,plant,volume,volume_type,se_name) VALUES(null,'${req.body.plant}','${req.body.volume}','${req.body.volume_type}', '${req.body.name}')`, function (err, resultUser) {
-            if (err) throw err;
-            // req.result = result
-            next();
-            // })
-        })
+        console.log(req.body)
+        // db.query(`INSERT INTO  year_round_planing (plan_id,plant,volume,volume_type,se_name) VALUES(null,'${req.body.plant}','${req.body.volume}','${req.body.volume_type}', '${req.body.name}')`, function (err, resultUser) {
+        //     if (err) throw err;
+        //     // req.result = result
+        //     next();
+        //     // })
+        // })
     }
 }
 
@@ -1602,23 +1603,47 @@ exports.add_year_round = function () {
         // db.query(`SELECT * FROM user_information where name ='${req.body.name}'`, function (err, result) {
         //     if (err) throw err;
         //     console.log(result)
-        db.query(`INSERT INTO  year_round_planing (plan_id,plant,volume,volume_type,se_name) VALUES(null,'${req.body.plant}','${req.body.volume}','${req.body.volume_type}', '${req.body.name}')`, function (err, resultUser) {
-            if (err) throw err;
-            // req.result = result
-            next();
-            // })
+        console.log(req.body)
+        req.body.check_array.map((element) => {
+            let obj = {
+                plant: req.body.plant,
+                volume: element.amount,
+                se_name: element.check,
+                status_reading: 0
+
+            }
+            db.query(`INSERT INTO  year_round_planing SET ?`, obj, function (err, resultUser) {
+                if (err) throw err;
+                // req.result = result
+
+                // })
+            })
         })
+        next();
     }
 }
 
-exports.get_year_round = () =>{
-    return (req,res,next)=>{
-        db.query('SELECT * FROM year_round_planing ORDER BY plan_id DESC',(err,result)=>{
-            if(err) throw err
-            else{
+exports.get_year_round = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM year_round_planing ORDER BY plan_id DESC', (err, result) => {
+            if (err) throw err
+            else {
                 req.result = result
                 next()
             }
         })
+    }
+}
+
+exports.get_count_se_all = () => {
+    return (req, res, next) => {
+        db.query('SELECT farmer_information.farmer_id as farmer_id ,user_information.name as se_name , COUNT(farmer_id) AS count_farmer FROM farmer_information LEFT JOIN user_information on user_information.user_id = farmer_information.user_id WHERE user_information.type_user = 3 GROUP BY user_information.user_id', (err, result) => {
+            if (err) throw err
+            else {
+                req.result = result
+                next()
+            }
+        })
+
     }
 }

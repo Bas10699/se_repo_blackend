@@ -171,6 +171,35 @@ router.get('/get_plant_name',
     }
 )
 
+router.post('/add_year_round',
+    neutrallyUtil.add_year_round(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: 'วางแผนการเพาะปลูกสำเร็จ'
+        })
+    }
+)
+router.get('/get_year_round',
+    neutrallyUtil.get_year_round(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+router.get('/get_count_se_all',
+    neutrallyUtil.get_count_se_all(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
 router.get('/gg',
     neutrallyUtil.add_stock_order(),
     (req, res) => {

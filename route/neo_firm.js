@@ -122,6 +122,17 @@ router.post('/add_planing_farmer',
     }
 )
 
+router.get('/get_count_farmer',
+    validateUtil.validate_token_se_small(),
+    neoFirmUtil.get_count_farmer(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
 router.get('/up_stock_se',
     // validateUtil.validate_token_se_small(),
     neoFirmUtil.up_stock_se(),

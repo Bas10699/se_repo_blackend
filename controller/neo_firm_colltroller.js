@@ -623,6 +623,18 @@ exports.add_planing_farmer = () => {
     }
 }
 
+exports.get_count_farmer = () =>{
+    return(req,res,next)=>{
+        db.query('SELECT COUNT(*) as sum_farmer FROM farmer_information LEFT JOIN user_information ON farmer_information.user_id = user_information.user_id WHERE farmer_information.user_id=?',req.user_id,(err,result)=>{
+            if(err) throw err
+            else{
+                req.result = result
+                next()
+            }
+        })
+    }
+}
+
 
 // exports.get_invoice_order_se = ()
 
