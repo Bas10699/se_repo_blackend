@@ -16,7 +16,8 @@ exports.get_product = () => {
                             product_id: 'P ' + element.plant_id,
                             product_name: element.plant_name,
                             image: element.image,
-                            amount_stock: element.amount_stock
+                            amount_stock: element.amount_stock,
+                            price : JSON.parse(element.price)
                         })
                     }
 

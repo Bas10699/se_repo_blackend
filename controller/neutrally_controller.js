@@ -988,6 +988,13 @@ exports.get_plant_volume_all_se = function () {
                         }
                     )
                 }
+                else {
+                    se_result_obj.push({
+                        se_name: element,
+                        plant: plant_info.plant,
+                        data: 0
+                    })
+                }
 
                 // console.log(plant_obj)
             })
@@ -1609,6 +1616,7 @@ exports.add_year_round = function () {
                 plant: req.body.plant,
                 volume: element.amount,
                 se_name: element.check,
+                year_round_planing_date: req.body.date,
                 status_reading: 0
 
             }
@@ -1628,7 +1636,48 @@ exports.get_year_round = () => {
         db.query('SELECT * FROM year_round_planing ORDER BY plan_id DESC', (err, result) => {
             if (err) throw err
             else {
-                req.result = result
+                let plant = []
+                let date = []
+                let result_send = []
+                result.map((element) => {
+                    let index = plant.findIndex((el) => el === element.plant)
+                    if (index < 0) {
+                        plant.push(element.plant)
+                    }
+                    // let index_date = date.findIndex((el) => el === element.year_round_planing_date)
+                    // if (index_date < 0) {
+                    //     date.push(element.year_round_planing_date)
+                    // }
+                })
+
+                let plant_result = null
+                let date_result = null
+                let volume = 0
+                plant.map((plant_name) => {
+                    let detail = []
+                    result.map((ele) => {
+                        // date.map((date_send) => {
+
+                        if (plant_name === ele.plant) {
+                            volume += ele.volume * 1
+                            plant_result = ele.plant
+                            date_result = ele.year_round_planing_date
+                            detail.push({
+                                se_name: ele.se_name,
+                                volume: ele.volume * 1
+                            })
+                        }
+                    })
+                    result_send.push({
+                        plant: plant_result,
+                        volume: volume,
+                        year_round_planing_date: date_result,
+                        detail: detail
+
+                    })
+                })
+                // })
+                req.result = result_send
                 next()
             }
         })
