@@ -1652,8 +1652,9 @@ exports.get_year_round = () => {
 
                 let plant_result = null
                 let date_result = null
-                let volume = 0
+                
                 plant.map((plant_name) => {
+                    let volume = 0
                     let detail = []
                     result.map((ele) => {
                         // date.map((date_send) => {
