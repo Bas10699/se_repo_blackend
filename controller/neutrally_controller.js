@@ -1696,3 +1696,152 @@ exports.get_count_se_all = () => {
 
     }
 }
+
+// exports.get_farmer_se_all = () => {
+//     return (req, res, next) => {
+//         let farmer = []
+//         let plant = []
+
+//         db.query('SELECT user_id,name from user_information WHERE type_user="3"', (err, result_id) => {
+//             if (err) throw err
+//             else {
+//                 var se_farmer = []
+//                 result_id.map((element_id) => {
+//                     // console.log(element_id)
+//                     db.query('SELECT * from farmer_information INNER JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id WHERE user_id=?', element_id.user_id, (err, result) => {
+//                         if (err) throw err
+//                         else {
+//                             result.map((element) => {
+//                                 element.plant_type = JSON.parse(element.plant_type)
+//                                 element.plant_type.map((ele) => {
+//                                     if (ele.year_value_unit === 'ตัน') {
+//                                         ele.year_value = ele.year_value * 1000
+//                                     }
+//                                     if (ele.plant !== null && ele.plant !== '' && ele.plant !== undefined) {
+//                                         if (ele.year_value !== null) {
+//                                             if (((ele.deliver_value * 1) !== 0) || ((ele.year_value * 1) !== 0)) {
+//                                                 farmer.push({
+//                                                     title_name: element.title_name,
+//                                                     first_name: element.first_name,
+//                                                     last_name: element.last_name,
+//                                                     plant: ele.plant,
+//                                                     year_value: ele.year_value * 1,
+//                                                     year_value_unit: ele.year_value_unit,
+//                                                     deliver_value: ele.deliver_value * 1,
+//                                                     product_value: ele.product_value * 1,
+//                                                     growingArea: ele.growingarea * 1,
+//                                                     end_plant: ele.end_plant,
+//                                                     deliver_frequency_number: ele.deliver_frequency_number
+//                                                 })
+//                                             }
+//                                         }
+
+
+//                                     }
+
+
+//                                 })
+
+//                             })
+//                             // req.result = result[0]
+
+//                         }
+//                         se_farmer.push({
+//                             name: element_id.name,
+//                             se: farmer
+//                         })
+//                     })
+
+//                 })
+//                 req.result = se_farmer
+//                 next()
+//             }
+
+//         })
+
+//     }
+// }
+
+exports.get_name_se_all = () => {
+    return (req, res, next) => {
+        db.query('SELECT user_id,name from user_information WHERE type_user="3"', (err, result_id) => {
+            if (err) throw err
+            else {
+                req.result = result_id
+                next()
+            }
+        })
+    }
+}
+
+exports.get_farmer_se_all = () => {
+    return (req, res, next) => {
+        let farmer = []
+        let plant = []
+        // console.log(req.body)
+        db.query('SELECT * from farmer_information INNER JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id WHERE user_id=?', req.body.user_id, (err, result) => {
+            if (err) throw err
+            else {
+                result.map((element) => {
+                    element.plant_type = JSON.parse(element.plant_type)
+                    element.plant_type.map((ele) => {
+                        if (ele.year_value_unit === 'ตัน') {
+                            ele.year_value = ele.year_value * 1000
+                        }
+                        if (ele.plant !== null && ele.plant !== '' && ele.plant !== undefined) {
+                            if (ele.year_value !== null) {
+                                if (((ele.deliver_value * 1) !== 0) || ((ele.year_value * 1) !== 0)) {
+                                    farmer.push({
+                                        title_name: element.title_name,
+                                        first_name: element.first_name,
+                                        last_name: element.last_name,
+                                        plant: ele.plant,
+                                        year_value: ele.year_value * 1,
+                                        year_value_unit: ele.year_value_unit,
+                                        deliver_value: ele.deliver_value * 1,
+                                        product_value: ele.product_value * 1,
+                                        growingArea: ele.growingarea * 1,
+                                        end_plant: ele.end_plant,
+                                        deliver_frequency_number: ele.deliver_frequency_number
+                                    })
+                                }
+                            }
+
+
+                        }
+
+
+                    })
+
+                })
+                // req.result = result[0]
+                req.result = farmer
+                next()
+            }
+        })
+    }
+}
+
+exports.get_Certified_farmer_se = () => {
+    return (req, res, next) => {
+        // console.log(req.user_id)
+        let data = []
+        db.query('SELECT * from farmer_information INNER JOIN area_information ON farmer_information.farmer_id = area_information.farmer_id WHERE user_id=?', req.body.user_id, (err, result) => {
+            if (err) throw err
+            else {
+                
+                result.map((element) => {
+                    data.push({
+                        title_name: element.title_name,
+                        first_name: element.first_name,
+                        last_name: element.last_name,
+                        area_storage: element.area_storage,
+                        chemical_date: element.chemical_date
+                    })
+                })
+                req.result = data
+                next()
+            }
+        })
+    }
+}

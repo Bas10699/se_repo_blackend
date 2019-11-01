@@ -199,6 +199,35 @@ router.get('/get_count_se_all',
         })
     }
 )
+router.post('/get_farmer_se_all',
+    neutrallyUtil.get_farmer_se_all(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+router.post('/get_Certified_farmer_se',
+    neutrallyUtil.get_Certified_farmer_se(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+router.get('/get_name_se_all',
+    neutrallyUtil.get_name_se_all(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
 
 router.get('/gg',
     neutrallyUtil.add_stock_order(),
