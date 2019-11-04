@@ -49,109 +49,109 @@ exports.get_product_information = () => {
                     let caption = result[0].caption
                     let amount_stock = result[0].amount_stock
                     let volume_sold = result[0].volume_sold
-                    db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3' order by manufacture_id DESC`
-                        , (err, result_plant_type) => {
-                            if (err) throw err
-                            let result_plant = []
-                            let result = []
+                    // db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3' order by manufacture_id DESC`
+                    //     , (err, result_plant_type) => {
+                    //         if (err) throw err
+                    //         let result_plant = []
+                    //         let result = []
 
-                            result_plant_type.map((element) => {
-                                try {
-                                    element.plant_type = JSON.parse(element.plant_type)
-                                    if (element.plant_type != null) {
-                                        element.plant_type.map((element) => {
-                                            end_plant = element.end_plant
-                                            volume = (element.deliver_value) * 1
-                                            plant = element.plant
-                                            result_plant.push({
-                                                name: plant,
-                                                end_plant: end_plant,
-                                                volume: volume,
-                                            })
-                                        })
-                                    }
-                                }
-                                catch (error) {
-                                    console.log(error)
-                                }
+                    //         result_plant_type.map((element) => {
+                    //             try {
+                    //                 element.plant_type = JSON.parse(element.plant_type)
+                    //                 if (element.plant_type != null) {
+                    //                     element.plant_type.map((element) => {
+                    //                         end_plant = element.end_plant
+                    //                         volume = (element.deliver_value) * 1
+                    //                         plant = element.plant
+                    //                         result_plant.push({
+                    //                             name: plant,
+                    //                             end_plant: end_plant,
+                    //                             volume: volume,
+                    //                         })
+                    //                     })
+                    //                 }
+                    //             }
+                    //             catch (error) {
+                    //                 console.log(error)
+                    //             }
 
-                            })
+                    //         })
 
-                            let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
-                            let result_freq = []
-                            let plant_data = []
-                            result_plant.map((element) => {
-                                if (name_plant === element.name) {
-                                    // console.log(element.end_plant, ':', element.volume)
+                    //         let jan = 0, feb = 0, mar = 0, apr = 0, may = 0, jul = 0, jun = 0, aug = 0, sep = 0, oct = 0, nov = 0, dec = 0
+                    //         let result_freq = []
+                    //         let plant_data = []
+                    //         result_plant.map((element) => {
+                    //             if (name_plant === element.name) {
+                    //                 // console.log(element.end_plant, ':', element.volume)
 
-                                    if (element.end_plant === "มกราคม") {
+                    //                 if (element.end_plant === "มกราคม") {
 
-                                        jan += element.volume
+                    //                     jan += element.volume
 
-                                    } else if (element.end_plant === "กุมภาพันธ์") {
+                    //                 } else if (element.end_plant === "กุมภาพันธ์") {
 
-                                        feb += element.volume
-                                        feb
-                                    } else if (element.end_plant === "มีนาคม") {
+                    //                     feb += element.volume
+                    //                     feb
+                    //                 } else if (element.end_plant === "มีนาคม") {
 
-                                        mar += element.volume
+                    //                     mar += element.volume
 
-                                    } else if (element.end_plant === "เมษายน") {
+                    //                 } else if (element.end_plant === "เมษายน") {
 
-                                        apr += element.volume
+                    //                     apr += element.volume
 
-                                    } else if (element.end_plant === "พฤษภาคม") {
+                    //                 } else if (element.end_plant === "พฤษภาคม") {
 
-                                        may += element.volume
+                    //                     may += element.volume
 
-                                    } else if (element.end_plant === "มิถุนายน") {
+                    //                 } else if (element.end_plant === "มิถุนายน") {
 
-                                        jul += element.volume
+                    //                     jul += element.volume
 
-                                    } else if (element.end_plant === "กรกฎาคม") {
+                    //                 } else if (element.end_plant === "กรกฎาคม") {
 
-                                        jun += element.volume
+                    //                     jun += element.volume
 
-                                    } else if (element.end_plant === "สิงหาคม") {
+                    //                 } else if (element.end_plant === "สิงหาคม") {
 
-                                        aug += element.volume
+                    //                     aug += element.volume
 
-                                    } else if (element.end_plant === "กันยายน") {
+                    //                 } else if (element.end_plant === "กันยายน") {
 
-                                        sep += element.volume
+                    //                     sep += element.volume
 
-                                    } else if (element.end_plant === "ตุลาคม") {
+                    //                 } else if (element.end_plant === "ตุลาคม") {
 
-                                        oct += element.volume
+                    //                     oct += element.volume
 
-                                    } else if (element.end_plant === "พฤศจิกายน") {
+                    //                 } else if (element.end_plant === "พฤศจิกายน") {
 
-                                        nov += element.volume
+                    //                     nov += element.volume
 
-                                    } else if (element.end_plant === "ธันวาคม") {
+                    //                 } else if (element.end_plant === "ธันวาคม") {
 
-                                        dec += element.volume
+                    //                     dec += element.volume
 
-                                    } else { }
-                                    result.push(element)
+                    //                 } else { }
+                    //                 result.push(element)
 
-                                }
+                    //             }
 
-                            })
+                    //         })
 
 
 
-                            plant_data.push({
-                                plant_id: id_plant,
-                                plant_name: name_plant,
-                                price: price,
-                                volume: 1,
-                                data: [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
-                            })
+                    //         plant_data.push({
+                    //             plant_id: id_plant,
+                    //             plant_name: name_plant,
+                    //             price: price,
+                    //             volume: 1,
+                    //             data: [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
+                    //         })
                             result_freq = {
                                 product_id: id_plant,
                                 product_name: name_plant,
-                                plant: plant_data,
+                                // plant: plant_data,
                                 image: image,
                                 cost: cost,
                                 price: price,
@@ -164,7 +164,7 @@ exports.get_product_information = () => {
 
                             req.result = result_freq
                             next();
-                        })
+                        // })
                 }
             })
         }
@@ -654,6 +654,19 @@ exports.get_send_demand = () => {
                 next()
             }
         })
+    }
+}
+
+exports.get_tracking_order = () =>{
+    return(req,res,next)=>{
+
+    }
+}
+
+exports.add_review_order = () =>{
+    return(req,res,next)=>{
+        console.log(req.body)
+        // next()
     }
 }
 

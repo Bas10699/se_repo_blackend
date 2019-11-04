@@ -52,6 +52,12 @@ exports.get_demand_trader_all = () =>{
     }
 }
 
+exports.update_demand_trader = () =>{
+    return(req,res,next)=>{
+        
+    }
+}
+
 exports.get_plant = function () {
     return function (req, res, next) {
 

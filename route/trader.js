@@ -178,6 +178,16 @@ router.get('/get_send_demand',
     }
 )
 
+router.post('/add_review_order',
+    productUtil.add_review_order(),
+    (req,res) =>{
+        res.status(200).json({
+            success: true,
+            message: "ส่งรีวิวสำเร็จ"
+        })
+    }
+)
+
 
 router.get('/image/:id',
     function (req, res) {

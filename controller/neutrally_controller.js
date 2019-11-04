@@ -1827,7 +1827,16 @@ exports.get_Certified_farmer_se = () => {
     return (req, res, next) => {
         // console.log(req.user_id)
         let data = []
-        db.query('SELECT * from farmer_information INNER JOIN area_information ON farmer_information.farmer_id = area_information.farmer_id WHERE user_id=?', req.body.user_id, (err, result) => {
+        db.query(`SELECT  *  FROM farmer_information
+        LEFT JOIN user_information 
+        on user_information.user_id = farmer_information.user_id 
+        LEFT JOIN (
+            SELECT * FROM area_information WHERE area_id IN (
+                SELECT MAX(area_id) FROM area_information GROUP BY farmer_id
+            )
+            ) as area_join_information
+        on farmer_information.farmer_id = area_join_information.farmer_id
+        WHERE user_information.user_id=?`, req.body.user_id, (err, result) => {
             if (err) throw err
             else {
                 
