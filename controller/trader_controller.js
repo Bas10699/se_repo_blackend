@@ -17,7 +17,7 @@ exports.get_product = () => {
                             product_name: element.plant_name,
                             image: element.image,
                             amount_stock: element.amount_stock,
-                            price : JSON.parse(element.price)
+                            price: JSON.parse(element.price)
                         })
                     }
 
@@ -148,23 +148,23 @@ exports.get_product_information = () => {
                     //             volume: 1,
                     //             data: [jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]
                     //         })
-                            result_freq = {
-                                product_id: id_plant,
-                                product_name: name_plant,
-                                // plant: plant_data,
-                                image: image,
-                                cost: cost,
-                                price: price,
-                                details: details,
-                                caption: caption,
-                                amount_stock: amount_stock,
-                                volume_sold: volume_sold
+                    result_freq = {
+                        product_id: id_plant,
+                        product_name: name_plant,
+                        // plant: plant_data,
+                        image: image,
+                        cost: cost,
+                        price: price,
+                        details: details,
+                        caption: caption,
+                        amount_stock: amount_stock,
+                        volume_sold: volume_sold
 
-                            }
+                    }
 
-                            req.result = result_freq
-                            next();
-                        // })
+                    req.result = result_freq
+                    next();
+                    // })
                 }
             })
         }
@@ -630,9 +630,12 @@ exports.get_proof_of_payment_trader = () => {
 
 exports.add_send_demand = () => {
     return (req, res, next) => {
+        console.log(req.body)
         let object = {
             product_name: req.body.product_name,
             nutrient: req.body.nutrient,
+            volume:req.body.volume,
+            volume_type:req.body.volume_type,
             product_status: req.body.product_status,
             trader_id: req.user_id
         }
@@ -645,11 +648,14 @@ exports.add_send_demand = () => {
     }
 }
 
-exports.get_send_demand = () => {
+exports.get_send_demand_personal = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM product_information', (err, result) => {
+        db.query('SELECT * FROM product_information WHERE trader_id = ?',req.user_id, (err, result) => {
             if (err) throw err
             else {
+                result.map((element)=>{
+                    element.nutrient = JSON.parse(element.nutrient)
+                })
                 req.result = result
                 next()
             }
@@ -657,14 +663,29 @@ exports.get_send_demand = () => {
     }
 }
 
-exports.get_tracking_order = () =>{
-    return(req,res,next)=>{
+exports.get_send_demand = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM product_information', (err, result) => {
+            if (err) throw err
+            else {
+                result.map((element)=>{
+                    element.nutrient = JSON.parse(element.nutrient)
+                })
+                req.result = result
+                next()
+            }
+        })
+    }
+}
+
+exports.get_tracking_order = () => {
+    return (req, res, next) => {
 
     }
 }
 
-exports.add_review_order = () =>{
-    return(req,res,next)=>{
+exports.add_review_order = () => {
+    return (req, res, next) => {
         console.log(req.body)
         // next()
     }

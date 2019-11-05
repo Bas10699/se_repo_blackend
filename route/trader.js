@@ -167,9 +167,10 @@ router.post('/add_send_demand',
         })
     }
 )
-router.get('/get_send_demand',
+
+router.get('/get_send_demand_personal',
     validateUtil.validate_token_trader(),
-    productUtil.get_send_demand(),
+    productUtil.get_send_demand_personal(),
     (req, res) => {
         res.status(200).json({
             success: true,
@@ -177,6 +178,16 @@ router.get('/get_send_demand',
         })
     }
 )
+
+// router.get('/get_send_demand',
+//     productUtil.get_send_demand(),
+//     (req, res) => {
+//         res.status(200).json({
+//             success: true,
+//             result: req.result
+//         })
+//     }
+// )
 
 router.post('/add_review_order',
     productUtil.add_review_order(),

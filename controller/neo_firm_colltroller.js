@@ -560,8 +560,7 @@ exports.get_Certified = () => {
         db.query('SELECT * from farmer_information INNER JOIN area_information ON farmer_information.farmer_id = area_information.farmer_id WHERE user_id=?', req.user_id, (err, result) => {
             if (err) throw err
             else {
-
-
+                
                 result.map((element) => {
                     data.push({
                         title_name: element.title_name,
@@ -634,6 +633,12 @@ exports.get_count_farmer = () =>{
         })
     }
 }
+
+// exports.get_purchase_history_farmer = () =>{
+//     return(req,res,next)=>{
+//         db.query('SELECT * FROM order_farmer WHERE se_id')
+//     }
+// }
 
 
 // exports.get_invoice_order_se = ()

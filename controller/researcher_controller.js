@@ -2,27 +2,27 @@ var db = require('../connect/test_connect')
 var moment = require('moment')
 var errorMessages = require('../const/error_message')
 
-exports.get_plant_se = () =>{
-    return(req,res,next)=>{
-        db.query('SELECT user_information.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = 3',(err,result)=>{
+exports.get_plant_se = () => {
+    return (req, res, next) => {
+        db.query('SELECT user_information.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = 3', (err, result) => {
             if (err) throw err
-            else{
+            else {
                 let plant_name = []
-                result.map((element)=>{
+                result.map((element) => {
                     element.plant_type = JSON.parse(element.plant_type)
                     let plant_type = element.plant_type
-                    plant_type.map((ele_plant)=>{
+                    plant_type.map((ele_plant) => {
                         index = plant_name.findIndex((elem) => elem === ele_plant.plant)
                         if (index < 0) {
                             // console.log(ele_pla.plant)
-                            if(ele_plant.plant !== null && plant_name !== undefined)
-                            plant_name.push(
-                                ele_plant.plant
-                            )
-        
+                            if (ele_plant.plant !== null && plant_name !== undefined)
+                                plant_name.push(
+                                    ele_plant.plant
+                                )
+
                         }
                     })
-                    
+
                 })
                 req.result = result
                 next()
@@ -31,20 +31,28 @@ exports.get_plant_se = () =>{
     }
 }
 
-exports.add_demand_ = () =>{
-    return(req,res,next)=>{
+exports.add_demand_ = () => {
+    return (req, res, next) => {
         console.log(req.body)
-        db.query('INSERT INTO product_information SET ?',(err,result)=>{
-            if(err) throw err
+        db.query('INSERT INTO product_information SET ?', (err, result) => {
+            if (err) throw err
         })
     }
 }
 
-exports.get_demand_trader_all = () =>{
-    return(req,res,next)=>{
-        db.query('SELECT * FROM product_information',(err,result)=>{
-            if(err) throw err
-            else{
+exports.get_demand_trader_all = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM product_information', (err, result) => {
+            if (err) throw err
+            else {
+
+                result.map((element) => {
+                    try {
+                        element.nutrient = JSON.parse(element.nutrient)
+                    } catch (error) {
+                        console.log(error)
+                    }
+                })
                 req.result = result
                 next()
             }
@@ -52,9 +60,9 @@ exports.get_demand_trader_all = () =>{
     }
 }
 
-exports.update_demand_trader = () =>{
-    return(req,res,next)=>{
-        
+exports.update_demand_trader = () => {
+    return (req, res, next) => {
+
     }
 }
 

@@ -229,6 +229,16 @@ router.get('/get_name_se_all',
     }
 )
 
+router.get('/get_name_researcher',
+    neutrallyUtil.get_name_researcher(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
 router.get('/gg',
     neutrallyUtil.add_stock_order(),
     (req, res) => {
