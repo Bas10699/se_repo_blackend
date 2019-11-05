@@ -415,6 +415,7 @@ exports.get_farmer_se = () => {
                             if (ele.year_value !== null) {
                                 if (((ele.deliver_value * 1) !== 0) || ((ele.year_value * 1) !== 0)) {
                                     farmer.push({
+                                        farmer_id: element.farmer_id,
                                         title_name: element.title_name,
                                         first_name: element.first_name,
                                         last_name: element.last_name,
@@ -500,7 +501,7 @@ exports.add_order_farmer = () => {
         console.log(req.body)
         req.body.object.map((element) => {
             let obj = {
-                order_farmer_id: 'Mr' + req.user_id + moment().utc(7).add('years', 543).format('YYYYMMDDHHMM'),
+                order_farmer_id: 'Mr' + req.user_id + moment().utc(7).add('years', 543).format('YYYYMMDDHHMM') +element.farmer_id,
                 order_farmer_title_name: element.title_name,
                 order_farmer_name: element.first_name,
                 order_farmer_lastname: element.last_name,
@@ -560,7 +561,7 @@ exports.get_Certified = () => {
         db.query('SELECT * from farmer_information INNER JOIN area_information ON farmer_information.farmer_id = area_information.farmer_id WHERE user_id=?', req.user_id, (err, result) => {
             if (err) throw err
             else {
-                
+
                 result.map((element) => {
                     data.push({
                         title_name: element.title_name,
@@ -606,11 +607,11 @@ exports.add_planing_farmer = () => {
         // console.log(req.body)
         req.body.check_array.map((element) => {
             let obj = {
-                neo_firm_id : req.user_id,
-                planing_farmer_name : element.check,
-                planing_farmer_status : 0,
-                planing_farmer_volume : element.amount,
-                planing_farmer_plant : req.body.name_plant,
+                neo_firm_id: req.user_id,
+                planing_farmer_name: element.check,
+                planing_farmer_status: 0,
+                planing_farmer_volume: element.amount,
+                planing_farmer_plant: req.body.name_plant,
                 planing_farmer_date: req.body.date
             }
             db.query('INSERT INTO year_round_planing_farmer SET ?', obj, (err) => {
@@ -622,11 +623,11 @@ exports.add_planing_farmer = () => {
     }
 }
 
-exports.get_count_farmer = () =>{
-    return(req,res,next)=>{
-        db.query('SELECT COUNT(*) as sum_farmer FROM farmer_information LEFT JOIN user_information ON farmer_information.user_id = user_information.user_id WHERE farmer_information.user_id=?',req.user_id,(err,result)=>{
-            if(err) throw err
-            else{
+exports.get_count_farmer = () => {
+    return (req, res, next) => {
+        db.query('SELECT COUNT(*) as sum_farmer FROM farmer_information LEFT JOIN user_information ON farmer_information.user_id = user_information.user_id WHERE farmer_information.user_id=?', req.user_id, (err, result) => {
+            if (err) throw err
+            else {
                 req.result = result
                 next()
             }

@@ -224,7 +224,7 @@ exports.get_plant_name = () => {
 exports.get_chart_frequency_all = function () {
 
     return function (req, res, next) {
-        db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3' order by manufacture_id DESC`, function (err, result) {
+        db.query(`SELECT user_information.name,user_information.user_id,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3' order by manufacture_id DESC`, function (err, result) {
             if (err) throw err;
 
             let se_obj = []
@@ -248,6 +248,7 @@ exports.get_chart_frequency_all = function () {
             let sum = 0
             se_obj.map((element) => {
 
+                let id = 0
                 let frequency = []
                 let result_freq = []
                 let plant_obj = []
@@ -263,7 +264,7 @@ exports.get_chart_frequency_all = function () {
                             plant_obj = JSON.parse(el.plant_type)
 
                             if (el.name === element) {
-
+                                id = el.user_id
                                 plant_obj.map((ele) => {
 
                                     if (ele.plant === plant) {
@@ -307,7 +308,7 @@ exports.get_chart_frequency_all = function () {
                                 plant_obj = JSON.parse(ele.plant_type)
 
                                 if (ele.name === element) {
-
+                                    id = ele.user_id
                                     plant_obj.map((elem) => {
 
                                         if (elem.plant === plant) {
@@ -389,6 +390,7 @@ exports.get_chart_frequency_all = function () {
 
                     result_se.push({
                         name: element,
+                        id_name: id,
                         rang: result_freq
                     })
                 }
@@ -1233,6 +1235,7 @@ exports.get_linechart_some_se = function () {
 
 exports.add_order_se = () => {
     return (req, res, next) => {
+        // console.log(req.body)
         let order_se = req.body.order_se
         let detail_order_trader = req.body.detail_order_trader
 
@@ -1248,7 +1251,7 @@ exports.add_order_se = () => {
                     if (parseInt(element.amount) > 0) {
                         let obj = {
                             plant_name: element.plant,
-                            se_name: element.name,
+                            se_name: element.id_name,
                             amount: parseInt(element.amount),
                             order_trader_id: req.body.order_trader_id,
                             order_se_date: moment().utc(7).add('years', 543).format(),
@@ -1652,7 +1655,7 @@ exports.get_year_round = () => {
 
                 let plant_result = null
                 let date_result = null
-                
+
                 plant.map((plant_name) => {
                     let volume = 0
                     let detail = []
@@ -1836,7 +1839,7 @@ exports.get_Certified_farmer_se = () => {
         WHERE farmer_information.user_id=?`, req.body.user_id, (err, result) => {
             if (err) throw err
             else {
-                
+
                 result.map((element) => {
                     data.push({
                         title_name: element.title_name,
@@ -1853,11 +1856,11 @@ exports.get_Certified_farmer_se = () => {
     }
 }
 
-exports.get_name_researcher = () =>{
-    return(req,res,next)=>{
-        db.query('SELECT * FROM user_information WHERE type_user="1"',(err,result)=>{
-            if(err) throw err
-            else{
+exports.get_name_researcher = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM user_information WHERE type_user="1"', (err, result) => {
+            if (err) throw err
+            else {
                 req.result = result
                 next()
             }
