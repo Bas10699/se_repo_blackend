@@ -111,6 +111,16 @@ router.get('/get_planing_farmer',
         })
     })
 
+router.get('/get_planing_se_personal',
+    validateUtil.validate_token_se_small(),
+    neoFirmUtil.get_planing_se_personal(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
+
 router.post('/add_planing_farmer',
     validateUtil.validate_token_user(),
     neoFirmUtil.add_planing_farmer(),
@@ -125,6 +135,18 @@ router.post('/add_planing_farmer',
 router.get('/get_count_farmer',
     validateUtil.validate_token_se_small(),
     neoFirmUtil.get_count_farmer(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+
+router.get('/get_trading_statistics_farmer',
+    validateUtil.validate_token_se_small(),
+    neoFirmUtil.get_trading_statistics_farmer(),
     (req, res) => {
         res.status(200).json({
             'success': true,

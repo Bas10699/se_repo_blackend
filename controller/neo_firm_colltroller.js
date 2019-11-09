@@ -7,7 +7,7 @@ exports.get_order_se = () => {
         db.query('SELECT * FROM user_information WHERE user_id = ?', req.user_id, (err, result) => {
             if (err) throw err
             else {
-                db.query('SELECT * FROM order_se WHERE se_name = ? ORDER BY id DESC ', result[0].name, (err, result) => {
+                db.query('SELECT * FROM order_se WHERE se_name = ? OR se_name = ? ORDER BY id DESC ', [result[0].name, req.user_id], (err, result) => {
                     if (err) throw err
                     else {
                         if (!result) {
@@ -501,7 +501,7 @@ exports.add_order_farmer = () => {
         console.log(req.body)
         req.body.object.map((element) => {
             let obj = {
-                order_farmer_id: 'Mr' + req.user_id + moment().utc(7).add('years', 543).format('YYYYMMDDHHMM') +element.farmer_id,
+                order_farmer_id: 'Mr' + moment().utc(7).add('years', 543).format('YYYYMMDDHHMM') + element.farmer_id,
                 order_farmer_title_name: element.title_name,
                 order_farmer_name: element.first_name,
                 order_farmer_lastname: element.last_name,
@@ -509,7 +509,9 @@ exports.add_order_farmer = () => {
                 order_farmer_plant_volume: element.amount,
                 order_farmer_plant_cost: req.body.cost,
                 order_se_id: req.body.order_se_id,
-                order_farmer_status: 1
+                order_farmer_status: 1,
+                se_id: req.user_id,
+                order_farmer_date: moment().utc(7).add('years', 543).format()
 
             }
             db.query('INSERT INTO order_farmer SET ?', obj, (err) => {
@@ -602,6 +604,18 @@ exports.get_planing_farmer = () => {
     }
 }
 
+exports.get_planing_se_personal = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM year_round_planing WHERE se_name=?',req.user_id,(err,result)=>{
+            if(err) throw err
+            else{
+                req.result = result
+                next()
+            }
+        })
+    }
+}
+
 exports.add_planing_farmer = () => {
     return (req, res, next) => {
         // console.log(req.body)
@@ -626,6 +640,18 @@ exports.add_planing_farmer = () => {
 exports.get_count_farmer = () => {
     return (req, res, next) => {
         db.query('SELECT COUNT(*) as sum_farmer FROM farmer_information LEFT JOIN user_information ON farmer_information.user_id = user_information.user_id WHERE farmer_information.user_id=?', req.user_id, (err, result) => {
+            if (err) throw err
+            else {
+                req.result = result
+                next()
+            }
+        })
+    }
+}
+
+exports.get_trading_statistics_farmer = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM order_farmer WHERE se_id=?', req.user_id, (err, result) => {
             if (err) throw err
             else {
                 req.result = result

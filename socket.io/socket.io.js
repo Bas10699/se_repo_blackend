@@ -47,6 +47,10 @@ module.exports = function (io) {
             io.of(version).emit('new-noti-se', message)
             console.log('gg', message)
         })
+        client.on('confirm_payment', function (message) {
+            io.of(version).emit('new_confirm_payment', message)
+            console.log('gg', message)
+        })
     })
     return router
 }

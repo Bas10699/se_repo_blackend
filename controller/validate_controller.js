@@ -120,6 +120,19 @@ exports.validate_update_plant_stock = () => {
   }
 }
 
+exports.validate_update_name_resercher_damand = () => {
+  return (req, res, next) => {
+    // console.log(req.body)
+    let data = req.body.list_research
+    if (data.length !== 0 && req.body.date) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
+
 exports.validate_add_invoice_neutrally = () => {
   return (req, res, next) => {
     console.log(req.body)
@@ -158,15 +171,15 @@ exports.validate_add_proof_of_payment_trader = () => {
     }
   }
 }
-exports.validate_add_send_demand = () =>{
-  return(req,res,next) => {
-    if(req.body.product_name&&
-      req.body.nutrient){
-        next()
-      }
-      else{
-        res.status(200).json(errorMessages.invalid_data)
-      }
+exports.validate_add_send_demand = () => {
+  return (req, res, next) => {
+    if (req.body.product_name &&
+      req.body.nutrient) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
   }
 }
 

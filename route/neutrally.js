@@ -155,7 +155,7 @@ router.post('/add_order_se_payment',
     (req, res) => {
         res.status(200).json({
             'success': true,
-            result: 'ส่งหลักฐานการชำระเงินสำเร็จ'
+            message: 'ส่งหลักฐานการชำระเงินสำเร็จ'
             // result: req.result
         })
     }
@@ -176,7 +176,7 @@ router.post('/add_year_round',
     (req, res) => {
         res.status(200).json({
             'success': true,
-            result: 'วางแผนการเพาะปลูกสำเร็จ'
+            message: 'วางแผนการเพาะปลูกสำเร็จ'
         })
     }
 )
@@ -231,6 +231,28 @@ router.get('/get_name_se_all',
 
 router.get('/get_name_researcher',
     neutrallyUtil.get_name_researcher(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+router.post('/update_name_resercher_damand',
+    validateUtil.validate_update_name_resercher_damand(),
+    neutrallyUtil.update_name_resercher_damand(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: 'เลือกนักวิจัยสำเร็จ'
+        })
+    }
+)
+
+router.post('/get_product_researcher_confirm',
+    validateUtil.validate_token_se(),
+    neutrallyUtil.get_product_researcher_confirm(),
     (req, res) => {
         res.status(200).json({
             'success': true,

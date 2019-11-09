@@ -60,8 +60,41 @@ exports.get_demand_trader_all = () => {
     }
 }
 
-exports.update_demand_trader = () => {
+exports.get_demand_personal = () => {
     return (req, res, next) => {
+        db.query('SELECT * FROM product_information INNER JOIN product_researcher ON product_information.product_id = product_researcher.product_id WHERE product_researcher.researcher_id =?',
+            req.user_id, (err, result) => {
+                if (err) throw err
+                else {
+                    req.result = result
+                    next()
+                }
+            })
+    }
+}
+
+exports.confirm_resercher_damand = () => {
+    return (req, res, next) => {
+        console.log(req.body)
+        if (req.body.product_researcher_status === 1) {
+
+            db.query('UPDATE product_researcher SET product_researcher_status=1 WHERE product_id=? AND researcher_id=?'
+                , [req.body.product_id, req.user_id], (err) => {
+                    if (err) throw err
+                    else {
+                        next()
+                    }
+                })
+        }
+        else {
+            db.query('UPDATE product_researcher SET product_researcher_status=2 WHERE product_id=? AND researcher_id=?'
+                , [req.body.product_id, req.user_id], (err) => {
+                    if (err) throw err
+                    else {
+                        next()
+                    }
+                })
+        }
 
     }
 }

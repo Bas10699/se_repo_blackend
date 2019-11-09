@@ -189,33 +189,84 @@ exports.add_invoice_neutrally = () => {
     }
 }
 
+// exports.get_plant_name = () => {
+//     return (req, res, next) => {
+//         db.query('SELECT user_information.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = 3', (err, result) => {
+//             if (err) throw err
+//             else {
+//                 let plant_name = []
+//                 result.map((element) => {
+//                     element.plant_type = JSON.parse(element.plant_type)
+//                     let plant_type = element.plant_type
+//                     if (plant_type !== null) {
+//                         plant_type.map((ele_plant) => {
+//                             index = plant_name.findIndex((elem) => elem === ele_plant.plant)
+//                             if (index < 0) {
+//                                 // console.log(ele_pla.plant)
+//                                 if (ele_plant.plant !== null && ele_plant.plant !== undefined)
+//                                     plant_name.push(
+//                                         ele_plant.plant
+//                                     )
+
+//                             }
+//                         })
+//                     }
+
+
+//                 })
+//                 req.result = plant_name
+//                 next()
+//             }
+//         })
+//     }
+// }
+
 exports.get_plant_name = () => {
     return (req, res, next) => {
-        db.query('SELECT user_information.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = 3', (err, result) => {
+        db.query('SELECT * FROM plant_stock', (err, result) => {
             if (err) throw err
             else {
-                let plant_name = []
-                result.map((element) => {
-                    element.plant_type = JSON.parse(element.plant_type)
-                    let plant_type = element.plant_type
-                    if (plant_type !== null) {
-                        plant_type.map((ele_plant) => {
-                            index = plant_name.findIndex((elem) => elem === ele_plant.plant)
-                            if (index < 0) {
-                                // console.log(ele_pla.plant)
-                                if (ele_plant.plant !== null && ele_plant.plant !== undefined)
-                                    plant_name.push(
-                                        ele_plant.plant
-                                    )
-
+                db.query('SELECT * FROM order_trader WHERE order_status<=4', (err, result_order) => {
+                    if (err) throw err
+                    else {
+                        result_order.map((element) => {
+                            try {
+                                element.detail = JSON.parse(element.detail)
+                            } catch (error) {
+                                console.log(error)
                             }
                         })
+
+                        let plant = []
+                        result.map((ele_result) => {
+                            let amount = 0
+
+                            result_order.map((element) => {
+                                let detail = element.detail
+                                detail.map((element_detail) => {
+                                    if (ele_result.plant_id == element_detail.plant_id) {
+                                        // console.log(ele_result.plant_name,element_detail.amount)
+                                        amount += element_detail.amount * 1
+                                    }
+                                })
+
+                            })
+                            plant.push({
+                                plant_id: ele_result.plant_id,
+                                plant_name: ele_result.plant_name,
+                                amount_stock: ele_result.amount_stock,
+                                amount_want: amount
+                            })
+
+
+                        })
+
+                        // console.log(plant)
+                        req.result = plant
+                        next()
                     }
-
-
                 })
-                req.result = plant_name
-                next()
+
             }
         })
     }
@@ -918,7 +969,7 @@ exports.get_plant_volume_all_se = function () {
             plant: req.body.name_plant
         }
 
-        db.query(`SELECT user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3'`, function (err, result) {
+        db.query(`SELECT user_information.user_id,user_information.name,manufacture_information.plant_type FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = '3'`, function (err, result) {
             if (err) throw err;
             // req.result = result
 
@@ -928,11 +979,12 @@ exports.get_plant_volume_all_se = function () {
 
             result.map((element) => {
                 let index
-                index = se_obj.findIndex((el) => el === element.name)
+                index = se_obj.findIndex((el) => el.name === element.name)
                 if (index < 0) {
-                    se_obj.push(
-                        element.name
-                    )
+                    se_obj.push({
+                        id: element.user_id,
+                        name: element.name
+                    })
                 } else {
 
                 }
@@ -948,7 +1000,7 @@ exports.get_plant_volume_all_se = function () {
 
                     if (el.plant_type !== null) {
 
-                        if (element === el.name) {
+                        if (element.name === el.name) {
                             let se_plant
                             let plant_value = 0
                             try {
@@ -984,7 +1036,8 @@ exports.get_plant_volume_all_se = function () {
                 if (plant_value_total > 0) {
                     se_result_obj.push(
                         {
-                            se_name: element,
+                            se_id: element.id,
+                            se_name: element.name,
                             plant: plant_info.plant,
                             data: plant_value_total
                         }
@@ -992,7 +1045,8 @@ exports.get_plant_volume_all_se = function () {
                 }
                 else {
                     se_result_obj.push({
-                        se_name: element,
+                        se_id: element.id,
+                        se_name: element.name,
                         plant: plant_info.plant,
                         data: 0
                     })
@@ -1346,20 +1400,20 @@ exports.add_order_se_payment = () => {
     }
 }
 
-exports.add_year_round = function () {
-    return function (req, res, next) {
-        // db.query(`SELECT * FROM user_information where name ='${req.body.name}'`, function (err, result) {
-        //     if (err) throw err;
-        //     console.log(result)
-        console.log(req.body)
-        // db.query(`INSERT INTO  year_round_planing (plan_id,plant,volume,volume_type,se_name) VALUES(null,'${req.body.plant}','${req.body.volume}','${req.body.volume_type}', '${req.body.name}')`, function (err, resultUser) {
-        //     if (err) throw err;
-        //     // req.result = result
-        //     next();
-        //     // })
-        // })
-    }
-}
+// exports.add_year_round = function () {
+//     return function (req, res, next) {
+//         // db.query(`SELECT * FROM user_information where name ='${req.body.name}'`, function (err, result) {
+//         //     if (err) throw err;
+//         //     console.log(result)
+//         console.log(req.body)
+//         // db.query(`INSERT INTO  year_round_planing (plan_id,plant,volume,volume_type,se_name) VALUES(null,'${req.body.plant}','${req.body.volume}','${req.body.volume_type}', '${req.body.name}')`, function (err, resultUser) {
+//         //     if (err) throw err;
+//         //     // req.result = result
+//         //     next();
+//         //     // })
+//         // })
+//     }
+// }
 
 exports.get_plant = function () {
     return function (req, res, next) {
@@ -1620,6 +1674,7 @@ exports.add_year_round = function () {
                 volume: element.amount,
                 se_name: element.check,
                 year_round_planing_date: req.body.date,
+                year_round_planing_date_start: moment().utc(7).add('years', 543).format('YYYY-MM-DD'),
                 status_reading: 0
 
             }
@@ -1858,7 +1913,9 @@ exports.get_Certified_farmer_se = () => {
 
 exports.get_name_researcher = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM user_information WHERE type_user="1"', (err, result) => {
+        db.query(`SELECT user_id,name,last_name,product_researcher.researcher_id, COUNT(product_researcher.product_id) AS count_pro_resear
+        FROM user_information LEFT JOIN product_researcher ON user_information.user_id = product_researcher.researcher_id 
+        WHERE user_information.type_user='1' GROUP BY user_information.user_id`, (err, result) => {
             if (err) throw err
             else {
                 req.result = result
@@ -1866,4 +1923,45 @@ exports.get_name_researcher = () => {
             }
         })
     }
+}
+
+exports.update_name_resercher_damand = () => {
+    return (req, res, next) => {
+        console.log(req.body)
+        let data = req.body.list_research
+        data.map((ele) => {
+            let obj = {
+                product_id: req.body.product_id,
+                researcher_id: ele,
+                product_researcher_status: 0,
+            }
+            db.query('INSERT INTO product_researcher SET ? ', obj, (err) => {
+                if (err) throw err
+            })
+        })
+        db.query('UPDATE product_information SET product_status=2 WHERE product_id=?', req.body.product_id, (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+    }
+}
+
+exports.get_product_researcher_confirm = () => {
+    return (req, res, next) => {
+        console.log(req.body)
+        db.query('SELECT * FROM product_researcher INNER JOIN user_information ON product_researcher.researcher_id = user_information.user_id WHERE product_id=?',
+            req.body.product_id, (err, result) => {
+                if (err) throw err
+                else {
+                    req.result = result
+                    next()
+                }
+            })
+    }
+}
+
+exports.get_demand_detail_all = () => {
+
 }

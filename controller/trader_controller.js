@@ -318,24 +318,17 @@ exports.get_product_information = () => {
 }
 exports.add_cart_trader = () => {
     return (req, res, next) => {
-        // console.log(req.body)
-        // res.status(200).json({
-        //     success: false,
-        //     error_message: "นี่คือสิ่งที่มึงส่งมา"+JSON.stringify(req.body)+"\nไปแก้โค้ดมาใหม่\nมึงใช้ push ใส่ array ดิ"
-        // })
-        console.log('55555', req.body.data_plant)
-        req.body.data_plant.map((element) => {
-
-            db.query('SELECT * FROM cart WHERE trader_id = ? AND plant_id = ?', [req.user_id, element.plant_id], (err, result) => {
+        // console.log('55555', req.body)
+            db.query('SELECT * FROM cart WHERE trader_id = ? AND plant_id = ?', [req.user_id, req.body.plant_id], (err, result) => {
                 if (err) throw err
                 else {
                     if (result[0]) {
                         console.log("update")
 
-                        let sum_amount = (Number(result[0].amount) + Number(element.total_plant))
+                        let sum_amount = (Number(result[0].amount) + Number(req.body.total_plant))
                         console.log("sum_amont", sum_amount)
 
-                        db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND plant_id = ?', [sum_amount, req.user_id, element.plant_id], (err, result) => {
+                        db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND plant_id = ?', [sum_amount, req.user_id, req.body.plant_id], (err, result) => {
                             if (err) throw err
                             else {
                                 next()
@@ -346,8 +339,8 @@ exports.add_cart_trader = () => {
                         console.log("INSERT")
                         let cart = {
                             trader_id: req.user_id,
-                            plant_id: element.plant_id,
-                            amount: element.total_plant
+                            plant_id: req.body.plant_id,
+                            amount: req.body.total_plant
                         }
                         db.query('INSERT INTO cart SET ?', cart, (err, result) => {
                             if (err) throw err
@@ -358,8 +351,6 @@ exports.add_cart_trader = () => {
                     }
                 }
             })
-        })
-
     }
 }
 
@@ -637,7 +628,7 @@ exports.add_send_demand = () => {
             volume:req.body.volume,
             volume_type:req.body.volume_type,
             product_status: req.body.product_status,
-            trader_id: req.user_id
+            trader_id: req.user_id,
         }
         db.query('INSERT INTO product_information SET ?', object, (err) => {
             if (err) throw err

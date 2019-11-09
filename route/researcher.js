@@ -32,4 +32,28 @@ router.get('/get_demand_trader_all',
         })
     })
 
+
+router.get('/get_demand_personal',
+    validateUtil.validate_token_user(),
+    researcherUtil.get_demand_personal(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
+
+
+
+router.post('/confirm_resercher_damand',
+    validateUtil.validate_token_user(),
+    researcherUtil.confirm_resercher_damand(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: "ยืนยันการพัฒนาสำเร็จ"
+        })
+    })
+
+
 module.exports = router
