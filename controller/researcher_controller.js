@@ -42,7 +42,7 @@ exports.add_demand_ = () => {
 
 exports.get_demand_trader_all = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM product_information', (err, result) => {
+        db.query('SELECT * FROM product_information INNER JOIN user_information ON product_information.trader_id = user_information.user_id ORDER BY product_id DESC', (err, result) => {
             if (err) throw err
             else {
 
@@ -62,7 +62,7 @@ exports.get_demand_trader_all = () => {
 
 exports.get_demand_personal = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM product_information INNER JOIN product_researcher ON product_information.product_id = product_researcher.product_id WHERE product_researcher.researcher_id =?',
+        db.query('SELECT * FROM product_information INNER JOIN product_researcher ON product_information.product_id = product_researcher.product_id WHERE product_researcher.researcher_id =? ORDER BY product_information.product_id DESC',
             req.user_id, (err, result) => {
                 if (err) throw err
                 else {
@@ -96,6 +96,13 @@ exports.confirm_resercher_damand = () => {
                 })
         }
 
+    }
+}
+
+exports.get_demand_detail = () =>{
+    return(req,res,next)=>{
+        console.log(req.body)
+        // db.query('')
     }
 }
 

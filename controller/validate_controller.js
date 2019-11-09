@@ -122,9 +122,9 @@ exports.validate_update_plant_stock = () => {
 
 exports.validate_update_name_resercher_damand = () => {
   return (req, res, next) => {
-    // console.log(req.body)
+    console.log(req.body)
     let data = req.body.list_research
-    if (data.length !== 0 && req.body.date) {
+    if (data.length !== 0 && req.body.date_line && req.body.date_confirm) {
       next()
     }
     else {

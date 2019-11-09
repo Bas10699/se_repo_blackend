@@ -1927,7 +1927,7 @@ exports.get_name_researcher = () => {
 
 exports.update_name_resercher_damand = () => {
     return (req, res, next) => {
-        console.log(req.body)
+        // console.log(req.body)
         let data = req.body.list_research
         data.map((ele) => {
             let obj = {
@@ -1939,7 +1939,12 @@ exports.update_name_resercher_damand = () => {
                 if (err) throw err
             })
         })
-        db.query('UPDATE product_information SET product_status=2 WHERE product_id=?', req.body.product_id, (err) => {
+        let object = {
+            product_status: 2,
+            date_confirm: req.body.date_confirm,
+            date_line: req.body.date_line
+        }
+        db.query('UPDATE product_information SET ? WHERE product_id=?', [object, req.body.product_id], (err) => {
             if (err) throw err
             else {
                 next()

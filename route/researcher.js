@@ -43,6 +43,15 @@ router.get('/get_demand_personal',
         })
     })
 
+router.post('/get_demand_detail',
+    validateUtil.validate_token_user(),
+    researcherUtil.get_demand_detail(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
 
 
 router.post('/confirm_resercher_damand',
