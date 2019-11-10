@@ -99,10 +99,85 @@ exports.confirm_resercher_damand = () => {
     }
 }
 
-exports.get_demand_detail = () =>{
-    return(req,res,next)=>{
+exports.get_demand_detail = () => {
+    return (req, res, next) => {
         console.log(req.body)
-        // db.query('')
+        db.query('SELECT * FROM product_information WHERE product_id=?', req.body.product_id, (err, result) => {
+            if (err) throw err
+            else {
+                result[0].nutrient = JSON.parse(result[0].nutrient)
+                req.result = result[0]
+                next()
+            }
+        })
+    }
+}
+
+exports.add_product_plan = () => {
+    return (req, res, next) => {
+        // console.log(req.body)
+        let obj = {
+            product_id: req.body.product_id,
+            nutrient_precent: req.body.nutrient_precent,
+            plant: req.body.plant,
+            product_plan_name: req.body.product_plan_name,
+            researcher_id: req.user_id
+        }
+        db.query('INSERT INTO product_plan SET ? ', obj, (err, result) => {
+            if (err) throw err
+            else {
+                if (req.body.image != 0) {
+                    let pro_image = req.body.image.slice(req.body.image.indexOf(',') + 1)
+                    require("fs").writeFile("./image/productPlan/productPlan_" + result.insertId + '.png', pro_image, 'base64', function (err) {
+                        if (err) throw err;
+                        else {
+                            db.query(`UPDATE product_plan  SET image = 'researcher/image/productPlan_${result.insertId}.png'  WHERE plan_id = ${result.insertId}`, function (err) {
+                                if (err) throw err;
+                                // console.log('data', result.insertId)
+                                next()
+                            });
+                        }
+                    });
+                }
+                else {
+                    next()
+                }
+            }
+        })
+    }
+}
+
+exports.get_product_plan_detail = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM product_plan INNER JOIN product_information ON product_information.product_id = product_plan.product_id WHERE researcher_id=?',
+            req.user_id, (err, result) => {
+                if (err) throw err
+                else {
+                    result.map((element) => {
+                        try {
+                            element.nutrient = JSON.parse(element.nutrient)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+                        try {
+                            element.nutrient_precent = JSON.parse(element.nutrient_precent)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+                        try {
+                            element.plant = JSON.parse(element.plant)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+
+                    })
+                    req.result = result
+                    next()
+                }
+            })
     }
 }
 

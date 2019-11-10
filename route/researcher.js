@@ -54,6 +54,28 @@ router.post('/get_demand_detail',
     })
 
 
+router.post('/add_product_plan',
+    validateUtil.validate_token_user(),
+    validateUtil.validate_add_product_plan(),
+    researcherUtil.add_product_plan(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: "เพิ่มสูตรการพัฒนาสำเร็จ"
+        })
+    })
+
+
+router.get('/get_product_plan_detail',
+    validateUtil.validate_token_user(),
+    researcherUtil.get_product_plan_detail(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
+
 router.post('/confirm_resercher_damand',
     validateUtil.validate_token_user(),
     researcherUtil.confirm_resercher_damand(),
@@ -64,5 +86,21 @@ router.post('/confirm_resercher_damand',
         })
     })
 
+router.get('/image/:id',
+    function (req, res) {
+
+        console.log("image", req.params.id)
+
+        require("fs").readFile(__dirname.replace("route", "") + 'image/productPlan/' + req.params.id, (err, data) => {
+
+            if (err !== null) {
+                res.sendFile(__dirname.replace("route", "") + 'image/default_product.png')
+            } else {
+                res.sendFile(__dirname.replace("route", "") + 'image/productPlan/' + req.params.id)
+            }
+
+        })
+
+    })
 
 module.exports = router

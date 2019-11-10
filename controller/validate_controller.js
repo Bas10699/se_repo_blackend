@@ -183,6 +183,21 @@ exports.validate_add_send_demand = () => {
   }
 }
 
+exports.validate_add_product_plan = () => {
+  return (req, res, next) => {
+    if (req.body.product_id &&
+      req.body.nutrient_precent &&
+      req.body.plant &&
+      req.body.image &&
+      req.body.product_plan_name) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
+
 
 exports.validate_token_user = function () {
   return function (req, res, next) {
