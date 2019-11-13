@@ -2009,8 +2009,20 @@ exports.get_product_researcher_confirm = () => {
     }
 }
 
-exports.get_demand_detail_all = () => {
-
+exports.send_plan_product_to_trader = () => {
+    return (req, res, next) => {
+        req.body.plan_id.map((element) => {
+            db.query('UPDATE product_plan SET send_se=3 WHERE plan_id=?', element, (err) => {
+                if (err) throw err
+            })
+        })
+        db.query('UPDATE product_information SET product_status=4 WHERE product_id=?', req.body.product_id, (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+    }
 }
 
 exports.get_product_plan = () => {

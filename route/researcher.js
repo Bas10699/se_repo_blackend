@@ -126,6 +126,35 @@ router.get('/get_plant_all_mount',
         })
     })
 
+router.post('/add_nutrient_information',
+    validateUtil.validate_token_user(),
+    researcherUtil.add_nutrient_information(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: "เพิ่มสารอาหารสำเร็จ"
+        })
+    })
+
+router.get('/get_nutrient_information',
+    // validateUtil.validate_token_user(),
+    researcherUtil.get_nutrient_information(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
+
+router.get('/get_nutrient_information_plant',
+    // validateUtil.validate_token_user(),
+    researcherUtil.get_nutrient_information_plant(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
 
 router.get('/image/:id',
     function (req, res) {

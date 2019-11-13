@@ -31,11 +31,52 @@ exports.get_plant_se = () => {
     }
 }
 
-exports.add_demand_ = () => {
+// exports.add_demand_ = () => {
+//     return (req, res, next) => {
+//         console.log(req.body)
+//         db.query('INSERT INTO product_information SET ?', (err, result) => {
+//             if (err) throw err
+//         })
+//     }
+// }
+
+exports.add_nutrient_information = () => {
     return (req, res, next) => {
-        console.log(req.body)
-        db.query('INSERT INTO product_information SET ?', (err, result) => {
+        req.body.nutrient.map((element) => {
+            let obj = {
+                nutrient_name: element.name,
+                volume: element.y,
+                plant_name: req.body.plant_name
+            }
+            db.query('INSERT INTO nutrient_information SET ?', obj, (err) => {
+                if (err) throw err
+
+            })
+        })
+        next()
+    }
+}
+
+exports.get_nutrient_information_plant = () => {
+    return (req, res, next) => {
+        db.query('SELECT plant_name,nutrient_id FROM nutrient_information GROUP BY plant_name', (err, result) => {
             if (err) throw err
+            else {
+                req.result = result
+                next()
+            }
+        })
+    }
+}
+
+exports.get_nutrient_information = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM nutrient_information', (err, result) => {
+            if (err) throw err
+            else {
+                req.result = result
+                next()
+            }
         })
     }
 }
@@ -96,7 +137,13 @@ exports.send_developer_demand = () => {
         db.query('UPDATE product_plan SET send_se=2 WHERE plan_id=?', req.body.plan_id, (err) => {
             if (err) throw err
             else {
-                next()
+                db.query('UPDATE product_information SET product_status = 3 WHERE product_id=?', req.body.product_id, (err) => {
+                    if (err) throw err
+                    else {
+                        next()
+                    }
+                })
+
             }
         })
     }
