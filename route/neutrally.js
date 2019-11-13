@@ -14,6 +14,30 @@ router.post('/update_plant_stock',
         })
     }
 )
+
+router.post('/add_plant_stock',
+    validateUtil.validate_token_se(),
+    validateUtil.validate_add_plant_stock(),
+    neutrallyUtil.add_plant_stock(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: 'เพิ่มสินค้าสำเร็จ'
+        })
+    }
+)
+
+
+router.post('/delete_plant_stock',
+    validateUtil.validate_token_se(),
+    neutrallyUtil.delete_plant_stock(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: 'ลบสินค้าสำเร็จ'
+        })
+    }
+)
 router.get('/get_order_all',
     validateUtil.validate_token_se(),
     neutrallyUtil.get_order_trader(),
@@ -253,6 +277,28 @@ router.post('/update_name_resercher_damand',
 router.post('/get_product_researcher_confirm',
     validateUtil.validate_token_se(),
     neutrallyUtil.get_product_researcher_confirm(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+
+router.get('/get_summary_order_trader',
+    neutrallyUtil.get_summary_order_trader(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+
+router.post('/get_product_plan',
+    neutrallyUtil.get_product_plan(),
     (req, res) => {
         res.status(200).json({
             'success': true,

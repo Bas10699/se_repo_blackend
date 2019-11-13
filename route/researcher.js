@@ -76,6 +76,16 @@ router.get('/get_product_plan_detail',
         })
     })
 
+router.get('/get_history_product_plan_detail',
+    validateUtil.validate_token_user(),
+    researcherUtil.get_history_product_plan_detail(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
+
 router.post('/confirm_resercher_damand',
     validateUtil.validate_token_user(),
     researcherUtil.confirm_resercher_damand(),
@@ -85,6 +95,37 @@ router.post('/confirm_resercher_damand',
             message: "ยืนยันการพัฒนาสำเร็จ"
         })
     })
+
+router.post('/delete_product_plan',
+    validateUtil.validate_token_user(),
+    researcherUtil.delete_product_plan(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: "ลบสูตรพัฒนาสำเร็จ"
+        })
+    })
+router.post('/send_developer_demand',
+    validateUtil.validate_token_user(),
+    researcherUtil.send_developer_demand(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: "ส่งสูตรพัฒนาสำเร็จ"
+        })
+    })
+
+
+router.get('/get_plant_all_mount',
+    // validateUtil.validate_token_user(),
+    researcherUtil.get_plant_all_mount(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    })
+
 
 router.get('/image/:id',
     function (req, res) {

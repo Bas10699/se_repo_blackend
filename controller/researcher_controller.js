@@ -62,7 +62,14 @@ exports.get_demand_trader_all = () => {
 
 exports.get_demand_personal = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM product_information INNER JOIN product_researcher ON product_information.product_id = product_researcher.product_id WHERE product_researcher.researcher_id =? ORDER BY product_information.product_id DESC',
+        db.query(`SELECT *,product_information.product_id,COUNT(product_plan.plan_id) AS count_plan FROM product_information 
+        INNER JOIN product_researcher 
+        ON product_information.product_id = product_researcher.product_id 
+        LEFT JOIN product_plan 
+        ON product_information.product_id=product_plan.product_id 
+        WHERE product_researcher.researcher_id =? 
+        GROUP BY product_information.product_id 
+        ORDER BY product_information.product_id DESC`,
             req.user_id, (err, result) => {
                 if (err) throw err
                 else {
@@ -70,6 +77,28 @@ exports.get_demand_personal = () => {
                     next()
                 }
             })
+    }
+}
+
+exports.delete_product_plan = () => {
+    return (req, res, next) => {
+        db.query('DELETE FROM product_plan WHERE plan_id=?', req.body.plan_id, (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+    }
+}
+
+exports.send_developer_demand = () => {
+    return (req, res, next) => {
+        db.query('UPDATE product_plan SET send_se=2 WHERE plan_id=?', req.body.plan_id, (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
     }
 }
 
@@ -121,7 +150,8 @@ exports.add_product_plan = () => {
             nutrient_precent: req.body.nutrient_precent,
             plant: req.body.plant,
             product_plan_name: req.body.product_plan_name,
-            researcher_id: req.user_id
+            researcher_id: req.user_id,
+            send_se: 1
         }
         db.query('INSERT INTO product_plan SET ? ', obj, (err, result) => {
             if (err) throw err
@@ -149,7 +179,41 @@ exports.add_product_plan = () => {
 
 exports.get_product_plan_detail = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM product_plan INNER JOIN product_information ON product_information.product_id = product_plan.product_id WHERE researcher_id=?',
+        db.query('SELECT * FROM product_plan INNER JOIN product_information ON product_information.product_id = product_plan.product_id WHERE researcher_id=? AND send_se=1',
+            req.user_id, (err, result) => {
+                if (err) throw err
+                else {
+                    result.map((element) => {
+                        try {
+                            element.nutrient = JSON.parse(element.nutrient)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+                        try {
+                            element.nutrient_precent = JSON.parse(element.nutrient_precent)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+                        try {
+                            element.plant = JSON.parse(element.plant)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+
+                    })
+                    req.result = result
+                    next()
+                }
+            })
+    }
+}
+
+exports.get_history_product_plan_detail = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM product_plan INNER JOIN product_information ON product_information.product_id = product_plan.product_id WHERE researcher_id=? AND send_se>1',
             req.user_id, (err, result) => {
                 if (err) throw err
                 else {
@@ -211,7 +275,8 @@ exports.get_plant = function () {
 
                         index = disnict_plant.findIndex((find) => find === el.plant)
                         if (index < 0) {
-                            disnict_plant.push(el.plant)
+                            if (el.plant !== undefined && el.plant !== null)
+                                disnict_plant.push(el.plant)
                         } else {
 
                         }
@@ -426,4 +491,186 @@ exports.get_plant = function () {
             })
         })
     }
+}
+
+exports.get_plant_all_mount = function () {
+    return function (req, res, next) {
+        db.query(`SELECT user_information.name,manufacture_information.plant_type,farmer_information.title_name,farmer_information.first_name,farmer_information.last_name FROM ((user_information LEFT JOIN farmer_information ON user_information.user_id = farmer_information.user_id) LEFT JOIN manufacture_information ON farmer_information.farmer_id = manufacture_information.farmer_id) WHERE user_information.type_user = 3`, function (err, result) {
+            if (err) throw err;
+            let plant_name = []
+
+            result.map((element) => {
+                element.plant_type = JSON.parse(element.plant_type)
+                let plant_type = element.plant_type
+                if (plant_type !== null) {
+                    plant_type.map((ele_pla) => {
+
+
+                        index = plant_name.findIndex((elem) => elem === ele_pla.plant)
+                        if (index < 0) {
+                            if (ele_pla.plant !== null && ele_pla.plant !== undefined) {
+                                // console.log(ele_pla.plant)
+                                plant_name.push(
+                                    ele_pla.plant
+                                )
+                            }
+                        }
+                    })
+                }
+            })
+            let plant_se = []
+            let month = []
+
+            plant_name.map((ele_plant) => {
+                let january = 0,
+                    febuary = 0,
+                    march = 0,
+                    april = 0,
+                    may = 0,
+                    june = 0,
+                    july = 0,
+                    august = 0,
+                    september = 0,
+                    october = 0,
+                    november = 0,
+                    december = 0
+                let jan = [],
+                    feb = [],
+                    mar = [],
+                    apr = [],
+                    ma = [],
+                    jun = [],
+                    jul = [],
+                    aug = [],
+                    sep = [],
+                    oct = [],
+                    nov = [],
+                    dec = []
+
+                result.map((element) => {
+                    let plant_type = element.plant_type
+                    if (plant_type !== null) {
+                        plant_type.map((ele_pla) => {
+                            if (ele_plant === ele_pla.plant) {
+
+                                if (ele_pla.end_plant == "มกราคม") {
+                                    january = january + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // jan.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "กุมภาพันธ์") {
+                                    febuary = febuary + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // feb.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "มีนาคม") {
+                                    march = march + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // mar.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "เมษายน") {
+                                    april = april + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // apr.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "พฤษภาคม") {
+                                    may = may + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // ma.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "มิถุนายน") {
+                                    june = june + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // jun.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "กรกฎาคม") {
+                                    july = july + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // jul.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "สิงหาคม") {
+                                    august = august + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // aug.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "กันยายน") {
+                                    september = september + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // sep.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "ตุลาคม") {
+                                    october = october + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // oct.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "พฤศจิกายน") {
+                                    november = november + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // nov.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                } else if (ele_pla.end_plant == "ธันวาคม") {
+                                    december = december + (ele_pla.deliver_frequency_number * ele_pla.deliver_value)
+                                    // dec.push({
+                                    //     ...ele_pla,
+                                    //     title_name: element.title_name,
+                                    //     first_name: element.first_name,
+                                    //     last_name: element.last_name,
+                                    // })
+                                }
+
+                            }
+                        })
+                    }
+                })
+                month.push({
+                    name: ele_plant,
+                    data: [january, febuary, march, april, may, june, july, august, september, october, november, december],
+                    // detail: [jan, feb, mar, apr, ma, jun, jul, aug, sep, oct, nov, dec]
+                })
+            })
+            plant_se.push({
+                se_name: result[0].name,
+                plant: month
+            })
+
+            req.result = month
+            next();
+
+
+        })
+    }
+
 }

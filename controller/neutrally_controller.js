@@ -74,6 +74,47 @@ exports.update_status_date_of_delivery_order_trader = () => {
         })
     }
 }
+
+exports.add_plant_stock = () => {
+    return (req, res, next) => {
+        let obj = {
+            plant_name: req.body.plant_name,
+            cost: req.body.cost,
+            price: JSON.stringify(req.body.price),
+            amount_stock: req.body.amount_stock,
+            details: req.body.details,
+        }
+        db.query('INSERT INTO plant_stock SET ? ', obj, (err, result) => {
+            if (err) throw err
+            else {
+                let pro_image = req.body.image.slice(req.body.image.indexOf(',') + 1)
+                require("fs").writeFile("./image/product/plant_" + result.insertId + '.png', pro_image, 'base64', function (err) {
+                    if (err) throw err;
+                    else {
+                        db.query(`UPDATE plant_stock  SET image = 'trader/image/plant_${result.insertId}.png'  WHERE plant_id = ${result.insertId}`, function (err, result) {
+                            if (err) throw err;
+                            // console.log('data', pro_id)
+                            next()
+                        });
+                    }
+                });
+            }
+        })
+    }
+}
+
+exports.delete_plant_stock = () => {
+    return (req, res, next) => {
+        // console.log(req.body)
+        db.query('DELETE FROM plant_stock WHERE plant_id=? ', req.body.plant_id, (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+    }
+}
+
 exports.update_plant_stock = () => {
     return (req, res, next) => {
         let id = req.body.product_id.split(" ");
@@ -1309,7 +1350,8 @@ exports.add_order_se = () => {
                             amount: parseInt(element.amount),
                             order_trader_id: req.body.order_trader_id,
                             order_se_date: moment().utc(7).add('years', 543).format(),
-                            order_se_status: 0
+                            order_se_status: 0,
+                            order_se_price: req.body.price,
                         }
                         console.log(obj)
                         db.query('INSERT INTO order_se SET ?', obj, (err, result) => {
@@ -1969,4 +2011,81 @@ exports.get_product_researcher_confirm = () => {
 
 exports.get_demand_detail_all = () => {
 
+}
+
+exports.get_product_plan = () => {
+    return (req, res, next) => {
+        console.log(req.body)
+        db.query('SELECT * FROM product_plan INNER JOIN product_information ON product_information.product_id=product_plan.product_id WHERE product_plan.product_id=? AND send_se>1', req.body.product_id, (err, result) => {
+            if (err) throw err
+            else {
+                if (result[0]) {
+                    result.map((element) => {
+                        try {
+                            element.nutrient_precent = JSON.parse(element.nutrient_precent)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+                        try {
+                            element.plant = JSON.parse(element.plant)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+
+                    })
+                    req.result = result
+                    next()
+                }
+                else {
+                    res.status(200).json({
+                        'success': false,
+                        'error_message': "ไม่พบสูตรการพัฒนา"
+                    })
+                }
+            }
+        })
+    }
+}
+
+exports.get_summary_order_trader = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM order_trader WHERE order_status>2', (err, result) => {
+            if (err) throw err
+            else {
+                let result_plant = []
+                result.map((element) => {
+                    element.detail = JSON.parse(element.detail)
+                    let detail = element.detail
+                    detail.map((element_detail) => {
+                        result_plant.push({
+                            plant_id: element_detail.plant_id,
+                            plant_name: element_detail.plant_name,
+                            price: element_detail.price,
+                            cost: element_detail.cost,
+                            amount: element_detail.amount,
+                            date_of_payment: element.date_of_payment
+                        })
+                    })
+
+
+                })
+                req.result = result_plant
+                next()
+            }
+        })
+    }
+}
+
+exports.get_summary_order_se = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM order_se', (err, result) => {
+            if (err) throw err
+            else {
+                req.result = result
+                next()
+            }
+        })
+    }
 }

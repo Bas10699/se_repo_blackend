@@ -319,38 +319,38 @@ exports.get_product_information = () => {
 exports.add_cart_trader = () => {
     return (req, res, next) => {
         // console.log('55555', req.body)
-            db.query('SELECT * FROM cart WHERE trader_id = ? AND plant_id = ?', [req.user_id, req.body.plant_id], (err, result) => {
-                if (err) throw err
-                else {
-                    if (result[0]) {
-                        console.log("update")
+        db.query('SELECT * FROM cart WHERE trader_id = ? AND plant_id = ?', [req.user_id, req.body.plant_id], (err, result) => {
+            if (err) throw err
+            else {
+                if (result[0]) {
+                    console.log("update")
 
-                        let sum_amount = (Number(result[0].amount) + Number(req.body.total_plant))
-                        console.log("sum_amont", sum_amount)
+                    let sum_amount = (Number(result[0].amount) + Number(req.body.total_plant))
+                    console.log("sum_amont", sum_amount)
 
-                        db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND plant_id = ?', [sum_amount, req.user_id, req.body.plant_id], (err, result) => {
-                            if (err) throw err
-                            else {
-                                next()
-                            }
-                        })
-                    }
-                    else {
-                        console.log("INSERT")
-                        let cart = {
-                            trader_id: req.user_id,
-                            plant_id: req.body.plant_id,
-                            amount: req.body.total_plant
+                    db.query('UPDATE cart SET amount = ? WHERE trader_id = ? AND plant_id = ?', [sum_amount, req.user_id, req.body.plant_id], (err, result) => {
+                        if (err) throw err
+                        else {
+                            next()
                         }
-                        db.query('INSERT INTO cart SET ?', cart, (err, result) => {
-                            if (err) throw err
-                            else {
-                                next()
-                            }
-                        })
-                    }
+                    })
                 }
-            })
+                else {
+                    console.log("INSERT")
+                    let cart = {
+                        trader_id: req.user_id,
+                        plant_id: req.body.plant_id,
+                        amount: req.body.total_plant
+                    }
+                    db.query('INSERT INTO cart SET ?', cart, (err, result) => {
+                        if (err) throw err
+                        else {
+                            next()
+                        }
+                    })
+                }
+            }
+        })
     }
 }
 
@@ -625,8 +625,8 @@ exports.add_send_demand = () => {
         let object = {
             product_name: req.body.product_name,
             nutrient: req.body.nutrient,
-            volume:req.body.volume,
-            volume_type:req.body.volume_type,
+            volume: req.body.volume,
+            volume_type: req.body.volume_type,
             product_status: req.body.product_status,
             trader_id: req.user_id,
         }
@@ -641,10 +641,10 @@ exports.add_send_demand = () => {
 
 exports.get_send_demand_personal = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM product_information WHERE trader_id = ?',req.user_id, (err, result) => {
+        db.query('SELECT * FROM product_information WHERE trader_id = ?', req.user_id, (err, result) => {
             if (err) throw err
             else {
-                result.map((element)=>{
+                result.map((element) => {
                     element.nutrient = JSON.parse(element.nutrient)
                 })
                 req.result = result
@@ -659,13 +659,19 @@ exports.get_send_demand = () => {
         db.query('SELECT * FROM product_information', (err, result) => {
             if (err) throw err
             else {
-                result.map((element)=>{
+                result.map((element) => {
                     element.nutrient = JSON.parse(element.nutrient)
                 })
                 req.result = result
                 next()
             }
         })
+    }
+}
+
+exports.get_result_demand = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM product_information INNER JOIN ')
     }
 }
 

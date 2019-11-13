@@ -120,6 +120,23 @@ exports.validate_update_plant_stock = () => {
   }
 }
 
+exports.validate_add_plant_stock = () => {
+  return (req, res, next) => {
+    // console.log(req.body)
+    if (req.body.plant_name &&
+      req.body.cost &&
+      req.body.price &&
+      req.body.amount_stock &&
+      req.body.details &&
+      req.body.image) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
+
 exports.validate_update_name_resercher_damand = () => {
   return (req, res, next) => {
     console.log(req.body)
@@ -186,8 +203,8 @@ exports.validate_add_send_demand = () => {
 exports.validate_add_product_plan = () => {
   return (req, res, next) => {
     if (req.body.product_id &&
-      req.body.nutrient_precent &&
-      req.body.plant &&
+      req.body.nutrient_precent !== '[]' &&
+      req.body.plant !== '[]' &&
       req.body.image &&
       req.body.product_plan_name) {
       next()

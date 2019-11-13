@@ -4,7 +4,7 @@ var productUtil = require('../controller/trader_controller')
 var validateUtil = require('../controller/validate_controller')
 
 router.get('/get_product',
-    // validateUtil.validate_token_trader(),
+    // validateUtil.validate_token_user(),
     productUtil.get_product(),
     (req, res) => {
         res.status(200).json({
@@ -14,7 +14,7 @@ router.get('/get_product',
     }
 )
 router.post('/get_product_information',
-    // validateUtil.validate_token_trader(),
+    // validateUtil.validate_token_user(),
     productUtil.get_product_information(),
     (req, res) => {
         res.status(200).json({
@@ -25,7 +25,7 @@ router.post('/get_product_information',
 )
 
 router.post('/add_cart_trader',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     // validateUtil.validate_add_cart(),
     productUtil.add_cart_trader(),
     (req, res) => {
@@ -37,7 +37,7 @@ router.post('/add_cart_trader',
 )
 
 router.post('/delete_cart_product_tarder',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.delete_product_cart(),
     (req, res) => {
         res.status(200).json({
@@ -47,7 +47,7 @@ router.post('/delete_cart_product_tarder',
     })
 
 router.post('/update_cart_trader',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.update_cart_trader(),
     (req, res) => {
         res.status(200).json({
@@ -58,7 +58,7 @@ router.post('/update_cart_trader',
 )
 
 router.get('/get_cart_trader',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.get_cart_trader(),
     (req, res) => {
         res.status(200).json({
@@ -69,7 +69,7 @@ router.get('/get_cart_trader',
 )
 
 router.post('/add_order',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     validateUtil.validate_add_order(),
     productUtil.add_order_trader(),
     (req, res) => {
@@ -82,7 +82,7 @@ router.post('/add_order',
 )
 
 router.post('/update_status_order_trader',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.update_status_order_trader(),
     (req, res) => {
         res.status(200).json({
@@ -93,7 +93,7 @@ router.post('/update_status_order_trader',
 )
 
 router.post('/finish_trader_order',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.finish_trader_order(),
     (req, res) => {
         res.status(200).json({
@@ -104,7 +104,7 @@ router.post('/finish_trader_order',
 )
 
 router.get('/get_order',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.get_order_trader(),
     (req, res) => {
         res.status(200).json({
@@ -115,7 +115,7 @@ router.get('/get_order',
 )
 
 router.post('/get_order_info',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.get_order_info_trader(),
     (req, res) => {
         res.status(200).json({
@@ -125,7 +125,7 @@ router.post('/get_order_info',
     }
 )
 router.post('/get_invoice_trader',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.get_invoice_trader(),
     (req, res) => {
         res.status(200).json({
@@ -135,7 +135,7 @@ router.post('/get_invoice_trader',
     }
 )
 router.post('/add_proof_of_payment_trader',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     validateUtil.validate_add_proof_of_payment_trader(),
     productUtil.add_proof_of_payment_trader(),
     (req, res) => {
@@ -146,7 +146,7 @@ router.post('/add_proof_of_payment_trader',
     }
 )
 router.post('/get_proof_of_payment_trader',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.get_proof_of_payment_trader(),
     (req, res) => {
         res.status(200).json({
@@ -157,7 +157,7 @@ router.post('/get_proof_of_payment_trader',
 )
 
 router.post('/add_send_demand',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     validateUtil.validate_add_send_demand(),
     productUtil.add_send_demand(),
     (req, res) => {
@@ -169,7 +169,7 @@ router.post('/add_send_demand',
 )
 
 router.get('/get_send_demand_personal',
-    validateUtil.validate_token_trader(),
+    validateUtil.validate_token_user(),
     productUtil.get_send_demand_personal(),
     (req, res) => {
         res.status(200).json({

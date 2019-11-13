@@ -28,6 +28,30 @@ router.post('/user_login',
 
 )
 
+router.post('/facebook_login',
+    userUtil.facebook_login(),
+    function (req, res) {
+        res.status(200).json({
+            'success': true,
+            token: req.token,
+            message: "เข้าสู่ระบบสำเร็จ"
+        })
+    }
+
+)
+
+
+router.post('/update_facebook_id',
+    validateUtil.validate_token_user(),
+    userUtil.update_facebook_id(),
+    function (req, res) {
+        res.status(200).json({
+            'success': true,
+            message: "เพิ่มบัญชี Facebook เรียบร้อย"
+        })
+    }
+
+)
 
 router.post('/user_update_password',
     validateUtil.validate_user_update_password(),
@@ -70,7 +94,7 @@ router.get('/get_user',
     (req, res) => {
         res.status(200).json({
             'success': true,
-            result : req.result
+            result: req.result
         })
     }
 )
@@ -81,7 +105,7 @@ router.get('/get_all_user',
     (req, res) => {
         res.status(200).json({
             'success': true,
-            result : req.result
+            result: req.result
         })
     }
 )
@@ -92,7 +116,29 @@ router.get('/show_user',
     (req, res) => {
         res.status(200).json({
             'success': true,
-            result : req.result
+            result: req.result
+        })
+    }
+)
+
+router.post('/show_user_detail',
+    validateUtil.validate_token_user(),
+    userUtil.show_user_detail(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+router.post('/update_data_user',
+    validateUtil.validate_token_user(),
+    userUtil.update_data_user(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: "แก้ไขบัญชีผู้ใช้เรียบร้อย"
         })
     }
 )

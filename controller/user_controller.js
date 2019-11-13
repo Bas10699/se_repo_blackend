@@ -87,6 +87,53 @@ exports.User_Login = () => {
     }
 }
 
+exports.facebook_login = () => {
+    return (req, res, next) => {
+        console.log(req.body)
+        let obj = {
+            facebook_id: req.body.facebook_id,
+            name: req.body.name,
+            username: req.body.email,
+            type_user: 'A'
+        }
+        db.query('SELECT * FROM user_information WHERE facebook_id=?', obj.facebook_id, (err, result_user) => {
+            if (err) throw err
+            if (result_user[0]) {
+                req.token = jsonwebToken.sign({
+                    id: result_user[0].user_id,
+                    type: result_user[0].type_user
+                }, constance.sign)
+
+                next()
+            }
+            else {
+                db.query('INSERT INTO user_information SET ?', obj, (err, result) => {
+                    if (err) throw err
+                    else {
+                        req.token = jsonwebToken.sign({
+                            id: result.insertId,
+                            type: obj.type_user
+                        }, constance.sign)
+
+                        next()
+                    }
+                })
+            }
+        })
+    }
+}
+
+exports.update_facebook_id = () => {
+    return (req, res, next) => {
+        db.query('UPDATE user_information SET facebook_id=? WHERE user_id=?', [req.body.facebook_id, req.user_id], (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+    }
+}
+
 exports.user_update_password = () => {
     return (req, res, next) => {
         let user_id = req.user_id
@@ -139,31 +186,31 @@ exports.user_update_data = () => {
             bank_information: req.body.bank_information
         }
 
-            db.query('UPDATE user_information SET ? WHERE user_id = ?', [data_update, user_id], (err, result) => {
-                if (err) throw err;
-                if (req.body.user_image) {
-                    let user_image = req.body.user_image.slice(req.body.user_image.indexOf(',') + 1)
-                    require("fs").writeFile("./image/user/user_" + req.user_id + '.png', user_image, 'base64', function (err) {
+        db.query('UPDATE user_information SET ? WHERE user_id = ?', [data_update, user_id], (err, result) => {
+            if (err) throw err;
+            if (req.body.user_image) {
+                let user_image = req.body.user_image.slice(req.body.user_image.indexOf(',') + 1)
+                require("fs").writeFile("./image/user/user_" + req.user_id + '.png', user_image, 'base64', function (err) {
+                    if (err) throw err;
+                    db.query(`UPDATE user_information  SET user_image = 'user/image/user_${req.user_id}.png'  WHERE user_id= ${req.user_id}`, function (err, result) {
                         if (err) throw err;
-                        db.query(`UPDATE user_information  SET user_image = 'user/image/user_${req.user_id}.png'  WHERE user_id= ${req.user_id}`, function (err, result) {
-                            if (err) throw err;
-                            else {
-                                next()
-                            }
-                        });
+                        else {
+                            next()
+                        }
                     });
-                }
-                else {
-                    req.token = jsonwebToken.sign({ id: result.insertId }, constance.sign)
-                    next()
-                }
-            })
+                });
+            }
+            else {
+                req.token = jsonwebToken.sign({ id: result.insertId }, constance.sign)
+                next()
+            }
+        })
     }
 }
 
 exports.delete_user = () => {
     return (req, res, next) => {
-        db.query('DELETE user_information WHERE user_id=?',
+        db.query('DELETE FROM user_information WHERE user_id=?',
             req.body.user_id, (err) => {
                 if (err) throw err
                 else {
@@ -196,20 +243,52 @@ exports.show_user = () => {
     return (req, res, next) => {
         let data = ''
         let sql = 'SELECT * From user_information WHERE user_id=?'
-        db.query(sql,req.user_id, (err, result) => {
+        db.query(sql, req.user_id, (err, result) => {
             if (err) throw err;
 
             else {
-                data = {
-                    ...result[0],
-                    user_type: result[0].type_user
-                }
-                req.result = data
+                // data = {
+                //     ...result[0],
+                //     user_type: result[0].type_user
+                // }
+                req.result = result[0]
                 next()
             }
         })
     }
 }
+
+exports.show_user_detail = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM user_information WHERE user_id=?', req.body.user_id, (err, result) => {
+            if (err) throw err
+            else {
+                req.result = result[0]
+                next()
+            }
+        })
+    }
+}
+
+exports.update_data_user = () => {
+    return (req, res, next) => {
+        let obj = {
+            name: req.body.name,
+            last_name: req.body.last_name,
+            address: req.body.address,
+            phone: req.body.phone,
+            username: req.body.username,
+            type_user: req.body.type_user
+        }
+        db.query('UPDATE user_information SET ? WHERE user_id=?', [obj,req.body.user_id], (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
+        })
+    }
+}
+
 exports.get_all_user = () => {
     return (req, res, next) => {
         let sql = 'SELECT * From user_information'
