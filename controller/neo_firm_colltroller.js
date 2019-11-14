@@ -606,9 +606,9 @@ exports.get_planing_farmer = () => {
 
 exports.get_planing_se_personal = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM year_round_planing WHERE se_name=?',req.user_id,(err,result)=>{
-            if(err) throw err
-            else{
+        db.query('SELECT * FROM year_round_planing WHERE se_name=?', req.user_id, (err, result) => {
+            if (err) throw err
+            else {
                 req.result = result
                 next()
             }
@@ -652,6 +652,18 @@ exports.get_count_farmer = () => {
 exports.get_trading_statistics_farmer = () => {
     return (req, res, next) => {
         db.query('SELECT * FROM order_farmer WHERE se_id=?', req.user_id, (err, result) => {
+            if (err) throw err
+            else {
+                req.result = result
+                next()
+            }
+        })
+    }
+}
+
+exports.get_summary_personal = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM order_se FROM se_name=?', req.user_id, (err, result) => {
             if (err) throw err
             else {
                 req.result = result
