@@ -44,14 +44,35 @@ exports.add_nutrient_information = () => {
     return (req, res, next) => {
         req.body.nutrient.map((element) => {
             let obj = {
+                nutrient_id: element.id,
                 nutrient_name: element.name,
                 volume: element.y,
                 plant_name: req.body.plant_name
             }
             db.query('INSERT INTO nutrient_information SET ?', obj, (err) => {
-                if (err) throw err
+                if (err) {
+                    if (err.code === 'ER_DUP_ENTRY') {
+                        let object = {
+                            nutrient_name: element.name,
+                            volume: element.y,
+                            plant_name: req.body.plant_name
+                        }
+                        db.query('UPDATE nutrient_information SET ? WHERE nutrient_id=?', [object, element.id], (err) => {
+                            if (err) throw err
+                        })
+                    }
+                    else
+                        throw err;
+                }
 
             })
+            if (req.body.delete_id[0]) {
+                req.body.delete_id.map((ele_id) => {
+                    db.query('DELETE FROM nutrient_information WHERE nutrient_id=?', ele_id, (err) => {
+                        if (err) throw err
+                    })
+                })
+            }
         })
         next()
     }
