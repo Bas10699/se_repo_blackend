@@ -296,9 +296,41 @@ router.get('/get_summary_order_trader',
     }
 )
 
+router.get('/get_summary_order_se',
+    neutrallyUtil.get_summary_order_se(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
 
 router.post('/get_product_plan',
     neutrallyUtil.get_product_plan(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            result: req.result
+        })
+    }
+)
+
+
+router.post('/send_plan_product_to_trader',
+    validateUtil.validate_send_plan_product_to_trader(),
+    neutrallyUtil.send_plan_product_to_trader(),
+    (req, res) => {
+        res.status(200).json({
+            'success': true,
+            message: 'เลือกนักวิจัยสำเร็จ'
+        })
+    }
+)
+
+
+router.get('/get_plant_stock',
+    neutrallyUtil.get_plant_stock(),
     (req, res) => {
         res.status(200).json({
             'success': true,

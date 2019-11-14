@@ -215,6 +215,19 @@ exports.validate_add_product_plan = () => {
   }
 }
 
+exports.validate_send_plan_product_to_trader = () => {
+  return (req, res, next) => {
+    console.log(req.body)
+    let data = req.body.plan_id
+    if (data.length !== 0 && req.body.product_id) {
+      next()
+    }
+    else {
+      res.status(200).json(errorMessages.invalid_data)
+    }
+  }
+}
+
 
 exports.validate_token_user = function () {
   return function (req, res, next) {

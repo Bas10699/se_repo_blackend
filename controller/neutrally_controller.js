@@ -1415,6 +1415,7 @@ exports.add_order_se_payment = () => {
             order_se_Payment_time: req.body.order_se_Payment_time,
             order_se_id: req.body.order_se_id,
         }
+        let date_payment = moment().utc(7).add('years', 543).format()
         db.query('INSERT INTO order_se_payment SET ?', object, (err) => {
             if (err) throw err
             else {
@@ -1426,7 +1427,7 @@ exports.add_order_se_payment = () => {
                         db.query(`UPDATE order_se_payment SET order_se_payment_image= 'trader/image/payment/payment_${object.order_se_Payment_id}.png'  WHERE order_se_id= '${req.body.order_se_id}'`, function (err, result) {
                             if (err) throw err;
                             else {
-                                db.query('UPDATE order_se SET order_se_status=2 WHERE order_se_id=?', req.body.order_se_id, (err) => {
+                                db.query('UPDATE order_se SET order_se_status=2,order_se_date_payment=? WHERE order_se_id=?', [req.body.order_se_id, date_payment], (err) => {
                                     if (err) throw err
                                     else {
                                         next()
@@ -2032,23 +2033,59 @@ exports.get_product_plan = () => {
             if (err) throw err
             else {
                 if (result[0]) {
-                    result.map((element) => {
-                        try {
-                            element.nutrient_precent = JSON.parse(element.nutrient_precent)
-                        }
-                        catch (error) {
-                            console.log(error)
-                        }
-                        try {
-                            element.plant = JSON.parse(element.plant)
-                        }
-                        catch (error) {
-                            console.log(error)
-                        }
+                    db.query('SELECT * FROM plant_stock', (err, result_plant) => {
+                        if (err) throw err
+                        else {
+                            let data_send = []
+                            result.map((element) => {
+                                let price = []
+                                try {
+                                    element.nutrient = JSON.parse(element.nutrient)
+                                }
+                                catch (error) {
+                                    console.log(error)
+                                }
+                                try {
+                                    element.nutrient_precent = JSON.parse(element.nutrient_precent)
+                                }
+                                catch (error) {
+                                    console.log(error)
+                                }
+                                try {
 
+                                    element.plant = JSON.parse(element.plant)
+                                    let plant = element.plant
+                                    element.plant.map((ele) => {
+                                        let price_ele = 0
+                                        result_plant.map((ele_r_p) => {
+                                            if (ele.plant_name === ele_r_p.plant_name) {
+                                                ele_r_p.price = JSON.parse(ele_r_p.price)
+                                                let price = ele_r_p.price
+                                                // console.log(price[0].price)
+                                                price_ele = price[0].price
+                                            }
+                                        })
+                                        price.push({
+                                            ...ele,
+                                            price: price_ele
+                                        })
+                                    })
+                                }
+                                catch (error) {
+                                    console.log(error)
+                                }
+                                data_send.push({
+                                    ...element,
+                                    price: price
+                                })
+
+                            })
+
+                            req.result = data_send
+                            next()
+                        }
                     })
-                    req.result = result
-                    next()
+
                 }
                 else {
                     res.status(200).json({
@@ -2063,7 +2100,7 @@ exports.get_product_plan = () => {
 
 exports.get_summary_order_trader = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_trader WHERE order_status>2', (err, result) => {
+        db.query('SELECT * FROM order_trader WHERE order_status>2 ORDER BY date_of_payment DESC', (err, result) => {
             if (err) throw err
             else {
                 let result_plant = []
@@ -2092,9 +2129,24 @@ exports.get_summary_order_trader = () => {
 
 exports.get_summary_order_se = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_se', (err, result) => {
+        db.query('SELECT * FROM order_se INNER JOIN order_se_payment ON order_se.order_se_id = order_se_payment.order_se_id INNER JOIN user_information ON user_information.user_id = order_se.se_name ORDER BY order_se_Payment_date DESC', (err, result) => {
             if (err) throw err
             else {
+                req.result = result
+                next()
+            }
+        })
+    }
+}
+
+exports.get_plant_stock = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM plant_stock', (err, result) => {
+            if (err) throw err
+            else {
+                result.map((element) => {
+                    element.price = JSON.parse(element.price)
+                })
                 req.result = result
                 next()
             }

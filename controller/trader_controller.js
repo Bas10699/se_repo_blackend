@@ -669,6 +669,40 @@ exports.get_send_demand = () => {
     }
 }
 
+exports.get_product_plan = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM product_plan INNER JOIN product_information ON product_plan.product_id = product_information.product_id WHERE product_information.product_id=?',
+            req.body.product_id, (err, result) => {
+                if (err) throw err
+                else {
+                    result.map((element) => {
+                        try {
+                            element.nutrient = JSON.parse(element.nutrient)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+                        try {
+                            element.nutrient_precent = JSON.parse(element.nutrient_precent)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+                        try {
+                            element.plant = JSON.parse(element.plant)
+                        }
+                        catch (error) {
+                            console.log(error)
+                        }
+
+                    })
+                    req.result = result
+                    next()
+                }
+            })
+    }
+}
+
 exports.get_result_demand = () => {
     return (req, res, next) => {
         db.query('SELECT * FROM product_information INNER JOIN ')

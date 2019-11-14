@@ -179,6 +179,17 @@ router.get('/get_send_demand_personal',
     }
 )
 
+router.post('/get_product_plan',
+    validateUtil.validate_token_user(),
+    productUtil.get_product_plan(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: req.result
+        })
+    }
+)
+
 // router.get('/get_send_demand',
 //     productUtil.get_send_demand(),
 //     (req, res) => {
