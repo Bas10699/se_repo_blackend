@@ -19,7 +19,8 @@ exports.User_Register = () => {
             user_informationcol: '-',
             team_code: 0,
             user_image: '',
-            bank_information: ''
+            bank_information: '',
+            email:req.body.email
         };
 
         var sql = 'INSERT INTO user_information SET ?';
@@ -93,7 +94,7 @@ exports.facebook_login = () => {
         let obj = {
             facebook_id: req.body.facebook_id,
             name: req.body.name,
-            username: req.body.email,
+            email: req.body.email,
             type_user: 'A'
         }
         db.query('SELECT * FROM user_information WHERE facebook_id=?', obj.facebook_id, (err, result_user) => {
@@ -183,7 +184,8 @@ exports.user_update_data = () => {
             last_name: req.body.last_name,
             address: req.body.address,
             phone: req.body.phone,
-            bank_information: req.body.bank_information
+            bank_information: req.body.bank_information,
+            email:req.body.email
         }
 
         db.query('UPDATE user_information SET ? WHERE user_id = ?', [data_update, user_id], (err, result) => {

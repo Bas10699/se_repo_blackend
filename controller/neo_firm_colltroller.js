@@ -663,9 +663,10 @@ exports.get_trading_statistics_farmer = () => {
 
 exports.get_summary_personal = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_se FROM se_name=?', req.user_id, (err, result) => {
+        db.query('SELECT * FROM order_se INNER JOIN order_se_payment ON order_se.order_se_id = order_se_payment.order_se_id WHERE se_name=?', req.user_id, (err, result) => {
             if (err) throw err
             else {
+                // console.log('g',result)
                 req.result = result
                 next()
             }

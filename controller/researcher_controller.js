@@ -42,12 +42,14 @@ exports.get_plant_se = () => {
 
 exports.add_nutrient_information = () => {
     return (req, res, next) => {
+        console.log(req.body)
         req.body.nutrient.map((element) => {
             let obj = {
                 nutrient_id: element.id,
                 nutrient_name: element.name,
                 volume: element.y,
-                plant_name: req.body.plant_name
+                plant_name: req.body.plant_name,
+                
             }
             db.query('INSERT INTO nutrient_information SET ?', obj, (err) => {
                 if (err) {

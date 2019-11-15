@@ -2,6 +2,16 @@ var db = require('../connect/test_connect')
 var moment = require('moment')
 var randomstring = require("randomstring");
 var errorMessages = require('../const/error_message')
+var nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'bas10699@gmail.com', // your email
+        pass: 'tossapol3103' // your email password
+    }
+});
+
 
 
 exports.get_product = () => {
@@ -478,6 +488,25 @@ exports.add_order_trader = () => {
                             //         }
                             //     })
                             // })
+
+                            let mailOptions = {
+                                from: 'sender@hotmail.com',                // sender
+                                to: req.body.email,                // list of receivers
+                                subject: 'ยืนยันคำสั่งซื้อหมายเลข'+order_id,              // Mail subject
+                                html: `<b>สวัสดีคุณ ${req.body.name} ${req.body.last_name},</b><br/>
+                                        <p>เราได้รับ หมายเลขของคำสั่งซื้อ #${order_id} ของคุณ ${moment().lang("th").utc(7).add('years', 543).format('LLLL')}</p>
+                                        <b>ดูข้อมูลเพิ่มเติม</b>
+                                        <a href=http://localhost:3000/T_Buying/order?order_id=${order_id}>กรุณากด ที่นี่</a>`   // HTML body
+                            };
+
+                            transporter.sendMail(mailOptions, function (err, info) {
+                                if(err)
+                                  console.log(err)
+                                else
+                                  console.log(info);
+                             });
+
+
                             req.result = order_id
                             next()
                         })

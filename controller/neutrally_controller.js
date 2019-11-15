@@ -1376,7 +1376,7 @@ exports.add_order_se = () => {
 
 exports.get_order_se_all = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM order_se ORDER BY id DESC', (err, result) => {
+        db.query('SELECT * FROM order_se INNER JOIN user_information ON order_se.se_name = user_information.user_id ORDER BY id DESC', (err, result) => {
             if (err) throw err
             else {
                 req.result = result
@@ -1389,7 +1389,7 @@ exports.get_order_se_all = () => {
 exports.get_order_se = () => {
     return (req, res, next) => {
         console.log(req.body)
-        db.query('SELECT * FROM order_se_payment RIGHT JOIN order_se_invoice ON  order_se_payment.order_se_id=order_se_invoice.order_se_id RIGHT JOIN order_se ON order_se_invoice.order_se_id = order_se.order_se_id WHERE order_se.order_se_id = ?', req.body.order_id, (err, result) => {
+        db.query('SELECT * FROM order_se_payment RIGHT JOIN order_se_invoice ON  order_se_payment.order_se_id=order_se_invoice.order_se_id RIGHT JOIN order_se ON order_se_invoice.order_se_id = order_se.order_se_id INNER JOIN user_information ON order_se.se_name = user_information.user_id WHERE order_se.order_se_id = ?', req.body.order_id, (err, result) => {
             // db.query('SELECT * FROM order_se LEFT JOIN order_se_payment ON order_se_payment.order_se_id=order_se.order_se_id LEFT JOIN order_se_invoice ON order_se.order_se_id = order_se_invoice.order_se_id WHERE order_se.order_se_id=?', req.body.order_id, (err, result) => {
             if (err) throw err
             else {
@@ -1427,7 +1427,7 @@ exports.add_order_se_payment = () => {
                         db.query(`UPDATE order_se_payment SET order_se_payment_image= 'trader/image/payment/payment_${object.order_se_Payment_id}.png'  WHERE order_se_id= '${req.body.order_se_id}'`, function (err, result) {
                             if (err) throw err;
                             else {
-                                db.query('UPDATE order_se SET order_se_status=2,order_se_date_payment=? WHERE order_se_id=?', [req.body.order_se_id, date_payment], (err) => {
+                                db.query('UPDATE order_se SET order_se_status=2,order_se_date_payment=? WHERE order_se_id=?', [date_payment,req.body.order_se_id], (err) => {
                                     if (err) throw err
                                     else {
                                         next()
@@ -1734,7 +1734,7 @@ exports.add_year_round = function () {
 
 exports.get_year_round = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM year_round_planing ORDER BY plan_id DESC', (err, result) => {
+        db.query('SELECT * FROM year_round_planing INNER JOIN user_information ON year_round_planing.se_name = user_information.user_id ORDER BY plan_id DESC', (err, result) => {
             if (err) throw err
             else {
                 let plant = []
@@ -1765,7 +1765,7 @@ exports.get_year_round = () => {
                             plant_result = ele.plant
                             date_result = ele.year_round_planing_date
                             detail.push({
-                                se_name: ele.se_name,
+                                se_name: ele.name,
                                 volume: ele.volume * 1
                             })
                         }
