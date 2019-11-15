@@ -205,7 +205,6 @@ exports.validate_add_product_plan = () => {
     if (req.body.product_id &&
       req.body.nutrient_precent !== '[]' &&
       req.body.plant !== '[]' &&
-      req.body.image &&
       req.body.product_plan_name) {
       next()
     }

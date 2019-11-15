@@ -2082,13 +2082,14 @@ exports.get_product_plan = () => {
 
                                     element.plant = JSON.parse(element.plant)
                                     let plant = element.plant
+                                    console.log(plant)
                                     element.plant.map((ele) => {
                                         let price_ele = 0
                                         result_plant.map((ele_r_p) => {
-                                            if (ele.plant_name === ele_r_p.plant_name) {
+                                            if ((ele.plant_name).trim() === (ele_r_p.plant_name).trim()) {
                                                 ele_r_p.price = JSON.parse(ele_r_p.price)
                                                 let price = ele_r_p.price
-                                                // console.log(price[0].price)
+                                                console.log(price[0].price)
                                                 price_ele = price[0].price
                                             }
                                         })

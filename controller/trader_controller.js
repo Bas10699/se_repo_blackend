@@ -492,7 +492,7 @@ exports.add_order_trader = () => {
                             let mailOptions = {
                                 from: 'sender@hotmail.com',                // sender
                                 to: req.body.email,                // list of receivers
-                                subject: 'ยืนยันคำสั่งซื้อหมายเลข'+order_id,              // Mail subject
+                                subject: 'ยืนยันคำสั่งซื้อหมายเลข' + order_id,              // Mail subject
                                 html: `<b>สวัสดีคุณ ${req.body.name} ${req.body.last_name},</b><br/>
                                         <p>เราได้รับ หมายเลขของคำสั่งซื้อ #${order_id} ของคุณ ${moment().lang("th").utc(7).add('years', 543).format('LLLL')}</p>
                                         <b>ดูข้อมูลเพิ่มเติม</b>
@@ -500,11 +500,11 @@ exports.add_order_trader = () => {
                             };
 
                             transporter.sendMail(mailOptions, function (err, info) {
-                                if(err)
-                                  console.log(err)
+                                if (err)
+                                    console.log(err)
                                 else
-                                  console.log(info);
-                             });
+                                    console.log(info);
+                            });
 
 
                             req.result = order_id
@@ -732,6 +732,80 @@ exports.get_product_plan = () => {
     }
 }
 
+exports.get_product_plan_price = () => {
+    return (req, res, next) => {
+        console.log(req.body)
+        db.query('SELECT * FROM product_plan INNER JOIN product_information ON product_information.product_id=product_plan.product_id WHERE product_plan.product_id=? AND send_se>2', req.body.product_id, (err, result) => {
+            if (err) throw err
+            else {
+                if (result[0]) {
+                    db.query('SELECT * FROM plant_stock', (err, result_plant) => {
+                        if (err) throw err
+                        else {
+                            let data_send = []
+                            result.map((element) => {
+                                let price = []
+                                try {
+                                    element.nutrient = JSON.parse(element.nutrient)
+                                }
+                                catch (error) {
+                                    console.log(error)
+                                }
+                                try {
+                                    element.nutrient_precent = JSON.parse(element.nutrient_precent)
+                                }
+                                catch (error) {
+                                    console.log(error)
+                                }
+                                try {
+
+                                    element.plant = JSON.parse(element.plant)
+                                    let plant = element.plant
+                                    console.log(plant)
+                                    element.plant.map((ele) => {
+                                        let price_ele = 0
+                                        result_plant.map((ele_r_p) => {
+                                            if ((ele.plant_name).trim() === (ele_r_p.plant_name).trim()) {
+                                                ele_r_p.price = JSON.parse(ele_r_p.price)
+                                                let price = ele_r_p.price
+                                                console.log(price[0].price)
+                                                price_ele = price[0].price
+                                            }
+                                        })
+                                        price.push({
+                                            ...ele,
+                                            price: price_ele
+                                        })
+                                    })
+                                }
+                                catch (error) {
+                                    console.log(error)
+                                }
+                                data_send.push({
+                                    ...element,
+                                    price: price
+                                })
+
+                            })
+
+                            req.result = data_send
+                            next()
+                        }
+                    })
+
+                }
+                else {
+                    res.status(200).json({
+                        'success': false,
+                        'error_message': "ไม่พบสูตรการพัฒนา"
+                    })
+                }
+            }
+        })
+    }
+}
+
+
 exports.get_result_demand = () => {
     return (req, res, next) => {
         db.query('SELECT * FROM product_information INNER JOIN ')
@@ -766,6 +840,40 @@ exports.finish_trader_order = () => {
                     next()
                 }
             })
+        })
+    }
+}
+
+exports.get_send_demand_draft = () => {
+    return (req, res, next) => {
+        db.query('SELECT * FROM product_information WHERE product_id=?', req.body.product_id, (err, result) => {
+            if (err) throw err
+            else {
+                result[0].nutrient = JSON.parse(result[0].nutrient)
+                req.result = result[0]
+                // console.log(result[0])
+                next()
+            }
+        })
+    }
+}
+
+exports.update_send_demand = () => {
+    return (req, res, next) => {
+        console.log(req.body)
+        let object = {
+            product_name: req.body.product_name,
+            nutrient: req.body.nutrient,
+            volume: req.body.volume,
+            volume_type: req.body.volume_type,
+            product_status: req.body.product_status,
+            trader_id: req.user_id,
+        }
+        db.query('UPDATE product_information SET ? WHERE product_id=?', [object,req.body.product_id], (err) => {
+            if (err) throw err
+            else {
+                next()
+            }
         })
     }
 }

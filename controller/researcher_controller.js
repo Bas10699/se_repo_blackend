@@ -106,7 +106,7 @@ exports.get_nutrient_information = () => {
 
 exports.get_demand_trader_all = () => {
     return (req, res, next) => {
-        db.query('SELECT * FROM product_information INNER JOIN user_information ON product_information.trader_id = user_information.user_id ORDER BY product_id DESC', (err, result) => {
+        db.query('SELECT * FROM product_information INNER JOIN user_information ON product_information.trader_id = user_information.user_id WHERE product_status>0 ORDER BY product_id DESC', (err, result) => {
             if (err) throw err
             else {
 
@@ -226,22 +226,22 @@ exports.add_product_plan = () => {
         db.query('INSERT INTO product_plan SET ? ', obj, (err, result) => {
             if (err) throw err
             else {
-                if (req.body.image != 0) {
-                    let pro_image = req.body.image.slice(req.body.image.indexOf(',') + 1)
-                    require("fs").writeFile("./image/productPlan/productPlan_" + result.insertId + '.png', pro_image, 'base64', function (err) {
-                        if (err) throw err;
-                        else {
-                            db.query(`UPDATE product_plan  SET image = 'researcher/image/productPlan_${result.insertId}.png'  WHERE plan_id = ${result.insertId}`, function (err) {
-                                if (err) throw err;
+                // if (req.body.image != 0) {
+                //     let pro_image = req.body.image.slice(req.body.image.indexOf(',') + 1)
+                //     require("fs").writeFile("./image/productPlan/productPlan_" + result.insertId + '.png', pro_image, 'base64', function (err) {
+                //         if (err) throw err;
+                //         else {
+                //             db.query(`UPDATE product_plan  SET image = 'researcher/image/productPlan_${result.insertId}.png'  WHERE plan_id = ${result.insertId}`, function (err) {
+                //                 if (err) throw err;
                                 // console.log('data', result.insertId)
                                 next()
-                            });
-                        }
-                    });
-                }
-                else {
-                    next()
-                }
+                //             });
+                //         }
+                //     });
+                // }
+                // else {
+                //     next()
+                // }
             }
         })
     }

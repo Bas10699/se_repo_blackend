@@ -167,6 +167,18 @@ router.post('/add_send_demand',
         })
     }
 )
+router.post('/update_send_demand',
+    validateUtil.validate_token_user(),
+    validateUtil.validate_add_send_demand(),
+    productUtil.update_send_demand(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            message: "อัปเดตความต้องการสำเร็จ"
+        })
+    }
+)
+
 
 router.get('/get_send_demand_personal',
     validateUtil.validate_token_user(),
@@ -190,6 +202,29 @@ router.post('/get_product_plan',
     }
 )
 
+router.post('/get_product_plan_price',
+    validateUtil.validate_token_user(),
+    productUtil.get_product_plan_price(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: req.result
+        })
+    }
+)
+
+
+router.post('/get_send_demand_draft',
+    validateUtil.validate_token_user(),
+    productUtil.get_send_demand_draft(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: req.result
+        })
+    }
+)
+
 // router.get('/get_send_demand',
 //     productUtil.get_send_demand(),
 //     (req, res) => {
@@ -202,7 +237,7 @@ router.post('/get_product_plan',
 
 router.post('/add_review_order',
     productUtil.add_review_order(),
-    (req,res) =>{
+    (req, res) => {
         res.status(200).json({
             success: true,
             message: "ส่งรีวิวสำเร็จ"
