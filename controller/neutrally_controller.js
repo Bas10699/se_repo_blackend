@@ -1,6 +1,15 @@
 var db = require('../connect/test_connect')
 var moment = require('moment')
 var errorMessages = require('../const/error_message')
+var nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'bas10699@gmail.com', // your email
+        pass: 'tossapol3103' // your email password
+    }
+});
 
 exports.get_order_trader = () => {
     return (req, res, next) => {
@@ -222,6 +231,22 @@ exports.add_invoice_neutrally = () => {
                 db.query('UPDATE order_trader SET ? WHERE order_id=?', [object, req.body.order_id], (err) => {
                     if (err) throw err
                     else {
+                        let mailOptions = {
+                            from: 'sender@hotmail.com',                // sender
+                            to: req.body.email,                // list of receivers
+                            subject: 'สั่งซื้อหมายเลข' + req.body.order_id,              // Mail subject
+                            html: `
+                                    <p>ใบแจ้งหนี้เลขที่ ${data.invoice_id} หมายเลขของคำสั่งซื้อ #${req.body.order_id} ของคุณ ${moment().lang("th").utc(7).add('years', 543).format('LLLL')}</p>
+                                    <b>ดูข้อมูลเพิ่มเติม</b>
+                                    <a href=http://localhost:3000/T_Buying/order?order_id=${req.body.order_id}>กรุณากด ที่นี่</a>`   // HTML body
+                        };
+
+                        transporter.sendMail(mailOptions, function (err, info) {
+                            if (err)
+                                console.log(err)
+                            else
+                                console.log(info);
+                        });
                         next()
                     }
                 })
@@ -1427,7 +1452,7 @@ exports.add_order_se_payment = () => {
                         db.query(`UPDATE order_se_payment SET order_se_payment_image= 'trader/image/payment/payment_${object.order_se_Payment_id}.png'  WHERE order_se_id= '${req.body.order_se_id}'`, function (err, result) {
                             if (err) throw err;
                             else {
-                                db.query('UPDATE order_se SET order_se_status=2,order_se_date_payment=? WHERE order_se_id=?', [date_payment,req.body.order_se_id], (err) => {
+                                db.query('UPDATE order_se SET order_se_status=2,order_se_date_payment=? WHERE order_se_id=?', [date_payment, req.body.order_se_id], (err) => {
                                     if (err) throw err
                                     else {
                                         next()
