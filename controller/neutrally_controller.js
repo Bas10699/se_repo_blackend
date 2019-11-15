@@ -227,6 +227,7 @@ exports.add_invoice_neutrally = () => {
                     order_status: 1,
                     noti_status_trader: 1,
                     noti_date_trader: moment().utc(7).add('years', 543).format(),
+                    date_send: req.body.date_send,
                 }
                 db.query('UPDATE order_trader SET ? WHERE order_id=?', [object, req.body.order_id], (err) => {
                     if (err) throw err
