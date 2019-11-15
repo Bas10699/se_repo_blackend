@@ -236,7 +236,8 @@ exports.add_invoice_neutrally = () => {
                             to: req.body.email,                // list of receivers
                             subject: 'สั่งซื้อหมายเลข' + req.body.order_id,              // Mail subject
                             html: `
-                                    <p>ใบแจ้งหนี้เลขที่ ${data.invoice_id} หมายเลขของคำสั่งซื้อ #${req.body.order_id} ของคุณ ${moment().lang("th").utc(7).add('years', 543).format('LLLL')}</p>
+                                    <p>ใบแจ้งหนี้เลขที่ ${data.invoice_id} หมายเลขของคำสั่งซื้อ #${req.body.order_id} <br/>
+                                    กรุณาชำระเงินภายในวันที่ ${moment(data.date_send).lang("th").format('LL')}</p>
                                     <b>ดูข้อมูลเพิ่มเติม</b>
                                     <a href=http://localhost:3000/T_Buying/order?order_id=${req.body.order_id}>กรุณากด ที่นี่</a>`   // HTML body
                         };
