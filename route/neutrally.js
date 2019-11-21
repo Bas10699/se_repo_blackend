@@ -69,6 +69,19 @@ router.post('/update_status_order_trader',
         })
     }
 )
+
+
+router.post('/cancel_order_trader',
+    validateUtil.validate_token_se(),
+    neutrallyUtil.cancel_order_trader(),
+    (req, res) => {
+        res.status(200).json({
+            success: true,
+            result: 'ยกเลิกคำสั่งซื้อสำเร็จ'
+        })
+    }
+)
+
 router.post('/update_status_date_of_delivery_order_trader',
     validateUtil.validate_token_trader(),
     neutrallyUtil.update_status_date_of_delivery_order_trader(),

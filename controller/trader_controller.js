@@ -2,16 +2,7 @@ var db = require('../connect/test_connect')
 var moment = require('moment')
 var randomstring = require("randomstring");
 var errorMessages = require('../const/error_message')
-var nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'bas10699@gmail.com', // your email
-        pass: 'tossapol3103' // your email password
-    }
-});
-
+var constance = require('../const/constance')
 
 
 exports.get_product = () => {
@@ -476,39 +467,36 @@ exports.add_order_trader = () => {
                         db.query('DELETE FROM cart WHERE trader_id = ?', req.user_id, (err) => {
                             if (err) throw err
 
-                            // req.body.detail.map((element) => {
-                            //     console.log(element)
-                            //     db.query('SELECT * FROM plant_stock WHERE plant_id=?', element.plant_id, (err, result) => {
-                            //         if (err) throw err
-                            //         else {
-                            //             let stock = result[0].amount_stock - element.amount
-                            //             db.query('UPDATE plant_stock SET amount_stock=? WHERE plant_id=?', [stock, element.plant_id], (err) => {
-                            //                 if (err) throw err
-                            //             })
-                            //         }
-                            //     })
-                            // })
+                            db.query('SELECT email FROM user_information WHERE type_user=4', (err, res_email) => {
+                                if (err) throw err
+                                else {
 
-                            let mailOptions = {
-                                from: 'sender@hotmail.com',                // sender
-                                to: req.body.email,                // list of receivers
-                                subject: 'ยืนยันคำสั่งซื้อหมายเลข' + order_id,              // Mail subject
-                                html: `<b>สวัสดีคุณ ${req.body.name} ${req.body.last_name},</b><br/>
-                                        <p>เราได้รับ หมายเลขของคำสั่งซื้อ #${order_id} ของคุณ ${moment().lang("th").utc(7).add('years', 543).format('LLLL')}</p>
+                                    let mailOptions = {
+                                        // from: 'sender@hotmail.com',                // sender
+                                        to: res_email[0].email,                // list of receivers
+                                        subject: 'คำสั่งซื้อใหม่หมายเลข' + order_id,              // Mail subject
+                                        html: `
+                                        <h3>มีคำสั่งซื้อใหม่จาก ${req.body.name} ${req.body.last_name}</h3> <br/>
+                                        <p>หมายเลขของคำสั่งซื้อ #${order_id} <br/>
+                                        ${moment().lang("th").utc(7).add('years', 543).format('LLLL')} น.</p><br/>
+                                        <p>กรุณาทำการสั่งซื้อวัตถุดิบจาก SE ย่อย และยืนยันการสั่งซื้อ</p>
+                                        
                                         <b>ดูข้อมูลเพิ่มเติม</b>
-                                        <a href=http://localhost:3000/T_Buying/order?order_id=${order_id}>กรุณากด ที่นี่</a>`   // HTML body
-                            };
+                                        <a href=http://${constance.domain_name}/M_Order/gg?aa=${order_id}>กรุณากด ที่นี่</a>`   // HTML body
+                                    };
 
-                            transporter.sendMail(mailOptions, function (err, info) {
-                                if (err)
-                                    console.log(err)
-                                else
-                                    console.log(info);
-                            });
+                                    constance.transporter.sendMail(mailOptions, function (err, info) {
+                                        if (err)
+                                            console.log(err)
+                                        else
+                                            console.log(info);
+                                    });
 
 
-                            req.result = order_id
-                            next()
+                                    req.result = order_id
+                                    next()
+                                }
+                            })
                         })
                     }
                 })
@@ -625,7 +613,31 @@ exports.add_proof_of_payment_trader = () => {
                                 db.query('UPDATE order_trader SET ? WHERE order_id=?', [sd, req.body.order_id], (err) => {
                                     if (err) throw err
                                     else {
-                                        next()
+                                        db.query('SELECT email FROM user_information WHERE type_user=4', (err, res_email) => {
+                                            if (err) throw err
+                                            else {
+                                                let mailOptions = {
+                                                    // from: 'sender@hotmail.com',                // sender
+                                                    to: res_email[0].email,                // list of receivers
+                                                    subject: 'แจ้งการชำระเงินคำสั่งซื้อหมายเลข' + req.body.order_id,              // Mail subject
+                                                    html: `
+                                                            <p>หมายเลขของคำสั่งซื้อ #${req.body.order_id} แจ้งชำระเงินแล้ว <br/>${moment().lang("th").utc(7).add('years', 543).format('LLLL')} น.</p>
+                                                        
+                                                            <b>ดูข้อมูลเพิ่มเติม</b>
+                                                            <a href=http://${constance.domain_name}/M_Order/gg?aa=${req.body.order_id}>กรุณากด ที่นี่</a>`   // HTML body
+                                                };
+
+                                                constance.transporter.sendMail(mailOptions, function (err, info) {
+                                                    if (err)
+                                                        console.log(err)
+                                                    else
+                                                        console.log(info);
+                                                });
+                                                next()
+                                            }
+
+                                        })
+
                                     }
                                 })
                             }
@@ -869,7 +881,7 @@ exports.update_send_demand = () => {
             product_status: req.body.product_status,
             trader_id: req.user_id,
         }
-        db.query('UPDATE product_information SET ? WHERE product_id=?', [object,req.body.product_id], (err) => {
+        db.query('UPDATE product_information SET ? WHERE product_id=?', [object, req.body.product_id], (err) => {
             if (err) throw err
             else {
                 next()

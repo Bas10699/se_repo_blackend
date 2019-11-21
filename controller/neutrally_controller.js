@@ -1,15 +1,7 @@
 var db = require('../connect/test_connect')
 var moment = require('moment')
 var errorMessages = require('../const/error_message')
-var nodemailer = require('nodemailer');
-
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: 'bas10699@gmail.com', // your email
-        pass: 'tossapol3103' // your email password
-    }
-});
+var constance = require('../const/constance')
 
 exports.get_order_trader = () => {
     return (req, res, next) => {
@@ -63,6 +55,29 @@ exports.update_status_order_trader = () => {
             if (err) throw err
             else {
                 next()
+            }
+        })
+    }
+}
+
+exports.cancel_order_trader = () => {
+    return (req, res, next) => {
+        // console.log(req.body)
+        let obj = {
+            order_status: req.body.status,
+            detail:JSON.stringify(req.body.detail)
+            // check_payment_date: moment().utc(7).add('years', 543).format(),
+        }
+        db.query('UPDATE order_trader SET ? WHERE order_id=?', [obj, req.body.order_id], (err, result) => {
+            if (err) throw err
+            else {
+                db.query('UPDATE order_se SET order_se_status=-1 WHERE order_trader_id=?', req.body.order_id, (err) => {
+                    if (err) throw err
+                    else {
+                        next()
+                    }
+                })
+
             }
         })
     }
@@ -240,10 +255,10 @@ exports.add_invoice_neutrally = () => {
                                     <p>ใบแจ้งหนี้เลขที่ ${data.invoice_id} หมายเลขของคำสั่งซื้อ #${req.body.order_id} <br/>
                                     กรุณาชำระเงินภายในวันที่ ${moment(data.date_send).lang("th").format('LL')}</p>
                                     <b>ดูข้อมูลเพิ่มเติม</b>
-                                    <a href=http://localhost:3000/T_Buying/order?order_id=${req.body.order_id}>กรุณากด ที่นี่</a>`   // HTML body
+                                    <a href=http://${constance.domain_name}/T_Buying/order?order_id=${req.body.order_id}>กรุณากด ที่นี่</a>`   // HTML body
                         };
 
-                        transporter.sendMail(mailOptions, function (err, info) {
+                        constance.transporter.sendMail(mailOptions, function (err, info) {
                             if (err)
                                 console.log(err)
                             else
@@ -1388,13 +1403,39 @@ exports.add_order_se = () => {
                                 db.query('UPDATE order_se SET order_se_id=? WHERE id=?', [order_se_id, result.insertId], (err) => {
                                     if (err) throw err
                                     else {
-                                        next()
+                                        db.query('SELECT email FROM user_information WHERE user_id=?',element.id_name,(err,res_email)=>{
+                                            if(err) throw err
+                                            else{
+                                                let mailOptions = {
+                                                    from: 'sender@hotmail.com',                // sender
+                                                    to: res_email[0].email,                // list of receivers
+                                                    subject: 'คำสั่งซื้อใหม่หมายเลข' + req.body.order_id,              // Mail subject
+                                                    html: `
+                                                    <h3>มีคำสั่งซื้อใหม่จาก SE กลาง</h3> <br/>
+                                                    <p>หมายเลขของคำสั่งซื้อ #${req.body.order_id} <br/>
+                                                    ${moment().lang("th").utc(7).add('years', 543).format('LLLL')} น.</p><br/>
+                                                    <p>กรุณาทำการยืนยันการสั่งซื้อ</p>
+                                                    
+                                                    <b>ดูข้อมูลเพิ่มเติม</b>
+                                                    <a href=http://${constance.domain_name}/S_Order/Order?orderId=${req.body.order_id}>กรุณากด ที่นี่</a>`   // HTML body
+                                                };
+                        
+                                                constance.transporter.sendMail(mailOptions, function (err, info) {
+                                                    if (err)
+                                                        console.log(err)
+                                                    else
+                                                        console.log(info);
+                                                });
+                                            }
+                                        })
+                                        
                                     }
                                 })
                             }
                         })
                     }
                 })
+                next()
             }
         })
 

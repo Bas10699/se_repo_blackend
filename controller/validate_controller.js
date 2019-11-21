@@ -178,6 +178,7 @@ exports.validate_get_order_info = () => {
 }
 exports.validate_add_proof_of_payment_trader = () => {
   return (req, res, next) => {
+    console.log(req.body.order_id+','+req.body.date_proof+','+req.body.time_proof)
     if (req.body.order_id &&
       req.body.date_proof &&
       req.body.time_proof &&
